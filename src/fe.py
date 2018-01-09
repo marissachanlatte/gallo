@@ -21,10 +21,10 @@ class Element():
         return self.mat_id
 
 class Node():
-    def __init__(self, position, node_id, interior_node_id, is_interior):
+    def __init__(self, position, node_id, interior_node_id, isinterior):
         self.position = position
         self.id = node_id
-        self.is_interior = is_interior
+        self.isinterior = isinterior
         self.interior_node_id = interior_node_id
 
     def get_position(self):
@@ -37,7 +37,7 @@ class Node():
         return self.interior_node_id
 
     def is_interior(self):
-        return self.is_interior
+        return self.isinterior
 
 class FEGrid():
     def __init__(self, node_file, ele_file):
@@ -103,17 +103,17 @@ class FEGrid():
     def get_mat_id(self, elt_number):
         return self.element(elt_number).get_mat_id()
         
-    def gradient(self, elt_number, node_number):
+    def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
         e = self.elts[elt_number].get_vertices()
-        n = self.nodes[node_number].get_position()
-        assert(n.is_interior())
-        dx = np.zeros(2, 2)
+        n = self.get_node(elt_number, local_node_number)
+        xbase = n.get_position()
+        dx = np.zeros((2, 2))
         for ivert in range(2):
-            other_node_number = e[(node_number + ivert + 1)%3]
+            other_node_number = e[(local_node_number + ivert + 1)%3]
             dx[ivert] = self.nodes[other_node_number].get_position()
             for idir in range(2):
-                dx[ivert, idir] -= n[idir]
+                dx[ivert, idir] -= xbase[idir]
 
         det = dx[0, 0]*dx[1, 1] - dx[1, 0]*dx[0, 1]
         retval = np.zeros(2)
@@ -122,8 +122,8 @@ class FEGrid():
         return retval
 
     def basis(self, elt_number):
-        V = np.zeros(3, 3)
-        for i in range(2):
+        V = np.zeros((3, 3))
+        for i in range(3):
             V[i, 0] = 1
             V[i, 1] = self.get_node(elt_number, i).get_position()[0]
             V[i, 2] = self.get_node(elt_number, i).get_position()[1]
@@ -196,3 +196,11 @@ class FEGrid():
             retval[idir]/=3
         return retval
 
+def reinsert(grid, internal_solution):
+        nodes = grid.get_num_nodes()
+        full_vector = np.zeros(nodes)
+        for i in range(nodes):
+            n = grid.node(i)
+            if n.is_interior():
+                full_vector[i] = internal_solution[n.get_interior_node_id()]
+        return full_vector
