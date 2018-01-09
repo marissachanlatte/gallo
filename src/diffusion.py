@@ -2,10 +2,10 @@ import numpy as np
 import scipy.sparse as sps
 
 
-class DiffusionOperator():
+class Diffusion():
     def __init__(self, grid, mat_data):
         k = grid.get_num_interior_nodes()
-        self.matrix = sps.csc_matrix((k, k))
+        self.sparse_matrix = sps.lil_matrix((k, k))
         self.fegrid = grid
         self.mat_data = mat_data
 
@@ -20,12 +20,12 @@ class DiffusionOperator():
             # Get absorption cross section for material
             sig_a = self.mat_data.get_siga(midx)
             # Determine basis functions for element
-            C = grid.basis(e)
+            coef = grid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = grid.gauss_nodes(e)
             for n in range(3):
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
-                bn = C[:, n]
+                bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
                 fn_vals = np.zeros(3)
                 for i in range(3):
@@ -33,10 +33,9 @@ class DiffusionOperator():
                         bn[0] + bn[1] * g_nodes[i, 0] + bn[2] * g_nodes[i, 1])
                 # Get global node
                 n_global = grid.get_node(e, n)
-
                 for ns in range(3):
                     # Coefficients of basis function
-                    bns = C[:, ns]
+                    bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
                     fns_vals = np.zeros(3)
                     for i in range(3):
@@ -69,4 +68,41 @@ class DiffusionOperator():
                         integral = grid.gauss_quad(e, f_vals)
                         C = sig_a * integral
 
-                        self.matrix[nid, nsid] += A + C
+                        self.sparse_matrix[nid, nsid] += A + C
+
+    def make_rhs(self, f_centroids):
+        # Get num interior nodes
+        n = self.fegrid.get_num_interior_nodes()
+        rhs_at_node = np.zeros(n)
+
+        # Get num elements
+        E = self.fegrid.get_num_elts()
+
+        for e in range(E):
+            for n in range(3):
+                n_global = self.fegrid.get_node(e, n)
+                # Check if boundary node
+                if not n_global.is_interior():
+                    continue
+                # Get node ids
+                nid = n_global.get_interior_node_id()
+                area = self.fegrid.element_area(e)
+                rhs_at_node[nid] += area*f_centroids[e]*1/3
+
+        return rhs_at_node
+
+    def get_matrix(self):
+        return self.sparse_matrix
+
+
+
+
+
+
+
+
+
+
+
+
+
