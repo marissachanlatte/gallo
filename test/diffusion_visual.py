@@ -14,7 +14,7 @@ def source_function(x, filename):
     if filename=="uniform_source":
         return 1
 
-    elif filename=="box_2":
+    elif filename=="box_source":
         if 4 < x[0] < 6 and 4 < x[1] < 6:
             return 1
         else:
@@ -105,6 +105,6 @@ def mms():
     plt.savefig("mms_plot")
 
 
-#diffusion_test("uniform_source")
-#diffusion_test("box_2")
+diffusion_test("uniform_source")
+diffusion_test("box_source")
 mms()
