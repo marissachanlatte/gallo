@@ -88,7 +88,6 @@ class Diffusion():
                 nid = n_global.get_interior_node_id()
                 area = self.fegrid.element_area(e)
                 rhs_at_node[nid] += area*f_centroids[e]*1/3
-
         return rhs_at_node
 
     def get_matrix(self):

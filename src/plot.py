@@ -20,9 +20,11 @@ def plot(grid, solution, filename, mesh_plot=False):
         plt.gca().set_aspect('equal')
         plt.triplot(x, y, triangles, 'go-', lw=1.0)
         plt.savefig(filename + "_mesh")
+    # Setup colorbar
+    inf = np.min(solution)
+    sup = np.max(solution)
     # Plot and save to file
     plt.figure()
-    plt.gca().set_aspect('equal')
-    plt.tricontourf(x, y, triangles, solution)
+    plt.tricontourf(x, y, triangles, solution, levels=np.linspace(inf, sup, 11))
     plt.colorbar()
     plt.savefig(filename)

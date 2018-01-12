@@ -9,31 +9,39 @@ from fe import *
 from materials import Materials
 from plot import plot
 
-def source_function(x):
-    if 4 <= x[0] <= 6 and 4 <= x[1] <=6:
-      return 1
+# Uniform Source Test
+def source_function(x, filename):
+    if filename=="uniform_source":
+        return 1
+    elif filename=="box_2":
+        if 4 < x[0] < 6 and 4 < x[1] < 6:
+            return 1
+        else:
+            return 0
     else:
-      return 0
+      print("Input not supported")
 
-nodefile = "test_inputs/box.node"
-elefile = "test_inputs/box.ele"
-matfile = "test_inputs/box.mat"
-grid = FEGrid(nodefile, elefile)
-mats = Materials(matfile)
+def diffusion_test(filename):
+    nodefile = "test_inputs/" + filename + ".node"
+    elefile = "test_inputs/" + filename + ".ele"
+    matfile = "test_inputs/" + filename + ".mat"
+    grid = FEGrid(nodefile, elefile)
+    mats = Materials(matfile)
 
-op = Diffusion(grid, mats)
+    op = Diffusion(grid, mats)
 
-A = op.get_matrix()
+    A = op.get_matrix()
 
-n_elements = grid.get_num_elts()
-source_terms = np.zeros(n_elements)
-for i in range(n_elements):
-  cent = grid.centroid(i)
-  source_terms[i] = source_function(cent)
-rhs = op.make_rhs(source_terms)
-internal_nodes = linalg.cg(A, rhs, tol=1e-6)
+    n_elements = grid.get_num_elts()
+    source_terms = np.zeros(n_elements)
+    for i in range(n_elements):
+      cent = grid.centroid(i)
+      source_terms[i] = source_function(cent, filename)
+    rhs = op.make_rhs(source_terms)
+    internal_nodes = linalg.cg(A, rhs)
 
-phi = reinsert(grid, internal_nodes[0])
+    phi = reinsert(grid, internal_nodes[0])
+    plot(grid, phi, filename+"_test")
 
-plot(grid, phi, "diffusion_test")
-
+#diffusion_test("uniform_source")
+diffusion_test("box_2")
