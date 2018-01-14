@@ -37,18 +37,21 @@ def diffusion_test(filename):
 
     op = Diffusion(grid, mats)
 
-    A = op.get_matrix()
+    A = op.get_matrix("all")
 
     n_elements = grid.get_num_elts()
     source_terms = np.zeros(n_elements)
     for i in range(n_elements):
       cent = grid.centroid(i)
       source_terms[i] = source_function(cent, filename)
-    rhs = op.make_rhs(source_terms)
-    internal_nodes = linalg.cg(A, rhs)
+    rhses = op.make_rhs(source_terms)
 
-    phi = reinsert(grid, internal_nodes[0])
-    plot(grid, phi, filename+"_test")
+    num_groups = mats.get_num_groups()
+    phi = []
+    for g in range(num_groups):
+        internal_nodes = linalg.cg(A[g], rhses[g])[0]
+        phi.append(reinsert(grid, internal_nodes))
+        plot(grid, phi[g], filename + "_group" + str(g) + "_test")
 
 def mms():
     N = 3
@@ -107,4 +110,4 @@ def mms():
 
 diffusion_test("uniform_source")
 diffusion_test("box_source")
-mms()
+#mms()

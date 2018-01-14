@@ -43,6 +43,9 @@ class Materials():
     def get_name(self, mat_id):
         return self.names[mat_id]
 
+    def get_num_groups(self):
+        return self.num_groups
+        
     def get_sigt(self, mat_id, group_id):
         return self.sig_t[mat_id, group_id]
 
