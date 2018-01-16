@@ -28,3 +28,4 @@ def plot(grid, solution, filename, mesh_plot=False):
     plt.tricontourf(x, y, triangles, solution, levels=np.linspace(inf, sup, 11))
     plt.colorbar()
     plt.savefig(filename)
+    plt.clf()

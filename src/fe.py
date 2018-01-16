@@ -175,6 +175,13 @@ class FEGrid():
         area = np.abs(dx[0, 0]*dx[1, 1] - dx[1, 0]*dx[0, 1])/2
         return area
 
+    def average_element_area(self):
+        area = 0
+        for i in range(self.get_num_elts()):
+            area += self.element_area(i)
+        area /= self.get_num_elts()
+        return area
+        
     def gauss_quad(self, elt_number, f_values):
         # Using second order Gaussian Quadrature formula
         # 1/3*Area*[f(0, .5) + f(.5, 0) + f(.5, .5)]

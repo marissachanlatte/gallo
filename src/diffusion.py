@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.sparse as sps
-
+import scipy.sparse.linalg as linalg
+from fe import *
 
 class Diffusion():
     def __init__(self, grid, mat_data):
@@ -73,33 +74,115 @@ class Diffusion():
             self.matrices.append(sparse_matrix)
 
     def make_rhs(self, f_centroids):
-        rhses = []
-        for g in range(self.num_groups):
-            # Get num interior nodes
-            n = self.fegrid.get_num_interior_nodes()
-            rhs_at_node = np.zeros(n)
+        # Get num interior nodes
+        n = self.fegrid.get_num_interior_nodes()
+        rhs_at_node = np.zeros(n)
+        # Get num elements
+        E = self.fegrid.get_num_elts()
+        for e in range(E):
+            for n in range(3):
+                n_global = self.fegrid.get_node(e, n)
+                # Check if boundary node
+                if not n_global.is_interior():
+                    continue
+                # Get node ids
+                nid = n_global.get_interior_node_id()
+                area = self.fegrid.element_area(e)
+                rhs_at_node[nid] += area*f_centroids[e]*1/3
+        return rhs_at_node
 
-            # Get num elements
-            E = self.fegrid.get_num_elts()
-
-            for e in range(E):
-                for n in range(3):
-                    n_global = self.fegrid.get_node(e, n)
-                    # Check if boundary node
-                    if not n_global.is_interior():
-                        continue
-                    # Get node ids
-                    nid = n_global.get_interior_node_id()
-                    area = self.fegrid.element_area(e)
-                    rhs_at_node[nid] += area*f_centroids[e]*1/3
-            rhses.append(rhs_at_node)
-        return rhses
+    def make_eigen_source(self, group_id, phi_prev):
+        E = self.fegrid.get_num_elts()
+        f_centroids = np.zeros(E)
+        for e in range(E):
+            midx = self.fegrid.get_mat_id(e)
+            nu = self.mat_data.get_nu(midx, group_id)
+            sig_f = self.mat_data.get_sigf(midx, group_id)
+            f_centroids[e] = nu*sig_f*phi_prev[e]
+        return f_centroids
 
     def get_matrix(self, group_id):
         if group_id == "all":
             return self.matrices
         else:
             return self.matrices[group_id]
+
+    def interpolate_to_centroid(self, f_nodes):
+        num_elts = self.fegrid.get_num_elts()
+        centroids = np.zeros(num_elts)
+        for e in range(num_elts):
+            area = self.fegrid.element_area(e)
+            for n in range(3):
+                node = self.fegrid.get_node(e, n)
+                if node.is_interior():
+                    id = node.get_interior_node_id()
+                    centroids[e] += f_nodes[id]
+        centroids /= 3
+        return centroids
+
+    def integrate(self, f_nodes):
+        f_centroids = self.interpolate_to_centroid(f_nodes)
+        integral = self.make_rhs(f_centroids)
+        return integral
+
+    def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
+        if problem_type=="fixed_source":
+            internal_nodes = linalg.cg(lhs, rhs)[0]
+            return internal_nodes
+        elif problem_type=="eigenvalue":
+            E = self.fegrid.get_num_elts()
+            N = self.fegrid.get_num_interior_nodes()
+            phi = np.zeros(N)
+            phi_prev = np.ones(N)
+            integral = self.integrate(phi_prev)
+            k_prev = np.sum(integral)
+            # renormalize
+            phi_prev /= k_prev
+
+            for i in range(max_iter):
+                # setup rhs
+                phi_centroid = self.interpolate_to_centroid(phi_prev)
+                f_centroids = self.make_eigen_source(group_id, phi_centroid)
+                # Integrate
+                rhs = self.make_rhs(f_centroids)
+                # solve
+                phi = linalg.cg(lhs, rhs)[0]
+                # compute k by integrating phi
+                integral = self.integrate(phi)
+                k = np.sum(integral)
+                # renormalize
+                phi /= k
+                norm = np.linalg.norm(phi-phi_prev, 2)
+                knorm = np.abs(k - k_prev)
+                if knorm < tol and norm < tol:
+                    break
+                phi_prev = phi
+                k_prev = k
+                print("Eigenvalue Iteration: ", i)
+                print("Norm: ", norm)
+
+            if i==max_iter:
+                print("Warning: maximum number of iterations reached in eigenvalue solver")
+
+            max = np.max(phi)
+            phi /= max
+
+            print("Number of Iterations: ", i)
+            print("Final Phi Norm: ", norm)
+            print("Final k Norm: ", knorm)
+            return phi, k
+            # phi_prev = np.ones_like(rhs)
+            # err = 1
+            # while err > tol:
+            #     rhs = self.make_rhs("eigenvalue", group_id, phi=phi_prev)
+            #     phi = linalg.cg(lhs, rhs)[0]
+            #     err = np.max(np.abs(phi_prev - phi))
+            #     phi_prev = phi
+            # phi = reinsert(self.fegrid, phi)
+        else:
+            print("Problem type must be fixed_source or eigenvalue")
+
+
 
 
 
