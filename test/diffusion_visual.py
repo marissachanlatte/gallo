@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('../src')
 
-from diffusion import Diffusion
+from formulations.diffusion import Diffusion
 from fe import *
 from materials import Materials
 from problem import Problem

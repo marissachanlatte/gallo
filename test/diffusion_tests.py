@@ -5,7 +5,7 @@ import scipy.sparse.linalg as linalg
 import sys
 sys.path.append('../src')
 
-from diffusion import Diffusion
+from formulations.diffusion import Diffusion
 from fe import *
 from materials import Materials
 from plot import plot

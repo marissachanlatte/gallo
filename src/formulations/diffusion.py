@@ -5,13 +5,15 @@ from fe import *
 
 class Diffusion():
     def __init__(self, grid, mat_data):
-        k = grid.get_num_interior_nodes()
-        E = grid.get_num_elts()
-        self.matrices = []
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
+        self.matrices = self.make_lhs()
         
+    def make_lhs(self):
+        k = self.fegrid.get_num_interior_nodes()
+        E = self.fegrid.get_num_elts()
+        matrices = []
         for g in range(self.num_groups):
             sparse_matrix = sps.lil_matrix((k, k))
             for e in range(E):
@@ -22,9 +24,9 @@ class Diffusion():
                 # Get absorption cross section for material
                 sig_a = self.mat_data.get_siga(midx, g)
                 # Determine basis functions for element
-                coef = grid.basis(e)
+                coef = self.fegrid.basis(e)
                 # Determine Gauss Nodes for element
-                g_nodes = grid.gauss_nodes(e)
+                g_nodes = self.fegrid.gauss_nodes(e)
                 for n in range(3):
                     # Coefficients of basis functions b[0] + b[1]x + b[2]y
                     bn = coef[:, n]
@@ -34,7 +36,7 @@ class Diffusion():
                         fn_vals[i] = (
                             bn[0] + bn[1] * g_nodes[i, 0] + bn[2] * g_nodes[i, 1])
                     # Get global node
-                    n_global = grid.get_node(e, n)
+                    n_global = self.fegrid.get_node(e, n)
                     for ns in range(3):
                         # Coefficients of basis function
                         bns = coef[:, ns]
@@ -44,7 +46,7 @@ class Diffusion():
                             fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
                                            bns[2] * g_nodes[i, 1])
                         # Get global node
-                        ns_global = grid.get_node(e, ns)
+                        ns_global = self.fegrid.get_node(e, ns)
                         # Get node IDs
                         nid = n_global.get_interior_node_id()
                         nsid = ns_global.get_interior_node_id()
@@ -53,8 +55,8 @@ class Diffusion():
                             continue
                         else:
                             # Calculate gradients
-                            ngrad = grid.gradient(e, n)
-                            nsgrad = grid.gradient(e, ns)
+                            ngrad = self.fegrid.gradient(e, n)
+                            nsgrad = self.fegrid.gradient(e, ns)
 
                             # Multiply basis functions together
                             f_vals = np.zeros(3)
@@ -62,16 +64,17 @@ class Diffusion():
                                 f_vals[i] = fn_vals[i] * fns_vals[i]
 
                             # Integrate for A (basis function derivatives)
-                            area = grid.element_area(e)
+                            area = self.fegrid.element_area(e)
                             inprod = np.dot(ngrad, nsgrad)
                             A = D * area * inprod
 
                             # Integrate for B (basis functions multiplied)
-                            integral = grid.gauss_quad(e, f_vals)
+                            integral = self.fegrid.gauss_quad(e, f_vals)
                             C = sig_a * integral
 
                             sparse_matrix[nid, nsid] += A + C
-            self.matrices.append(sparse_matrix)
+            matrices.append(sparse_matrix)
+        return matrices
 
     def make_rhs(self, f_centroids):
         # Get num interior nodes
@@ -107,24 +110,6 @@ class Diffusion():
         else:
             return self.matrices[group_id]
 
-    def interpolate_to_centroid(self, f_nodes):
-        num_elts = self.fegrid.get_num_elts()
-        centroids = np.zeros(num_elts)
-        for e in range(num_elts):
-            area = self.fegrid.element_area(e)
-            for n in range(3):
-                node = self.fegrid.get_node(e, n)
-                if node.is_interior():
-                    id = node.get_interior_node_id()
-                    centroids[e] += f_nodes[id]
-        centroids /= 3
-        return centroids
-
-    def integrate(self, f_nodes):
-        f_centroids = self.interpolate_to_centroid(f_nodes)
-        integral = self.make_rhs(f_centroids)
-        return integral
-
     def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
         if problem_type=="fixed_source":
             internal_nodes = linalg.cg(lhs, rhs)[0]
@@ -141,14 +126,15 @@ class Diffusion():
 
             for i in range(max_iter):
                 # setup rhs
-                phi_centroid = self.interpolate_to_centroid(phi_prev)
+                phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
                 f_centroids = self.make_eigen_source(group_id, phi_centroid)
                 # Integrate
                 rhs = self.make_rhs(f_centroids)
                 # solve
                 phi = linalg.cg(lhs, rhs)[0]
                 # compute k by integrating phi
-                integral = self.integrate(phi)
+                phi_centroids = self.fegrid.interpolate_to_centroid(phi)
+                integral = self.make_rhs(phi_centroids)
                 k = np.sum(integral)
                 # renormalize
                 phi /= k
@@ -171,14 +157,7 @@ class Diffusion():
             print("Final Phi Norm: ", norm)
             print("Final k Norm: ", knorm)
             return phi, k
-            # phi_prev = np.ones_like(rhs)
-            # err = 1
-            # while err > tol:
-            #     rhs = self.make_rhs("eigenvalue", group_id, phi=phi_prev)
-            #     phi = linalg.cg(lhs, rhs)[0]
-            #     err = np.max(np.abs(phi_prev - phi))
-            #     phi_prev = phi
-            # phi = reinsert(self.fegrid, phi)
+
         else:
             print("Problem type must be fixed_source or eigenvalue")
 

@@ -19,7 +19,8 @@ class Materials():
             self.sig_s = np.zeros((self.num_mats, self.num_groups))
             self.sig_f = np.zeros((self.num_mats, self.num_groups))
             self.D = np.zeros((self.num_mats, self.num_groups))
-            self.nu= np.zeros((self.num_mats, self.num_groups))
+            self.nu = np.zeros((self.num_mats, self.num_groups))
+            self.inv_sigt = np.zeros((self.num_mats, self.num_groups))
             for i in range(self.num_mats):
                 line = fp.readline()
                 attributes = line.split("|")
@@ -33,6 +34,7 @@ class Materials():
                     # Derived quantities
                     self.sig_t[i, j] = self.sig_a[i, j] + self.sig_s[i, j]
                     self.D[i, j] = 1/(3*self.sig_t[i, j])
+                    self.inv_sigt[i, j] = 1/self.sig_t[i, j]
                     if j==(self.num_groups - 1):
                         continue
                     else:
@@ -63,4 +65,7 @@ class Materials():
 
     def get_nu(self, mat_id, group_id):
         return self.nu[mat_id, group_id]
+
+    def get_inv_sigt(self, mat_id, group_id):
+        return self.inv_sigt[mat_id, group_id]
 

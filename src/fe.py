@@ -203,6 +203,19 @@ class FEGrid():
             retval[idir]/=3
         return retval
 
+    def interpolate_to_centroid(self, f_nodes):
+        num_elts = self.get_num_elts()
+        centroids = np.zeros(num_elts)
+        for e in range(num_elts):
+            area = self.element_area(e)
+            for n in range(3):
+                node = self.get_node(e, n)
+                if node.is_interior():
+                    id = node.get_interior_node_id()
+                    centroids[e] += f_nodes[id]
+        centroids /= 3
+        return centroids
+
 def reinsert(grid, internal_solution):
         nodes = grid.get_num_nodes()
         full_vector = np.zeros(nodes)
