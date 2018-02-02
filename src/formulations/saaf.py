@@ -9,9 +9,11 @@ class SAAF():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.matrices = self.make_lhs()
+        omega_prod = np.dot([0.3500212, 0.3500212], [0.3500212, 0.3500212])
+        self.matrices = self.make_lhs(omega_prod)
+
         
-    def make_lhs(self):
+    def make_lhs(self, angle_prod):
         k = self.fegrid.get_num_interior_nodes()
         E = self.fegrid.get_num_elts()
         matrices = []
@@ -67,7 +69,7 @@ class SAAF():
                             # TODO: Figure out Omega
                             area = self.fegrid.element_area(e)
                             inprod = np.dot(ngrad, nsgrad)
-                            A = inv_sigt * area * inprod * self.omega_prod
+                            A = inv_sigt * area * inprod * angle_prod
 
                             # Integrate for B (basis functions multiplied)
                             integral = self.fegrid.gauss_quad(e, f_vals)
@@ -77,13 +79,17 @@ class SAAF():
             matrices.append(sparse_matrix)
         return matrices
 
-    def make_rhs(self, f_centroids):
+    def make_rhs(self, group_id, q, problem_type, angles, phi_prev=None):
         # Get num interior nodes
         n = self.fegrid.get_num_interior_nodes()
         rhs_at_node = np.zeros(n)
         # Get num elements
         E = self.fegrid.get_num_elts()
         for e in range(E):
+            midx = self.fegrid.get_mat_id(e)
+            if problem_type=="eigenvalue":
+                inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
+                sig_s = self.mat_data.get_sigs(midx, group_id)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
                 # Check if boundary node
@@ -92,29 +98,14 @@ class SAAF():
                 # Get node ids
                 nid = n_global.get_interior_node_id()
                 area = self.fegrid.element_area(e)
-                rhs_at_node[nid] += area*f_centroids[e]*1/3
+                if problem_type=="fixed_source":
+                    rhs_at_node[nid] += q[e]*1/3*area
+                elif problem_type=="eigenvalue":
+                    ngrad = self.fegrid.gradient(e, n)
+                    rhs_at_node[nid] += (sig_s*phi_prev[e] + q[e] 
+                        - inv_sigt*(angles[0]*(ngrad[0]*sig_s)
+                        + angles[1]*(ngrad[1]*sig_s)))*1/3*area
         return rhs_at_node
-
-    def make_fixed_source(self, group_id, q):
-        E = self.fegrid.get_num_elts()
-        f_centroids = np.zeros(E)
-        for e in range(E):
-            midx = self.fegrid.get_mat_id(e)
-            inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
-            # TODO: Figure out Omega
-            f_centroids[e] = -(1 + inv_sigt)*q[e]
-        return f_centroids
-
-    def make_eigen_source(self, group_id, phi_prev):
-        E = self.fegrid.get_num_elts()
-        f_centroids = np.zeros(E)
-        for e in range(E):
-            midx = self.fegrid.get_mat_id(e)
-            inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
-            sig_s = self.mat_data.get_sigs(midx, group_id)
-            # TODO: Figure out Omega
-            f_centroids[e] = (1 + inv_sigt)*sig_s*phi_prev[e] #omega*nabla*inv_sigt
-        return f_centroids
 
     def get_matrix(self, group_id):
         if group_id == "all":
@@ -126,21 +117,21 @@ class SAAF():
         # TODO: S4 Angular Quadrature for 2D
         ang_one = 0.3500212
         ang_two = 0.8688903
-        omega = iter.product([ang_one, ang_two], repeat=2)
-        sclar_flux = 0
+        angles = iter.product([ang_one, ang_two], repeat=2)
+        scalar_flux = 0
         # Iterate over all angle possibilities
-        for i in omega:
-            self.omega_prod = np.inner(i, i)
-            lhs = self.make_lhs()
-            ang_flux = self.solve(lhs, problem_type, group_id)
+        for ang in angles:
+            angle_prod = np.inner(ang, ang)
+            lhs = self.make_lhs(angle_prod)
+            ang_flux = self.solve(lhs, problem_type, group_id, ang)
             # Multiplying by weight and summing for quadrature
             scalar_flux += ang_flux*1/3
         return scalar_flux
 
-    def solve(self, lhs, problem_type, group_id, max_iter=1000, tol=1e-5):
+    def solve(self, lhs, source, problem_type, group_id, angles, max_iter=1000, tol=1e-5):
         if problem_type=="fixed_source":
-            source = self.make_fixed_source(group_id, rhs)
-            rhs = self.make_rhs(source)
+            #source = self.make_fixed_source(group_id, rhs)
+            rhs = self.make_rhs(group_id, source, problem_type, angles)
             internal_nodes = linalg.cg(lhs, rhs)[0]
             return internal_nodes
         elif problem_type=="eigenvalue":
@@ -148,23 +139,24 @@ class SAAF():
             N = self.fegrid.get_num_interior_nodes()
             phi = np.zeros(N)
             phi_prev = np.ones(N)
-            integral = self.integrate(phi_prev)
-            k_prev = np.sum(integral)
+            #integral = self.integrate(phi_prev)
+            #k_prev = np.sum(integral)
+            k_prev = N
             # renormalize
             phi_prev /= k_prev
 
             for i in range(max_iter):
                 # setup rhs
-                phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
-                f_centroids = self.make_eigen_source(group_id, phi_centroid)
+                #phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
+                #f_centroids = self.make_eigen_source(group_id, phi_centroid)
                 # Integrate
-                rhs = self.make_rhs(f_centroids)
+                rhs = self.make_rhs(group_id, source, problem_type, phi_prev=phi_prev)
                 # solve
                 phi = linalg.cg(lhs, rhs)[0]
                 # compute k by integrating phi
-                phi_centroids = self.fegrid.interpolate_to_centroid(phi)
-                integral = self.make_rhs(phi_centroids)
-                k = np.sum(integral)
+                #phi_centroids = self.fegrid.interpolate_to_centroid(phi)
+                #integral = self.make_rhs(phi_centroids)
+                k = np.sum(phi)
                 # renormalize
                 phi /= k
                 norm = np.linalg.norm(phi-phi_prev, 2)

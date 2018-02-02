@@ -215,7 +215,7 @@ class FEGrid():
                     centroids[e] += f_nodes[id]
         centroids /= 3
         return centroids
-
+        
 def reinsert(grid, internal_solution):
         nodes = grid.get_num_nodes()
         full_vector = np.zeros(nodes)

@@ -119,8 +119,7 @@ class Diffusion():
             N = self.fegrid.get_num_interior_nodes()
             phi = np.zeros(N)
             phi_prev = np.ones(N)
-            integral = self.integrate(phi_prev)
-            k_prev = np.sum(integral)
+            k_prev = np.sum(phi_prev)
             # renormalize
             phi_prev /= k_prev
 

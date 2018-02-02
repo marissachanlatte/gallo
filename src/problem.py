@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from diffusion import Diffusion
+from formulations.diffusion import Diffusion
 from fe import FEGrid
 from materials import Materials
 
@@ -22,3 +22,7 @@ class Problem(NamedTuple):
     @property
     def matrix(self):
         return self.op.get_matrix("all")
+
+    @property
+    def n_nodes(self):
+        return self.grid.get_num_nodes()

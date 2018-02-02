@@ -125,10 +125,10 @@ for test in ["uniform_source", "box_source"]:
     for g in range(mats.get_num_groups()):
         phi_plot(grid, nodes[g], test, g)
     print("Completed " + test + " Test")
-mms()
-print("Completed Fixed Source MMS Test")
+#mms()
+#print("Completed Fixed Source MMS Test")
 eigenvalue_test("eigenvalue")
-print("Completed Eigenvalue Test")
-kmms()
-print("Completed Eigenvalue MMS Test")
+#print("Completed Eigenvalue Test")
+#kmms()
+#print("Completed Eigenvalue MMS Test")
 
