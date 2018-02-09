@@ -115,8 +115,10 @@ class SAAF():
 
     def get_scalar_flux(self, problem_type, group_id):
         # TODO: S4 Angular Quadrature for 2D
-        ang_one = 0.3500212
-        ang_two = 0.8688903
+        # ang_one = 0.3500212
+        # ang_two = 0.8688903
+        ang_one = .5773503
+        ang_two = -.5773503
         angles = iter.product([ang_one, ang_two], repeat=2)
         scalar_flux = 0
         # Iterate over all angle possibilities

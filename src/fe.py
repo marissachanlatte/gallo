@@ -52,6 +52,7 @@ class FEGrid():
             data = line.split(" ")
             self.num_nodes = int(data[0])
             self.nodes = []
+            self.interior_nodes = []
             self.num_interior_nodes = 0
             for i in range(self.num_nodes):
                 line = nf.readline()
@@ -66,6 +67,7 @@ class FEGrid():
                 if is_interior: 
                     interior_node_id = self.num_interior_nodes
                     self.num_interior_nodes += 1
+                    self.interior_nodes.append(Node([x, y], int(node_id), interior_node_id, is_interior))
                 self.nodes.append(Node([x, y], int(node_id), interior_node_id, is_interior))
 
         with open(ele_file) as ef:
@@ -99,6 +101,9 @@ class FEGrid():
 
     def node(self, node_number):
         return self.nodes[node_number]
+
+    def interior_node(self, interior_node_number):
+        return self.interior_nodes[interior_node_number]
 
     def get_mat_id(self, elt_number):
         return self.element(elt_number).get_mat_id()

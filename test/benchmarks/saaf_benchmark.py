@@ -10,7 +10,7 @@ from formulations.saaf import SAAF
 from fe import *
 from materials import Materials
 from problem import Problem
-from plot import plot
+from plot import *
 
 def to_problem(filename):
     nodefile = "../test_inputs/" + filename + ".node"
@@ -34,7 +34,7 @@ def mms_solution(problem, angles):
     eta = angles[1]
     inv_sigt = problem.mats.get_inv_sigt(0, 0)
     sigt = problem.mats.get_sigt(0, 0)
-    num_nodes = problem.n_nodes
+    num_nodes = problem.grid.get_num_nodes()
     angular_flux = np.zeros(num_nodes)
     for n in range(num_nodes):
         node = problem.grid.node(n).get_position()
@@ -42,13 +42,12 @@ def mms_solution(problem, angles):
         y = node[1]
         xbar = (1 - np.sin(mu))/2 + np.sin(mu)*x
         ybar = (1 - np.sin(eta))/2 + np.sin(eta)*y
-        if ybar < np.abs(eta/mu)*xbar:
+        if ybar <= np.abs(eta/mu)*xbar:
             angular_flux[n] = inv_sigt*(1 - np.exp((-sigt*ybar)/np.abs(eta)))
         elif ybar > np.abs(eta/mu)*xbar:
             angular_flux[n] = inv_sigt*(1 - np.exp((-sigt*xbar)/np.abs(mu)))
-        else:
-            print(xbar, ybar)
-            raise Exception("ybar=xbar")
+        #else:
+        #    raise Exception("ybar=xbar")
     return angular_flux
 
 @filename_to_problem
@@ -58,12 +57,13 @@ def fixed_source_error(problem):
         cent = problem.grid.centroid(i)
         # Source Everywhere
         source_terms[i] = 1
-    internal_nodes = []
     # Four calculations, S4
     errors = np.zeros(4)
     # Solve for angular flux
-    ang_one = 0.3500212
-    ang_two = 0.8688903
+    #ang_one = 0.3500212
+    #ang_two = 0.8688903
+    ang_one = .5773503
+    ang_two = -.5773503
     angles = product([ang_one, ang_two], repeat=2)
     source = np.ones(problem.n_elements)
     for i, ang in enumerate(angles):
@@ -73,7 +73,12 @@ def fixed_source_error(problem):
         # Calculate MMS solution
         mms_flux = mms_solution(problem, ang)
         # Error
-        errors[i] = np.max(np.abs(ang_flux - mms_flux))
+        #errors[i] = np.max(np.abs(ang_flux - mms_flux))
+        plot_interior(problem.grid, ang_flux, "angular flux", mesh_plot=True)
+        #aflx = reinsert(problem.grid, ang_flux)
+        #plot(problem.grid, aflx, "saaf" + str(i))
+        #plot(problem.grid, mms_flux, "mms" + str(i))
+        print("Angles", ang, "Error", errors[i])
     avg_error = np.mean(errors)
     return avg_error
 
@@ -99,12 +104,13 @@ def mms_convergence_test():
         norm[inp] = fixed_source_error(problem.filename)
         area = problem.grid.average_element_area()
         areas[inp] = area
-        print(np.sqrt(area), " ", norm[inp])
+        #print(np.sqrt(area), " ", norm[inp])
     mms_plot(areas, norm, "mms_saaf")
 
 
-mms_convergence_test()
-
+#mms_convergence_test()
+problem = to_problem("mesh0")
+fixed_source_error(problem.filename)
 
 
 
