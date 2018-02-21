@@ -3,7 +3,7 @@ import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import matplotlib.pyplot as plt
 import sys
-sys.path.append('../src')
+sys.path.append('../../src')
 
 from formulations.diffusion import Diffusion
 from fe import *
@@ -12,9 +12,9 @@ from problem import Problem
 from plot import plot
 
 def to_problem(filename):
-    nodefile = "test_inputs/" + filename + ".node"
-    elefile = "test_inputs/" + filename + ".ele"
-    matfile = "test_inputs/" + filename + ".mat"
+    nodefile = "../test_inputs/" + filename + ".node"
+    elefile = "../test_inputs/" + filename + ".ele"
+    matfile = "../test_inputs/" + filename + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
     op = Diffusion(grid, mats)
@@ -62,10 +62,12 @@ def fixed_source_test(problem):
 def eigenvalue_test(problem):
     for g in range(problem.num_groups):
         phi, k = problem.op.solve(problem.matrix[g], None, "eigenvalue", g, 1000, 1e-5)
-    k_exact = (mats.get_nu(0, 0)*mats.get_sigf(0, 0)/
-        (mats.get_siga(0, 0) + 2*mats.get_diff(0, 0)*np.pi**2))
+    k_exact = (problem.mats.get_nu(0, 0)*problem.mats.get_sigf(0, 0)/
+        (problem.mats.get_siga(0, 0) + 2*problem.mats.get_diff(0, 0)*np.pi**2))
     err = np.abs(k_exact - k)
     area = problem.grid.average_element_area()
+    flux = reinsert(problem.grid, phi)
+    plot(problem.grid, flux, "diffusion_eigenvalue" + str(problem.filename))
     print("K-Eigenvalue: ", k)
     print("Error: ", err)
     return err, area, phi, k
@@ -120,15 +122,15 @@ def mms():
         print(np.sqrt(area), " ", norm[inp])
     mms_plot(areas, norm, "mms")
 
-for test in ["uniform_source", "box_source"]:
-    nodes, grid, mats= fixed_source_test(test)
-    for g in range(mats.get_num_groups()):
-        phi_plot(grid, nodes[g], test, g)
-    print("Completed " + test + " Test")
+# for test in ["uniform_source", "box_source"]:
+#     nodes, grid, mats= fixed_source_test(test)
+#     for g in range(mats.get_num_groups()):
+#         phi_plot(grid, nodes[g], test, g)
+#     print("Completed " + test + " Test")
 #mms()
 #print("Completed Fixed Source MMS Test")
-eigenvalue_test("eigenvalue")
+#eigenvalue_test("eigenvalue")
 #print("Completed Eigenvalue Test")
-#kmms()
-#print("Completed Eigenvalue MMS Test")
+kmms()
+print("Completed Eigenvalue MMS Test")
 

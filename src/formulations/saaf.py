@@ -9,11 +9,10 @@ class SAAF():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        omega_prod = np.dot([0.3500212, 0.3500212], [0.3500212, 0.3500212])
-        self.matrices = self.make_lhs(omega_prod)
+        self.matrices = []
 
         
-    def make_lhs(self, angle_prod):
+    def make_lhs(self, angles):
         k = self.fegrid.get_num_interior_nodes()
         E = self.fegrid.get_num_elts()
         matrices = []
@@ -68,8 +67,7 @@ class SAAF():
                             # Integrate for A (basis function derivatives)
                             # TODO: Figure out Omega
                             area = self.fegrid.element_area(e)
-                            inprod = np.dot(ngrad, nsgrad)
-                            A = inv_sigt * area * inprod * angle_prod
+                            A = inv_sigt*area*(angles@ngrad)*(angles@nsgrad)
 
                             # Integrate for B (basis functions multiplied)
                             integral = self.fegrid.gauss_quad(e, f_vals)
@@ -79,17 +77,16 @@ class SAAF():
             matrices.append(sparse_matrix)
         return matrices
 
-    def make_rhs(self, group_id, q, problem_type, angles, phi_prev=None):
+    def make_rhs(self, group_id, q, angles, phi_prev=None):
+        # Get num elements
+        E = self.fegrid.get_num_elts()
         # Get num interior nodes
         n = self.fegrid.get_num_interior_nodes()
         rhs_at_node = np.zeros(n)
-        # Get num elements
-        E = self.fegrid.get_num_elts()
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
-            if problem_type=="eigenvalue":
-                inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
-                sig_s = self.mat_data.get_sigs(midx, group_id)
+            inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
+            sig_s = self.mat_data.get_sigs(midx, group_id)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
                 # Check if boundary node
@@ -98,13 +95,10 @@ class SAAF():
                 # Get node ids
                 nid = n_global.get_interior_node_id()
                 area = self.fegrid.element_area(e)
-                if problem_type=="fixed_source":
-                    rhs_at_node[nid] += q[e]*1/3*area
-                elif problem_type=="eigenvalue":
-                    ngrad = self.fegrid.gradient(e, n)
-                    rhs_at_node[nid] += (sig_s*phi_prev[e] + q[e] 
-                        - inv_sigt*(angles[0]*(ngrad[0]*sig_s)
-                        + angles[1]*(ngrad[1]*sig_s)))*1/3*area
+                ngrad = self.fegrid.gradient(e, n)
+                rhs_at_node[nid] += (sig_s*phi_prev[nid] + q[e] 
+                     - inv_sigt*(angles@ngrad)*(sig_s*phi_prev[nid] + q[e]))*1/3*area
+                #rhs_at_node[nid] += 1/3*area
         return rhs_at_node
 
     def get_matrix(self, group_id):
@@ -113,76 +107,53 @@ class SAAF():
         else:
             return self.matrices[group_id]
 
-    def get_scalar_flux(self, problem_type, group_id):
+    def get_scalar_flux(self, group_id, source, phi_prev):
         # TODO: S4 Angular Quadrature for 2D
         # ang_one = 0.3500212
         # ang_two = 0.8688903
         ang_one = .5773503
         ang_two = -.5773503
-        angles = iter.product([ang_one, ang_two], repeat=2)
+        angles = itr.product([ang_one, ang_two], repeat=2)
         scalar_flux = 0
+        ang_fluxes = []
         # Iterate over all angle possibilities
         for ang in angles:
-            angle_prod = np.inner(ang, ang)
-            lhs = self.make_lhs(angle_prod)
-            ang_flux = self.solve(lhs, problem_type, group_id, ang)
+            ang_flux = self.get_ang_flux(group_id, source, ang, phi_prev)
+            ang_fluxes.append(ang_flux)
             # Multiplying by weight and summing for quadrature
-            scalar_flux += ang_flux*1/3
-        return scalar_flux
+            print(np.max(ang_flux))
+            scalar_flux += ang_flux
+        return scalar_flux, ang_fluxes
 
-    def solve(self, lhs, source, problem_type, group_id, angles, max_iter=1000, tol=1e-5):
-        if problem_type=="fixed_source":
-            #source = self.make_fixed_source(group_id, rhs)
-            rhs = self.make_rhs(group_id, source, problem_type, angles)
-            internal_nodes = linalg.cg(lhs, rhs)[0]
-            return internal_nodes
-        elif problem_type=="eigenvalue":
-            E = self.fegrid.get_num_elts()
-            N = self.fegrid.get_num_interior_nodes()
-            phi = np.zeros(N)
-            phi_prev = np.ones(N)
-            #integral = self.integrate(phi_prev)
-            #k_prev = np.sum(integral)
-            k_prev = N
-            # renormalize
-            phi_prev /= k_prev
+    def get_ang_flux(self, group_id, source, ang, phi_prev):
+        lhs = self.make_lhs(ang)[0]
+        rhs = self.make_rhs(group_id, source, ang, phi_prev)
+        ang_flux = linalg.cg(lhs, rhs)[0]
+        return ang_flux
 
-            for i in range(max_iter):
-                # setup rhs
-                #phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
-                #f_centroids = self.make_eigen_source(group_id, phi_centroid)
-                # Integrate
-                rhs = self.make_rhs(group_id, source, problem_type, phi_prev=phi_prev)
-                # solve
-                phi = linalg.cg(lhs, rhs)[0]
-                # compute k by integrating phi
-                #phi_centroids = self.fegrid.interpolate_to_centroid(phi)
-                #integral = self.make_rhs(phi_centroids)
-                k = np.sum(phi)
-                # renormalize
-                phi /= k
-                norm = np.linalg.norm(phi-phi_prev, 2)
-                knorm = np.abs(k - k_prev)
-                if knorm < tol and norm < tol:
-                    break
-                phi_prev = phi
-                k_prev = k
-                print("Eigenvalue Iteration: ", i)
-                print("Norm: ", norm)
+    def solve(self, source, problem_type, group_id, max_iter=1000, tol=1e-4):
+        E = self.fegrid.get_num_elts()
+        N = self.fegrid.get_num_interior_nodes()
+        phi = np.zeros(N)
+        phi_prev = np.zeros(N)
+        for i in range(max_iter):
+            phi, ang_fluxes = self.get_scalar_flux(0, source, phi_prev)
+            norm = np.linalg.norm(phi-phi_prev, 2)
+            if norm < tol:
+                break
+            phi_prev = phi
+            print("Iteration: ", i)
+            print("Norm: ", norm)
 
-            if i==max_iter:
-                print("Warning: maximum number of iterations reached in eigenvalue solver")
+        if i==max_iter:
+            print("Warning: maximum number of iterations reached in solver")
 
-            max = np.max(phi)
-            phi /= max
+        #max = np.max(phi)
+        #phi /= max
+        print("Number of Iterations: ", i)
+        print("Final Phi Norm: ", norm)
+        return phi, ang_fluxes
 
-            print("Number of Iterations: ", i)
-            print("Final Phi Norm: ", norm)
-            print("Final k Norm: ", knorm)
-            return phi, k
-
-        else:
-            print("Problem type must be fixed_source or eigenvalue")
 
 
 
