@@ -61,7 +61,14 @@ class FEGrid():
                 data = line.split(" ")
                 node_id, x, y, boundary = data
                 x = float(x)
-                y = float(y) 
+                y = float(y)
+                # Set boundary data 
+                if i==0:
+                    self.xmin = x
+                    self.ymin = y
+                elif i==2:
+                    self.xmax = x
+                    self.ymax = y
                 is_interior = not int(boundary)
                 interior_node_id = -1
                 if is_interior: 
@@ -107,7 +114,7 @@ class FEGrid():
 
     def get_mat_id(self, elt_number):
         return self.element(elt_number).get_mat_id()
-        
+
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
         e = self.elts[elt_number].get_vertices()
@@ -220,6 +227,23 @@ class FEGrid():
                     centroids[e] += f_nodes[id]
         centroids /= 3
         return centroids
+
+    def nearest_neighbor(self, node_id):
+        node = self.node(node_id)
+        distance = 1e8
+        neighbor = None
+        nodex, nodey = node.get_position()
+        for i in range(self.num_nodes):
+            if i==node_id:
+                continue
+            n = self.node(i)
+            x, y = n.get_position()
+            norm = np.sqrt((nodex-x)**2 + (nodey-y)**2)
+            if norm < distance:
+                distance = norm
+                neighbor = i
+        return self.node(neighbor), distance
+
         
 def reinsert(grid, internal_solution):
         nodes = grid.get_num_nodes()

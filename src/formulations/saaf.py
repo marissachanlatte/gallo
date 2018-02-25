@@ -13,7 +13,8 @@ class SAAF():
 
         
     def make_lhs(self, angles):
-        k = self.fegrid.get_num_interior_nodes()
+        #k = self.fegrid.get_num_interior_nodes()
+        k = self.fegrid.get_num_nodes()
         E = self.fegrid.get_num_elts()
         matrices = []
         for g in range(self.num_groups):
@@ -49,8 +50,10 @@ class SAAF():
                         # Get global node
                         ns_global = self.fegrid.get_node(e, ns)
                         # Get node IDs
-                        nid = n_global.get_interior_node_id()
-                        nsid = ns_global.get_interior_node_id()
+                        #nid = n_global.get_interior_node_id()
+                        #nsid = ns_global.get_interior_node_id()
+                        nid = n_global.get_node_id()
+                        nsid = ns_global.get_node_id()
                         # Check if boundary nodes
                         if not ns_global.is_interior() or not n_global.is_interior():
                             continue
@@ -81,7 +84,8 @@ class SAAF():
         # Get num elements
         E = self.fegrid.get_num_elts()
         # Get num interior nodes
-        n = self.fegrid.get_num_interior_nodes()
+        #n = self.fegrid.get_num_interior_nodes()
+        n = self.fegrid.get_num_nodes()
         rhs_at_node = np.zeros(n)
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
@@ -93,12 +97,12 @@ class SAAF():
                 if not n_global.is_interior():
                     continue
                 # Get node ids
-                nid = n_global.get_interior_node_id()
+                #nid = n_global.get_interior_node_id()
+                nid = n_global.get_node_id()
                 area = self.fegrid.element_area(e)
                 ngrad = self.fegrid.gradient(e, n)
-                rhs_at_node[nid] += (sig_s*phi_prev[nid] + q[e] 
-                     - inv_sigt*(angles@ngrad)*(sig_s*phi_prev[nid] + q[e]))*1/3*area
-                #rhs_at_node[nid] += 1/3*area
+                rhs_at_node[nid] += ((sig_s*phi_prev[nid] + q[e]) 
+                     + (angles*(inv_sigt*(sig_s*phi_prev[nid] + q[e])))@ngrad)*1/3*area
         return rhs_at_node
 
     def get_matrix(self, group_id):
@@ -118,10 +122,12 @@ class SAAF():
         ang_fluxes = []
         # Iterate over all angle possibilities
         for ang in angles:
+            ang = np.array(ang)
             ang_flux = self.get_ang_flux(group_id, source, ang, phi_prev)
             ang_fluxes.append(ang_flux)
+        ### REFLECTING BOUNDARY CONDITIONS ###
+
             # Multiplying by weight and summing for quadrature
-            print(np.max(ang_flux))
             scalar_flux += ang_flux
         return scalar_flux, ang_fluxes
 
@@ -133,7 +139,8 @@ class SAAF():
 
     def solve(self, source, problem_type, group_id, max_iter=1000, tol=1e-4):
         E = self.fegrid.get_num_elts()
-        N = self.fegrid.get_num_interior_nodes()
+        #N = self.fegrid.get_num_interior_nodes()
+        N = self.fegrid.get_num_nodes()
         phi = np.zeros(N)
         phi_prev = np.zeros(N)
         for i in range(max_iter):
@@ -148,8 +155,6 @@ class SAAF():
         if i==max_iter:
             print("Warning: maximum number of iterations reached in solver")
 
-        #max = np.max(phi)
-        #phi /= max
         print("Number of Iterations: ", i)
         print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
