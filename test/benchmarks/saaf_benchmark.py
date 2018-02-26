@@ -36,49 +36,54 @@ def mms_solution(problem, angles):
     num_nodes = problem.grid.get_num_nodes()
     angular_flux = np.zeros(num_nodes)
     for n in range(num_nodes):
-        node = problem.grid.node(n).get_position()
-        x = node[0]
-        y = node[1]
+        node = problem.grid.node(n)
+        x, y = node.get_position()
         xbar = (1 - np.sin(mu))/2 + np.sin(mu)*x
         ybar = (1 - np.sin(eta))/2 + np.sin(eta)*y
         if ybar <= np.abs(eta/mu)*xbar:
             angular_flux[n] = inv_sigt*(1 - np.exp((-sigt*ybar)/np.abs(eta)))
         elif ybar > np.abs(eta/mu)*xbar:
             angular_flux[n] = inv_sigt*(1 - np.exp((-sigt*xbar)/np.abs(mu)))
-        #else:
-        #    raise Exception("ybar=xbar")
     return angular_flux
 
 @filename_to_problem
 def fixed_source_error(problem):
-    source_terms = np.zeros(problem.n_elements)
-    for i in range(problem.n_elements):
-        cent = problem.grid.centroid(i)
-        # Source Everywhere
-        source_terms[i] = 1/problem.n_elements
+    np.set_printoptions(5, suppress=True)
+    # source_terms = np.zeros(problem.n_elements)
+    # for i in range(problem.n_elements):
+    #     cent = problem.grid.centroid(i)
+    #     # Source Everywhere
+    #     source_terms[i] = 1/problem.n_elements
     ang_one = .5773503
     ang_two = -.5773503
     angles = product([ang_one, ang_two], repeat=2)
     source = np.ones(problem.n_elements)
-    mms_scalar = 0
-    nodes = problem.grid.get_num_interior_nodes()
+    #mms_scalar = 0
+    nodes = problem.grid.get_num_nodes()
     phi_prev = np.zeros(nodes)
-    for i, ang in enumerate(angles):
-    #     # Calculate MMS solution
-        mms_flux = mms_solution(problem, ang)
-        mms_scalar += mms_flux
-        plot(problem.grid, mms_flux, "mms" + str(i))
-    #     print("Angles", ang, "Error", errors[i])
-    mms_scalar /= 4
-    scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", 0, tol=1e-2)
-    for i in range(len(ang_fluxes)):
-        ang_fluxes[i] = reinsert(problem.grid, ang_fluxes[i])
-        plot(problem.grid, ang_fluxes[i], "saaf" + str(i))
-        print(np.max(ang_fluxes[i]))
-    scalar_flux = reinsert(problem.grid, scalar_flux)
-    plot(problem.grid, scalar_flux, "scalar_flux")
-    plot(problem.grid, mms_scalar, "mms_scalar")
+    ang = [ang_one, ang_one]
+    A = problem.op.make_rhs(0, source, ang, "vacuum", phi_prev)
+    #print(A)
+    ### CALCULATE & PLOT MMS SOLUTION ###
+    # for i, ang in enumerate(angles):
+    #     mms_flux = mms_solution(problem, ang)
+    #     mms_scalar += mms_flux
+    #     plot(problem.grid, mms_flux, "mms" + str(i))
+    # mms_scalar /= 4
+    # plot(problem.grid, mms_scalar, "mms_scalar")
 
+    # scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", 0, "reflecting", tol=1e-1)
+    # for i, ang in enumerate(angles):
+    #     plot(problem.grid, ang_fluxes[i], "saaf" + str(i))
+    # plot(problem.grid, scalar_flux, "scalar_flux", mesh_plot=True)
+    
+@filename_to_problem
+def test_problem(problem):
+    source = np.ones(problem.n_elements)
+    scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", 0, "reflecting", tol=1e-1)
+    for i in range(4):
+        plot(problem.grid, ang_fluxes[i], "saaf" + str(i))
+    plot(problem.grid, scalar_flux, "scalar_flux")
 
 def oned_solution():
     x = np.linspace(0, 1, 100)
@@ -127,10 +132,11 @@ def mms_convergence_test():
 
 
 #mms_convergence_test()
-problem = to_problem("mesh1")
+problem = to_problem("D.1")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 fixed_source_error(problem.filename)
+#test_problem(problem.filename)
 
 
 

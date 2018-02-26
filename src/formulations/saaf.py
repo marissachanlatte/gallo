@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import itertools as itr
+import sys
 from fe import *
 
 class SAAF():
@@ -9,14 +10,18 @@ class SAAF():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.matrices = []
+        #self.matrices = []
+        self.xmax = self.fegrid.get_boundary("xmax")
+        self.ymax = self.fegrid.get_boundary("ymax")
+        self.xmin = self.fegrid.get_boundary("xmin")
+        self.ymin = self.fegrid.get_boundary("ymin")
 
         
-    def make_lhs(self, angles):
-        #k = self.fegrid.get_num_interior_nodes()
+    def make_lhs(self, angles, boundary):
         k = self.fegrid.get_num_nodes()
         E = self.fegrid.get_num_elts()
         matrices = []
+        boundary_positions = []
         for g in range(self.num_groups):
             sparse_matrix = sps.lil_matrix((k, k))
             for e in range(E):
@@ -25,6 +30,7 @@ class SAAF():
                 # Get sigt and precomputed inverse
                 inv_sigt = self.mat_data.get_inv_sigt(midx, g)
                 sig_t = self.mat_data.get_sigt(midx, g)
+                sig_s = self.mat_data.get_sigs(midx, g)
                 # Determine basis functions for element
                 coef = self.fegrid.basis(e)
                 # Determine Gauss Nodes for element
@@ -50,13 +56,14 @@ class SAAF():
                         # Get global node
                         ns_global = self.fegrid.get_node(e, ns)
                         # Get node IDs
-                        #nid = n_global.get_interior_node_id()
-                        #nsid = ns_global.get_interior_node_id()
                         nid = n_global.get_node_id()
                         nsid = ns_global.get_node_id()
                         # Check if boundary nodes
-                        if not ns_global.is_interior() or not n_global.is_interior():
-                            continue
+                        if not n_global.is_interior(): 
+                            sparse_matrix[nid, nid] = 1
+                            boundary_positions.append(nid)
+                        elif not ns_global.is_interior():
+                            pass
                         else:
                             # Calculate gradients
                             ngrad = self.fegrid.gradient(e, n)
@@ -65,10 +72,10 @@ class SAAF():
                             # Multiply basis functions together
                             f_vals = np.zeros(3)
                             for i in range(3):
-                                f_vals[i] = fn_vals[i] * fns_vals[i]
+                               f_vals[i] = fn_vals[i] * fns_vals[i]
 
+                            
                             # Integrate for A (basis function derivatives)
-                            # TODO: Figure out Omega
                             area = self.fegrid.element_area(e)
                             A = inv_sigt*area*(angles@ngrad)*(angles@nsgrad)
 
@@ -77,44 +84,74 @@ class SAAF():
                             C = sig_t * integral
 
                             sparse_matrix[nid, nsid] += A + C
+            if boundary=="vacuum":
+            # Keep symmetry of matrix (only works for vacuum, need to change for reflecting)
+                for nid in boundary_positions:
+                    if nid==0:
+                        sparse_matrix[nid+1, nid] = 0
+                    elif nid==k-1:
+                        sparse_matrix[nid-1, nid] = 0
+                    else:
+                        sparse_matrix[nid+1, nid] = 0
+                        sparse_matrix[nid-1, nid] = 0
             matrices.append(sparse_matrix)
         return matrices
 
-    def make_rhs(self, group_id, q, angles, phi_prev=None):
+    def make_rhs(self, group_id, q, angles, boundary, phi_prev=None):
+        angles = np.array(angles)
         # Get num elements
         E = self.fegrid.get_num_elts()
         # Get num interior nodes
-        #n = self.fegrid.get_num_interior_nodes()
         n = self.fegrid.get_num_nodes()
         rhs_at_node = np.zeros(n)
         for e in range(E):
+            #print("Element: ", e)
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
+            sig_t = self.mat_data.get_sigt(midx, group_id)
             sig_s = self.mat_data.get_sigs(midx, group_id)
+            coef = self.fegrid.basis(e)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
+                # Get node ids
+                nid = n_global.get_node_id()
+                #ngrad = self.fegrid.gradient(e, n)
                 # Check if boundary node
                 if not n_global.is_interior():
-                    continue
-                # Get node ids
-                #nid = n_global.get_interior_node_id()
-                nid = n_global.get_node_id()
-                area = self.fegrid.element_area(e)
-                ngrad = self.fegrid.gradient(e, n)
-                rhs_at_node[nid] += ((sig_s*phi_prev[nid] + q[e]) 
-                     + (angles*(inv_sigt*(sig_s*phi_prev[nid] + q[e])))@ngrad)*1/3*area
+                    if boundary=='reflecting':
+                        x1, y1 = n_global.get_position()
+                        # If on incoming flux, change omega to omega prime
+                        if (x1 == self.xmax) or (x1 == self.xmin):
+                            if angles@[-1, 0] > 0:
+                                omega = angles
+                            else:
+                                omega = angles*[-1, 1]
+                        elif (y1 == self.ymax) or (y1 == self.ymin):
+                            if angles@[-1, 0] > 0:
+                                omega = angles
+                            else:
+                                omega = angles*[1, -1]
+                        
+                        rhs_at_node[nid] = (-omega@ngrad + q[e])/(sig_t - sig_s)
+                    elif boundary=='vacuum':
+                        continue
+                    else:
+                        raise RuntimeError("Boundary condition not implemented")
+                else:
+                    #print("Basis Function: ", nid)
+                    bn = coef[:, n]
+                    ngrad = np.array([bn[1], bn[2]])
+                    #ngrad2 = self.fegrid.gradient(e, n)
+                    #print(ngrad1, ngrad2)
+                    area = self.fegrid.element_area(e)
+                    Q = sig_s*phi_prev[nid] + q[e]
+                    rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
+
+                    print(rhs_at_node)
         return rhs_at_node
 
-    def get_matrix(self, group_id):
-        if group_id == "all":
-            return self.matrices
-        else:
-            return self.matrices[group_id]
-
-    def get_scalar_flux(self, group_id, source, phi_prev):
+    def get_scalar_flux(self, group_id, source, phi_prev, boundary):
         # TODO: S4 Angular Quadrature for 2D
-        # ang_one = 0.3500212
-        # ang_two = 0.8688903
         ang_one = .5773503
         ang_two = -.5773503
         angles = itr.product([ang_one, ang_two], repeat=2)
@@ -123,28 +160,25 @@ class SAAF():
         # Iterate over all angle possibilities
         for ang in angles:
             ang = np.array(ang)
-            ang_flux = self.get_ang_flux(group_id, source, ang, phi_prev)
+            ang_flux = self.get_ang_flux(group_id, source, ang, phi_prev, boundary)
             ang_fluxes.append(ang_flux)
-        ### REFLECTING BOUNDARY CONDITIONS ###
-
             # Multiplying by weight and summing for quadrature
             scalar_flux += ang_flux
         return scalar_flux, ang_fluxes
 
-    def get_ang_flux(self, group_id, source, ang, phi_prev):
-        lhs = self.make_lhs(ang)[0]
-        rhs = self.make_rhs(group_id, source, ang, phi_prev)
+    def get_ang_flux(self, group_id, source, ang, phi_prev, boundary):
+        lhs = self.make_lhs(ang, boundary)[0]
+        rhs = self.make_rhs(group_id, source, ang, boundary, phi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def solve(self, source, problem_type, group_id, max_iter=1000, tol=1e-4):
+    def solve(self, source, problem_type, group_id, boundary, max_iter=1000, tol=1e-4):
         E = self.fegrid.get_num_elts()
-        #N = self.fegrid.get_num_interior_nodes()
         N = self.fegrid.get_num_nodes()
         phi = np.zeros(N)
         phi_prev = np.zeros(N)
         for i in range(max_iter):
-            phi, ang_fluxes = self.get_scalar_flux(0, source, phi_prev)
+            phi, ang_fluxes = self.get_scalar_flux(0, source, phi_prev, boundary)
             norm = np.linalg.norm(phi-phi_prev, 2)
             if norm < tol:
                 break

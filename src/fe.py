@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import sys
 
 class Element():
     def __init__(self, el_id, vertices, mat_id):
@@ -91,6 +92,17 @@ class FEGrid():
                 vertices = [int(vert) for vert in vertices]
                 self.elts.append(Element(int(el_id), vertices, int(mat_id)))
 
+    def get_boundary(self, which_boundary):
+        if which_boundary=="xmin":
+            return self.xmin
+        elif which_boundary=="ymin":
+            return self.ymin
+        elif which_boundary=="xmax":
+            return self.xmax
+        elif which_boundary=="ymax":
+            return self.ymax
+        else:
+            raise RuntimeError("Boundary must be xmin, ymin, xmax, or ymax")
     def get_node(self, elt_number, local_node_number):
         return self.nodes[self.elts[elt_number][local_node_number]]
 
@@ -124,9 +136,7 @@ class FEGrid():
         for ivert in range(2):
             other_node_number = e[(local_node_number + ivert + 1)%3]
             dx[ivert] = self.nodes[other_node_number].get_position()
-            for idir in range(2):
-                dx[ivert, idir] -= xbase[idir]
-
+            dx[ivert] -= xbase
         det = dx[0, 0]*dx[1, 1] - dx[1, 0]*dx[0, 1]
         retval = np.zeros(2)
         retval[0] = (-(dx[1, 1] - dx[0, 1])/det)
@@ -243,13 +253,12 @@ class FEGrid():
                 distance = norm
                 neighbor = i
         return self.node(neighbor), distance
-
         
-def reinsert(grid, internal_solution):
-        nodes = grid.get_num_nodes()
-        full_vector = np.zeros(nodes)
-        for i in range(nodes):
-            n = grid.node(i)
-            if n.is_interior():
-                full_vector[i] = internal_solution[n.get_interior_node_id()]
-        return full_vector
+# def reinsert(grid, internal_solution):
+#         nodes = grid.get_num_nodes()
+#         full_vector = np.zeros(nodes)
+#         for i in range(nodes):
+#             n = grid.node(i)
+#             if n.is_interior():
+#                 full_vector[i] = internal_solution[n.get_interior_node_id()]
+#         return full_vector
