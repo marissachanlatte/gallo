@@ -115,7 +115,7 @@ class SAAF():
                 n_global = self.fegrid.get_node(e, n)
                 # Get node ids
                 nid = n_global.get_node_id()
-                #ngrad = self.fegrid.gradient(e, n)
+                ngrad = self.fegrid.gradient(e, n)
                 # Check if boundary node
                 if not n_global.is_interior():
                     if boundary=='reflecting':
@@ -138,20 +138,17 @@ class SAAF():
                     else:
                         raise RuntimeError("Boundary condition not implemented")
                 else:
-                    #print("Basis Function: ", nid)
-                    bn = coef[:, n]
-                    ngrad = np.array([bn[1], bn[2]])
-                    #ngrad2 = self.fegrid.gradient(e, n)
-                    #print(ngrad1, ngrad2)
+                    #ngrad = self.fegrid.gradient(e, n)
                     area = self.fegrid.element_area(e)
-                    Q = sig_s*phi_prev[nid] + q[e]
+                    Q = sig_s*phi_prev[nid] + q[e]/(4*np.pi)
                     rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
 
-                    print(rhs_at_node)
+                    #print(rhs_at_node)
         return rhs_at_node
 
     def get_scalar_flux(self, group_id, source, phi_prev, boundary):
         # TODO: S4 Angular Quadrature for 2D
+        #S2 quadrature
         ang_one = .5773503
         ang_two = -.5773503
         angles = itr.product([ang_one, ang_two], repeat=2)
@@ -163,7 +160,7 @@ class SAAF():
             ang_flux = self.get_ang_flux(group_id, source, ang, phi_prev, boundary)
             ang_fluxes.append(ang_flux)
             # Multiplying by weight and summing for quadrature
-            scalar_flux += ang_flux
+            scalar_flux += np.pi*ang_flux
         return scalar_flux, ang_fluxes
 
     def get_ang_flux(self, group_id, source, ang, phi_prev, boundary):
