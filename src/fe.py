@@ -140,7 +140,7 @@ class FEGrid():
         det = dx[0, 0]*dx[1, 1] - dx[1, 0]*dx[0, 1]
         retval = np.zeros(2)
         retval[0] = (-(dx[1, 1] - dx[0, 1])/det)
-        retval[1] = (-(dx[1, 0] - dx[0, 0])/det)
+        retval[1] = ((dx[1, 0] - dx[0, 0])/det)
         return retval
 
     def basis(self, elt_number):
