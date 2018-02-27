@@ -16,7 +16,7 @@ class SAAF():
         self.xmin = self.fegrid.get_boundary("xmin")
         self.ymin = self.fegrid.get_boundary("ymin")
      
-    def make_lhs(self, angles, boundary):
+    def make_lhs(self, angles):
         k = self.fegrid.get_num_nodes()
         E = self.fegrid.get_num_elts()
         matrices = []
@@ -61,46 +61,24 @@ class SAAF():
                             # Figure out what boundary you're on
                             pos_n = np.array(n_global.get_position())
                             pos_ns = np.array(ns_global.get_position())
-                            if self.fegrid.is_corner(nid):
-                                # Which corner, set normal?
-                                if (pos_n[0] == self.xmax and pos_n[1] == self.ymax):
-                                    n = [-1, -1]
-                                elif (pos_n[0] == self.xmax and pos_n[1] == self.ymin):
-                                    n = [-1, 1]
-                                elif (pos_n[0] == self.xmin and pos_n[1] == self.ymax):
-                                    n = [1, -1]
-                                elif (pos_n[0] == self.xmin and pos_n[1] == self.ymin):
-                                    n = [1, 1]
-                                else:
-                                    raise RuntimeError("Boundary Error")
-                                # Both on x boundary
-                                if (pos_n - pos_ns)[0] == 0:
-                                    gauss_nodes[0] = [0, xis[0]]
-                                    gauss_nodes[1] = [0, xis[1]]
-                                # Both on y boundary 
-                                elif (pos_n - pos_ns)[1] == 0:
-                                    gauss_nodes[0] = [xis[0], 0]
-                                    gauss_nodes[1] = [xis[1], 0]
-                                else:
-                                    raise RuntimeError("Boundary Error")
-                            elif (pos_n[0] == self.xmax):
-                                n = np.array([-1, 0])
-                                gauss_nodes[0] = [0, xis[0]]
-                                gauss_nodes[1] = [0, xis[1]]
-                            elif (pos_n[0] == self.xmin):
-                                n = np.array([1, 0])
-                                gauss_nodes[0] = [0, xis[0]]
-                                gauss_nodes[1] = [0, xis[1]]
-                            elif (pos_n[1] == self.ymax):
-                                n = np.array([0, -1])
-                                gauss_nodes[0] = [xis[0], 0]
-                                gauss_nodes[1] = [xis[1], 0]
-                            elif (pos_n[1] == self.ymin):
-                                n = np.array([0, 1])
-                                gauss_nodes[0] = [xis[0], 0]
-                                gauss_nodes[1] = [xis[1], 0]
+                            if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
+                                normal = np.array([1, 0])
+                                gauss_nodes[0] = [self.xmax, xis[0]]
+                                gauss_nodes[1] = [self.xmax, xis[1]]
+                            elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+                                normal = np.array([-1, 0])
+                                gauss_nodes[0] = [self.xmin, xis[0]]
+                                gauss_nodes[1] = [self.xmin, xis[1]]
+                            elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
+                                normal = np.array([0, 1])
+                                gauss_nodes[0] = [xis[0], self.ymax]
+                                gauss_nodes[1] = [xis[1], self.ymax]
+                            elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+                                normal = np.array([0, -1])
+                                gauss_nodes[0] = [xis[0], self.ymin]
+                                gauss_nodes[1] = [xis[1], self.ymin]
                             else:
-                                raise RuntimeError("Boundary Error")
+                                continue
                             # Value of first basis function at boundary gauss nodes
                             gn_vals = np.zeros(2)
                             gn_vals[0] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[0])
@@ -113,8 +91,8 @@ class SAAF():
                             g_vals = gn_vals*gns_vals
                             # Integrate over length of element on boundary
                             boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, nsid])
-                            if angles@n > 0:
-                                sparse_matrix[nid, nid] = angles@n*boundary_integral
+                            if angles@normal > 0:
+                                sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                             else:
                                 pass
                         elif not ns_global.is_interior() or not n_global.is_interior():
@@ -191,7 +169,7 @@ class SAAF():
         return scalar_flux, ang_fluxes
 
     def get_ang_flux(self, group_id, source, ang, phi_prev, boundary):
-        lhs = self.make_lhs(ang, boundary)[0]
+        lhs = self.make_lhs(ang)[0]
         rhs = self.make_rhs(group_id, source, ang, boundary, phi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux

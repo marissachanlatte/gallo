@@ -80,11 +80,21 @@ def fixed_source_error(problem):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones(problem.n_elements)
-    scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", 0, "reflecting", tol=1e-1)
+    scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", 0, "vacuum", tol=1e-1)
     for i in range(4):
         plot(problem.grid, ang_fluxes[i], "saaf" + str(i))
     plot(problem.grid, scalar_flux, "scalar_flux")
 
+@filename_to_problem
+def check_symmetry(problem):
+    source = np.ones(problem.n_elements)
+    ang_one = .5773503
+    ang_two = .5773503
+    A = problem.op.make_lhs(np.array([ang_one, ang_two]))[0]
+    nonzero = (A!=A.transpose()).nonzero()
+    #print(A[6, 60] - A[60, 6])
+    #print((A!=A.transpose()).nnz==0)
+    print(np.allclose(A.A, A.transpose().A, rtol=1e-12))
 def oned_solution():
     x = np.linspace(0, 1, 100)
     phi = (1 - ((np.exp(np.sqrt(6)*(1-x)) + np.exp(np.sqrt(6)*x))
@@ -132,11 +142,13 @@ def mms_convergence_test():
 
 
 #mms_convergence_test()
-problem = to_problem("D.1")
+problem = to_problem("saaf")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
-fixed_source_error(problem.filename)
-#test_problem(problem.filename)
+#fixed_source_error(problem.filename)
+test_problem(problem.filename)
+#mesh_plot(problem.grid, problem.filename)
+#check_symmetry(problem.filename)
 
 
 

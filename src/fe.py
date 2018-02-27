@@ -267,34 +267,34 @@ class FEGrid():
             retval[idir]/=3
         return retval
 
-    def interpolate_to_centroid(self, f_nodes):
-        num_elts = self.get_num_elts()
-        centroids = np.zeros(num_elts)
-        for e in range(num_elts):
-            area = self.element_area(e)
-            for n in range(3):
-                node = self.get_node(e, n)
-                if node.is_interior():
-                    id = node.get_interior_node_id()
-                    centroids[e] += f_nodes[id]
-        centroids /= 3
-        return centroids
+    # def interpolate_to_centroid(self, f_nodes):
+    #     num_elts = self.get_num_elts()
+    #     centroids = np.zeros(num_elts)
+    #     for e in range(num_elts):
+    #         area = self.element_area(e)
+    #         for n in range(3):
+    #             node = self.get_node(e, n)
+    #             if node.is_interior():
+    #                 id = node.get_interior_node_id()
+    #                 centroids[e] += f_nodes[id]
+    #     centroids /= 3
+    #     return centroids
 
-    def nearest_neighbor(self, node_id):
-        node = self.node(node_id)
-        distance = 1e8
-        neighbor = None
-        nodex, nodey = node.get_position()
-        for i in range(self.num_nodes):
-            if i==node_id:
-                continue
-            n = self.node(i)
-            x, y = n.get_position()
-            norm = np.sqrt((nodex-x)**2 + (nodey-y)**2)
-            if norm < distance:
-                distance = norm
-                neighbor = i
-        return self.node(neighbor), distance
+    # def nearest_neighbor(self, node_id):
+    #     node = self.node(node_id)
+    #     distance = 1e8
+    #     neighbor = None
+    #     nodex, nodey = node.get_position()
+    #     for i in range(self.num_nodes):
+    #         if i==node_id:
+    #             continue
+    #         n = self.node(i)
+    #         x, y = n.get_position()
+    #         norm = np.sqrt((nodex-x)**2 + (nodey-y)**2)
+    #         if norm < distance:
+    #             distance = norm
+    #             neighbor = i
+    #     return self.node(neighbor), distance
         
 # def reinsert(grid, internal_solution):
 #         nodes = grid.get_num_nodes()
