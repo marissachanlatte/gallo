@@ -103,6 +103,16 @@ class FEGrid():
             return self.ymax
         else:
             raise RuntimeError("Boundary must be xmin, ymin, xmax, or ymax")
+    
+    def is_corner(self, node_number):
+        x, y = self.node(node_number).get_position()
+        on_xboundary = (x == self.xmax or x == self.xmin)
+        on_yboundary = (y == self.ymax or y == self.ymin)
+        if on_xboundary and on_yboundary:
+            return True
+        else:
+            return False
+
     def get_node(self, elt_number, local_node_number):
         return self.nodes[self.elts[elt_number][local_node_number]]
 
@@ -121,11 +131,19 @@ class FEGrid():
     def node(self, node_number):
         return self.nodes[node_number]
 
-    def interior_node(self, interior_node_number):
-        return self.interior_nodes[interior_node_number]
+    # def interior_node(self, interior_node_number):
+    #     return self.interior_nodes[interior_node_number]
 
     def get_mat_id(self, elt_number):
         return self.element(elt_number).get_mat_id()
+
+    def evaluate_basis_function(self, coefficients, point):
+        # Evaluates linear basis functions of the form c1 + c2x + c3y at the point x, y
+        if len(coefficients) != 3:
+            raise RuntimeError("Must be linear basis function with 3 coefficients")
+        if len(point) != 2:
+            raise RuntimeError("Must be 2D point, (x,y)")
+        return coefficients[0] + coefficients[1]*point[0] + coefficients[2]*point[1]
 
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
@@ -152,6 +170,23 @@ class FEGrid():
         C = np.linalg.inv(V)
         return C
 
+    def boundary_length(self, boundary_vertices):
+        # Computes the length along the boundary between two nodes on the boundary
+        points = np.zeros((2, 2))
+        for i, n in enumerate(boundary_vertices):
+            node = self.node(n)
+            points[i] = node.get_position()
+        length = np.max(np.abs(points[0] - points[1]))
+        return length 
+
+    def gauss_nodes1d(self, boundary_vertices):
+        # Gauss nodes for 2 point quadrature on boundary
+        length = self.boundary_length(boundary_vertices)
+        xi = 1/np.sqrt(3)
+        half_length = length/2
+        nodes = np.array([-half_length*xi + half_length, half_length*xi + half_length])
+        return nodes
+
     def gauss_nodes(self, elt_number):
         # WARNING only works for 2D triangular elements
         # Using second order Gaussian Quadrature nodes (0, .5), (.5, 0), (.5, .5)
@@ -161,7 +196,6 @@ class FEGrid():
         alpha = self.get_node(elt_number, 1)
         beta = self.get_node(elt_number, 2)
         gamma = self.get_node(elt_number, 0)
-
 
         # get position of nodes
         apos = alpha.get_position()
@@ -209,6 +243,14 @@ class FEGrid():
         # 1/3*Area*[f(0, .5) + f(.5, 0) + f(.5, .5)]
         area = self.element_area(elt_number)
         integral = 1/3 * area*(np.sum(f_values))
+        return integral
+
+    def gauss_quad1d(self, f_values, boundary_vertices):
+        # Two point Gaussian Quadrature in one dimension
+        # Find length of element on boundary
+        # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
+        length = self.boundary_length(boundary_vertices)
+        integral = length/2*(f_values[0] + f_values[1])
         return integral
 
     def centroid(self, elt_number):
