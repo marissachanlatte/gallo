@@ -92,6 +92,8 @@ class SAAF():
                             # Integrate over length of element on boundary
                             boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, nsid])
                             if angles@normal > 0:
+                                print(nid, nsid)
+                                print(boundary_integral)
                                 sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                             else:
                                 pass
