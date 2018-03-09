@@ -56,7 +56,7 @@ class SAAF():
                         # Check if boundary nodes
                         if not n_global.is_interior() and not ns_global.is_interior():         
                             # Get Gauss Nodes for the element
-                            xis = self.fegrid.gauss_nodes1d([nid, nsid])
+                            xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
                             gauss_nodes = np.zeros((2, 2))
                             # Figure out what boundary you're on
                             pos_n = np.array(n_global.get_position())
@@ -90,10 +90,8 @@ class SAAF():
                             # Multiply basis functions together
                             g_vals = gn_vals*gns_vals
                             # Integrate over length of element on boundary
-                            boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, nsid])
+                            boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, nsid], e)
                             if angles@normal > 0:
-                                print(nid, nsid)
-                                print(boundary_integral)
                                 sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                             else:
                                 pass
@@ -146,7 +144,32 @@ class SAAF():
                 ngrad = self.fegrid.gradient(e, n)
                 # Check if boundary node
                 if not n_global.is_interior():
+                    if boundary == "vacuum":
                         continue
+                    elif boundary=="reflecting":
+                        # Figure out what boundary you're one
+                        pos_n = np.array(n_global.get_position()) 
+                        if (pos_n[0] == self.xmax):
+                            normal = np.array([1, 0])
+                            reflection = np.array([-1, 1])
+                        elif (pos_n[0] == self.xmin):
+                            normal = np.array([-1, 0])
+                            reflection = np.array([-1, 1])
+                        elif (pos_n[1] == self.ymax):
+                            normal = np.array([0, 1])
+                            reflection = np.array([1, -1])
+                        elif (pos_n[1] == self.ymin):
+                            normal = np.array([0, -1])
+                            reflection = np.array([1, -1])
+                        else:
+                            raise RuntimeError("Boundary error.")
+                        if angles@normal > 0:
+                            angle_reflected = reflection*angles
+                            area = self.fegrid.element_area(e)
+                            Q = sig_s*phi_prev[nid] + q[e]/(4*np.pi)
+                            rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angle_reflected@ngrad)*area
+                    else:
+                        raise RuntimeError("Boundary condition not implemented.")
                 else:
                     area = self.fegrid.element_area(e)
                     Q = sig_s*phi_prev[nid] + q[e]/(4*np.pi)

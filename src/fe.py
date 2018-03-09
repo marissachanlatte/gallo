@@ -179,9 +179,32 @@ class FEGrid():
         length = np.max(np.abs(points[0] - points[1]))
         return length 
 
-    def gauss_nodes1d(self, boundary_vertices):
+    def gauss_nodes1d(self, boundary_vertices, e):
         # Gauss nodes for 2 point quadrature on boundary
-        length = self.boundary_length(boundary_vertices)
+        if len(boundary_vertices) != 2:
+            raise RuntimeError("You must give two vertices.")
+        length = 0
+        if boundary_vertices[0] == boundary_vertices[1]:
+            # Figure out where on the boundary the basis function is non-zero
+            # Get vertices of element
+            current_vert = boundary_vertices[0]
+            all_verts = self.element(e).get_vertices()
+            idx = np.where(all_verts == current_vert)
+            other_verts = np.delete(all_verts, idx)
+
+            # Position of all the vertices
+            pos_a = self.node(current_vert).get_position()
+            pos_b = self.node(other_verts[0]).get_position()
+            pos_c = self.node(other_verts[1]).get_position()
+
+            # if a and b share a boundary integrate over that
+            if pos_a[0] == pos_b[0] or pos_a[1] == pos_b[1]:
+                length = self.boundary_length([current_vert, other_verts[0]])
+            # if a and c share a boundary integrate over that too
+            if pos_a[0] == pos_c[0] or pos_a[1] == pos_c[1]:
+                length += self.boundary_length([current_vert, other_verts[1]])
+        else:
+            length = self.boundary_length(boundary_vertices)
         xi = 1/np.sqrt(3)
         half_length = length/2
         nodes = np.array([-half_length*xi + half_length, half_length*xi + half_length])
@@ -245,11 +268,32 @@ class FEGrid():
         integral = 1/3 * area*(np.sum(f_values))
         return integral
 
-    def gauss_quad1d(self, f_values, boundary_vertices):
+    def gauss_quad1d(self, f_values, boundary_vertices, e):
         # Two point Gaussian Quadrature in one dimension
         # Find length of element on boundary
         # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
-        length = self.boundary_length(boundary_vertices)
+        length = 0
+        if boundary_vertices[0] == boundary_vertices[1]:
+            # Figure out where on the boundary the basis function is non-zero
+            # Get vertices of element
+            current_vert = boundary_vertices[0]
+            all_verts = self.element(e).get_vertices()
+            idx = np.where(all_verts == current_vert)
+            other_verts = np.delete(all_verts, idx)
+
+            # Position of all the vertices
+            pos_a = self.node(current_vert).get_position()
+            pos_b = self.node(other_verts[0]).get_position()
+            pos_c = self.node(other_verts[1]).get_position()
+
+            # if a and b share a boundary integrate over that
+            if pos_a[0] == pos_b[0] or pos_a[1] == pos_b[1]:
+                length = self.boundary_length([current_vert, other_verts[0]])
+            # if a and c share a boundary integrate over that too
+            if pos_a[0] == pos_c[0] or pos_a[1] == pos_c[1]:
+                length += self.boundary_length([current_vert, other_verts[1]])
+        else:
+            length = self.boundary_length(boundary_vertices)
         integral = length/2*(f_values[0] + f_values[1])
         return integral
 
