@@ -37,6 +37,8 @@ class SAAF():
                 for n in range(3):
                     # Get global node
                     n_global = self.fegrid.get_node(e, n)
+                    # Get global node id
+                    nid = n_global.get_node_id()
                     # Coefficients of basis functions b[0] + b[1]x + b[2]y
                     bn = coef[:, n]
                     if n_global.is_interior():
@@ -49,51 +51,41 @@ class SAAF():
                         # Get global node
                         ns_global = self.fegrid.get_node(e, ns)
                         # Get node IDs
-                        nid = n_global.get_node_id()
                         nsid = ns_global.get_node_id()
                         # Coefficients of basis function
                         bns = coef[:, ns]
                         # Check if boundary nodes
-                        if not n_global.is_interior() and not ns_global.is_interior():         
-                            # Get Gauss Nodes for the element
-                            xis = self.fegrid.gauss_nodes1d([nid, nsid])
-                            gauss_nodes = np.zeros((2, 2))
+                        if not n_global.is_interior() and not ns_global.is_interior():  
+                            # Assign boundary id, marks end of region along boundary where basis function is nonzero
+                            bid = nsid      
                             # Figure out what boundary you're on
-                            pos_n = np.array(n_global.get_position())
-                            pos_ns = np.array(ns_global.get_position())
-                            if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
-                                normal = np.array([1, 0])
-                                gauss_nodes[0] = [self.xmax, xis[0]]
-                                gauss_nodes[1] = [self.xmax, xis[1]]
-                            elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
-                                normal = np.array([-1, 0])
-                                gauss_nodes[0] = [self.xmin, xis[0]]
-                                gauss_nodes[1] = [self.xmin, xis[1]]
-                            elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
-                                normal = np.array([0, 1])
-                                gauss_nodes[0] = [xis[0], self.ymax]
-                                gauss_nodes[1] = [xis[1], self.ymax]
-                            elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
-                                normal = np.array([0, -1])
-                                gauss_nodes[0] = [xis[0], self.ymin]
-                                gauss_nodes[1] = [xis[1], self.ymin]
-                            else:
+                            if (nid==nsid) and (self.fegrid.is_corner(nid) >= 0):  
+                                # If on a corner, figure out what normal we should use
+                                verts = self.fegrid.boundary_nonzero(nid, e)
+                                if verts == -1: # Means the whole element is a corner
+                                    # We have to calculate boundary integral twice, once for each other vertex
+                                    # Find the other vertices
+                                    all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                    vert_local_idx = np.where(all_verts == nid)[0][0]
+                                    other_verts = np.delete(all_verts, vert_local_idx)
+                                    # Calculate boundary integrals for other vertices
+                                    for vtx in other_verts:
+                                        bid = vtx
+                                        normal = self.assign_normal(nid, bid)
+                                        if angles@normal > 0:
+                                            xis = self.fegrid.gauss_nodes1d([nid, bid], e)
+                                            boundary_integral = self.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
+                                            sparse_matrix[nid, nsid] += angles@normal*boundary_integral
+                                    continue
+                                else:
+                                    bid = verts[1]
+                            normal = self.assign_normal(nid, bid)
+                            if type(normal)==int:
                                 continue
-                            # Value of first basis function at boundary gauss nodes
-                            gn_vals = np.zeros(2)
-                            gn_vals[0] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[0])
-                            gn_vals[1] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[1])
-                            # Values of second basis function at boundary gauss nodes
-                            gns_vals = np.zeros(2)
-                            gns_vals[0] = self.fegrid.evaluate_basis_function(bns, gauss_nodes[0])
-                            gns_vals[1] = self.fegrid.evaluate_basis_function(bns, gauss_nodes[1])
-                            # Multiply basis functions together
-                            g_vals = gn_vals*gns_vals
-                            # Integrate over length of element on boundary
-                            boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, nsid])
                             if angles@normal > 0:
-                                print(nid, nsid)
-                                print(boundary_integral)
+                                # Get Gauss Nodes for the element
+                                xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
+                                boundary_integral = self.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
                                 sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                             else:
                                 pass
@@ -152,6 +144,49 @@ class SAAF():
                     Q = sig_s*phi_prev[nid] + q[e]/(4*np.pi)
                     rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
         return rhs_at_node
+
+    def assign_normal(self, nid, bid):
+        pos_n = self.fegrid.node(nid).get_position()
+        pos_ns = self.fegrid.node(bid).get_position()
+        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
+            normal = np.array([1, 0])
+        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+            normal = np.array([-1, 0])
+        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
+            normal = np.array([0, 1])
+        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+            normal = np.array([0, -1])
+        else:
+            return -1 
+        return normal
+
+    def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
+        pos_n = self.fegrid.node(nid).get_position()
+        pos_ns = self.fegrid.node(bid).get_position()
+        gauss_nodes = np.zeros((2, 2))
+        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax) or (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+            gauss_nodes[0] = [self.xmax, xis[0]]
+            gauss_nodes[1] = [self.xmax, xis[1]]
+        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax) or (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+            normal = np.array([0, 1])
+            gauss_nodes[0] = [xis[0], self.ymax]
+            gauss_nodes[1] = [xis[1], self.ymax]
+        else:
+            boundary_integral = 0
+            return boundary_integral
+        # Value of first basis function at boundary gauss nodes
+        gn_vals = np.zeros(2)
+        gn_vals[0] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[0])
+        gn_vals[1] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[1])
+        # Values of second basis function at boundary gauss nodes
+        gns_vals = np.zeros(2)
+        gns_vals[0] = self.fegrid.evaluate_basis_function(bns, gauss_nodes[0])
+        gns_vals[1] = self.fegrid.evaluate_basis_function(bns, gauss_nodes[1])
+        # Multiply basis functions together
+        g_vals = gn_vals*gns_vals
+        # Integrate over length of element on boundary
+        boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
+        return boundary_integral
 
     def get_scalar_flux(self, group_id, source, phi_prev, boundary):
         # TODO: S4 Angular Quadrature for 2D

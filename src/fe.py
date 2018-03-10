@@ -170,18 +170,62 @@ class FEGrid():
         C = np.linalg.inv(V)
         return C
 
-    def boundary_length(self, boundary_vertices):
-        # Computes the length along the boundary between two nodes on the boundary
+    def is_corner(self, point):
+        # Returns a value depending what boundary the point is on
+        pos = self.node(point).get_position()
+        if pos == [self.xmin, self.ymin]:
+            return 0
+        elif pos == [self.xmin, self.ymax]:
+            return 1
+        elif pos == [self.xmax, self.ymax]:
+            return 2
+        elif pos == [self.xmax, self.ymin]:
+            return 3
+        else:
+            return -1
+
+
+    def boundary_nonzero(self, current_vert, e):
+        # returns the points on the boundary where the basis function is non zero
+        all_verts = np.array(self.element(e).get_vertices())
+        vert_local_idx = np.where(all_verts == current_vert)[0][0]
+        other_verts = np.delete(all_verts, vert_local_idx)
+
+        # Get position of vertices
+        posa = self.node(current_vert).get_position()
+        posb = self.node(other_verts[0]).get_position()
+        posc = self.node(other_verts[1]).get_position()
+        
+        ab_boundary = (posa[0] == posb[0]) or (posa[1] == posb[1])
+        ac_boundary = (posa[0] == posc[0]) or (posa[1] == posc[1])
+
+        if ab_boundary and ac_boundary:
+            return -1
+        elif ab_boundary:
+            verts = [current_vert, other_verts[0]]
+        elif ac_boundary:
+            verts = [current_vert, other_verts[1]]
+        else:
+            verts = [current_vert, current_vert]
+        return verts
+
+    def boundary_length(self, boundary_vertices, e):
+        # Computes the length along boundary where the basis functions are non-zero
+        if boundary_vertices[0] == boundary_vertices[1]:
+            verts = self.boundary_nonzero(boundary_vertices[0], e)
+        else:
+            verts = boundary_vertices
         points = np.zeros((2, 2))
-        for i, n in enumerate(boundary_vertices):
+        for i, n in enumerate(verts):
             node = self.node(n)
             points[i] = node.get_position()
         length = np.max(np.abs(points[0] - points[1]))
         return length 
 
-    def gauss_nodes1d(self, boundary_vertices):
+    def gauss_nodes1d(self, boundary_vertices, e):
         # Gauss nodes for 2 point quadrature on boundary
-        length = self.boundary_length(boundary_vertices)
+        #multiplying by the same basis function
+        length = self.boundary_length(boundary_vertices, e)
         xi = 1/np.sqrt(3)
         half_length = length/2
         nodes = np.array([-half_length*xi + half_length, half_length*xi + half_length])
@@ -245,11 +289,11 @@ class FEGrid():
         integral = 1/3 * area*(np.sum(f_values))
         return integral
 
-    def gauss_quad1d(self, f_values, boundary_vertices):
+    def gauss_quad1d(self, f_values, boundary_vertices, e):
         # Two point Gaussian Quadrature in one dimension
         # Find length of element on boundary
         # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
-        length = self.boundary_length(boundary_vertices)
+        length = self.boundary_length(boundary_vertices, e)
         integral = length/2*(f_values[0] + f_values[1])
         return integral
 
