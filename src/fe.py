@@ -170,21 +170,6 @@ class FEGrid():
         C = np.linalg.inv(V)
         return C
 
-    def is_corner(self, point):
-        # Returns a value depending what boundary the point is on
-        pos = self.node(point).get_position()
-        if pos == [self.xmin, self.ymin]:
-            return 0
-        elif pos == [self.xmin, self.ymax]:
-            return 1
-        elif pos == [self.xmax, self.ymax]:
-            return 2
-        elif pos == [self.xmax, self.ymin]:
-            return 3
-        else:
-            return -1
-
-
     def boundary_nonzero(self, current_vert, e):
         # returns the points on the boundary where the basis function is non zero
         all_verts = np.array(self.element(e).get_vertices())

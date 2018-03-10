@@ -59,7 +59,7 @@ class SAAF():
                             # Assign boundary id, marks end of region along boundary where basis function is nonzero
                             bid = nsid      
                             # Figure out what boundary you're on
-                            if (nid==nsid) and (self.fegrid.is_corner(nid) >= 0):  
+                            if (nid==nsid) and (self.fegrid.is_corner(nid)):  
                                 # If on a corner, figure out what normal we should use
                                 verts = self.fegrid.boundary_nonzero(nid, e)
                                 if verts == -1: # Means the whole element is a corner
