@@ -196,8 +196,11 @@ class FEGrid():
         posb = self.node(other_verts[0]).get_position()
         posc = self.node(other_verts[1]).get_position()
         
-        ab_boundary = (posa[0] == posb[0]) or (posa[1] == posb[1])
-        ac_boundary = (posa[0] == posc[0]) or (posa[1] == posc[1])
+        
+        ab_boundary = (((posa[0] == posb[0]) and (posb[0] == self.xmin or posb[0] == self.xmax)) 
+                    or ((posa[1] == posb[1]) and (posb[1] == self.ymin or posb[1] == self.ymax)))
+        ac_boundary = (((posa[0] == posc[0]) and (posc[0] == self.xmin or posc[0] == self.xmax)) 
+                    or ((posa[1] == posc[1]) and (posc[1] == self.ymin or posc[1] == self.ymax)))
 
         if ab_boundary and ac_boundary:
             return -1
