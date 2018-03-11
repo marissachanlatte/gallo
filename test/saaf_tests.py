@@ -20,8 +20,10 @@ class TestSAAF:
 
         cls.stdnode = "test/test_inputs/std.1.node"
         cls.stdele = "test/test_inputs/std.1.ele"
+        cls.stdmat = "test/test_inputs/std.1.mat"
+        cls.stdmats = Materials(cls.matfile)
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
-        cls.stdop = SAAF(cls.stdgrid, cls.mats)
+        cls.stdop = SAAF(cls.stdgrid, cls.stdmats)
 
         cls.smnode = "test/test_inputs/D.1.node"
         cls.smele = "test/test_inputs/D.1.ele"
@@ -36,6 +38,16 @@ class TestSAAF:
         A = self.op.make_lhs(np.array([ang_one, ang_two]))[0]
         nonzero = (A!=A.transpose()).nonzero()
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
+
+    def hand_calculation_test(self):
+        angles = np.array([.5773503, .5773503])
+        A = self.stdop.make_lhs(angles)[0].todense()
+        print(A)
+        hand = np.array([[ 0.,          0.,          0.,          0.        ],
+                         [ 0.,          0.1924501,   0.09622505,  0.        ],
+                         [ 0.,          0.09622505,  0.3849002,   0.09622505],
+                         [ 0.,          0.,          0.09622505,  0.1924501 ]])
+        ok_(np.allclose(A, hand, rtol=1e-7))
 
     def incident_angle_test(self):
         ang_one = .5773503
