@@ -67,9 +67,17 @@ class FEGrid():
                 if i==0:
                     self.xmin = x
                     self.ymin = y
-                elif i==2:
                     self.xmax = x
                     self.ymax = y
+                else:
+                    if x < self.xmin:
+                        self.xmin = x
+                    if y < self.ymin:
+                        self.ymin = y
+                    if x > self.xmax:
+                        self.xmax = x
+                    if y > self.ymax:
+                        self.ymax = y
                 is_interior = not int(boundary)
                 interior_node_id = -1
                 if is_interior: 

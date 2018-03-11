@@ -10,11 +10,18 @@ class SAAF():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        #self.matrices = []
         self.xmax = self.fegrid.get_boundary("xmax")
         self.ymax = self.fegrid.get_boundary("ymax")
         self.xmin = self.fegrid.get_boundary("xmin")
         self.ymin = self.fegrid.get_boundary("ymin")
+
+        # S2 hard-coded
+        ang_one = .5773503
+        ang_two = -.5773503
+        angles = itr.product([ang_one, ang_two], repeat=2)
+        self.angs = np.zeros((4, 2))
+        for i, ang in enumerate(angles):
+            self.angs[i] = ang
      
     def make_lhs(self, angles):
         k = self.fegrid.get_num_nodes()
@@ -118,7 +125,7 @@ class SAAF():
             matrices.append(sparse_matrix)
         return matrices
 
-    def make_rhs(self, group_id, q, angles, boundary, phi_prev=None):
+    def make_rhs(self, group_id, q, angles, boundary, phi_prev=None, psi_prev=None):
         angles = np.array(angles)
         # Get num elements
         E = self.fegrid.get_num_elts()
@@ -138,7 +145,18 @@ class SAAF():
                 ngrad = self.fegrid.gradient(e, n)
                 # Check if boundary node
                 if not n_global.is_interior():
+                    if boundary == "vacuum":
                         continue
+                    if boundary == "reflecting":
+                        # Figure out normal
+                        verts = self.fegrid.boundary_nonzero(nid, e)
+                        if verts == -1:
+                            normal = self.assign_normal(nid, nid)
+                        else:
+                            normal = self.assign_normal(verts[0], verts[1])
+                        if angles@normal > 0:
+                            incident = self.assign_incident(nid, angles, psi_prev)
+                            rhs_at_node[nid] = incident
                 else:
                     area = self.fegrid.element_area(e)
                     Q = sig_s*phi_prev[nid] + q[e]/(4*np.pi)
@@ -159,6 +177,23 @@ class SAAF():
         else:
             return -1 
         return normal
+
+    def assign_incident(self, nid, angles, psi_prev):
+        pos = self.fegrid.node(nid).get_position()
+        # figure out which boundary
+        reflection = np.ones(2)
+        if self.fegrid.is_corner(nid):
+            reflection = np.array([-1, -1])
+        elif pos[0] == self.xmax or pos[0] == self.xmin:
+            reflection = np.array([-1, 1])
+        elif pos[1] == self.ymax or pos[1] == self.ymin:
+            reflection = np.array([1, -1])
+        else:
+            raise RuntimeError("Boundary Error")
+        incident_angle = angles*reflection
+        ia_idx = np.where((self.angs == incident_angle).all(axis=1))[0][0]
+        incident_flux = psi_prev[ia_idx, nid]
+        return incident_flux
 
     def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
         pos_n = self.fegrid.node(nid).get_position()
@@ -188,36 +223,43 @@ class SAAF():
         boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
         return boundary_integral
 
-    def get_scalar_flux(self, group_id, source, phi_prev, boundary):
+    def get_scalar_flux(self, group_id, source, boundary, phi_prev, psi_prev=None):
         # TODO: S4 Angular Quadrature for 2D
         #S2 quadrature
         ang_one = .5773503
         ang_two = -.5773503
         angles = itr.product([ang_one, ang_two], repeat=2)
-        scalar_flux = 0
-        ang_fluxes = []
+        scalar_flux = 0   
+        N = self.fegrid.get_num_nodes()
+        ang_fluxes = np.zeros((4, N))     
         # Iterate over all angle possibilities
-        for ang in angles:
+        for i, ang in enumerate(angles):
             ang = np.array(ang)
-            ang_flux = self.get_ang_flux(group_id, source, ang, phi_prev, boundary)
-            ang_fluxes.append(ang_flux)
+            if boundary == "vacuum":
+                ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, boundary, phi_prev)
+            if boundary == "reflecting":
+                ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, boundary, phi_prev, psi_prev)
             # Multiplying by weight and summing for quadrature
-            scalar_flux += np.pi*ang_flux
+            scalar_flux += np.pi*ang_fluxes[i]
         return scalar_flux, ang_fluxes
 
-    def get_ang_flux(self, group_id, source, ang, phi_prev, boundary):
+    def get_ang_flux(self, group_id, source, ang, boundary, phi_prev, psi_prev=None):
         lhs = self.make_lhs(ang)[0]
-        rhs = self.make_rhs(group_id, source, ang, boundary, phi_prev)
+        rhs = self.make_rhs(group_id, source, ang, boundary, phi_prev, psi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
     def solve(self, source, problem_type, group_id, boundary, max_iter=1000, tol=1e-4):
         E = self.fegrid.get_num_elts()
         N = self.fegrid.get_num_nodes()
-        phi = np.zeros(N)
         phi_prev = np.zeros(N)
+        psi_prev = np.ones((4, N))
         for i in range(max_iter):
-            phi, ang_fluxes = self.get_scalar_flux(0, source, phi_prev, boundary)
+            if boundary == "vacuum":
+                phi, ang_fluxes = self.get_scalar_flux(group_id, source, boundary, phi_prev)
+            if boundary == "reflecting":
+                phi, ang_fluxes = self.get_scalar_flux(group_id, source, boundary, phi_prev, psi_prev)
+                psi_prev = ang_fluxes
             norm = np.linalg.norm(phi-phi_prev, 2)
             if norm < tol:
                 break
