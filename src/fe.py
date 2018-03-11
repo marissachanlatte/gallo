@@ -67,9 +67,17 @@ class FEGrid():
                 if i==0:
                     self.xmin = x
                     self.ymin = y
-                elif i==2:
                     self.xmax = x
                     self.ymax = y
+                else:
+                    if x < self.xmin:
+                        self.xmin = x
+                    if y < self.ymin:
+                        self.ymin = y
+                    if x > self.xmax:
+                        self.xmax = x
+                    if y > self.ymax:
+                        self.ymax = y
                 is_interior = not int(boundary)
                 interior_node_id = -1
                 if is_interior: 
@@ -170,10 +178,41 @@ class FEGrid():
         C = np.linalg.inv(V)
         return C
 
-    def boundary_length(self, boundary_vertices):
-        # Computes the length along the boundary between two nodes on the boundary
+    def boundary_nonzero(self, current_vert, e):
+        # returns the points on the boundary where the basis function is non zero
+        all_verts = np.array(self.element(e).get_vertices())
+        vert_local_idx = np.where(all_verts == current_vert)[0][0]
+        other_verts = np.delete(all_verts, vert_local_idx)
+
+        # Get position of vertices
+        posa = self.node(current_vert).get_position()
+        posb = self.node(other_verts[0]).get_position()
+        posc = self.node(other_verts[1]).get_position()
+        
+        
+        ab_boundary = (((posa[0] == posb[0]) and (posb[0] == self.xmin or posb[0] == self.xmax)) 
+                    or ((posa[1] == posb[1]) and (posb[1] == self.ymin or posb[1] == self.ymax)))
+        ac_boundary = (((posa[0] == posc[0]) and (posc[0] == self.xmin or posc[0] == self.xmax)) 
+                    or ((posa[1] == posc[1]) and (posc[1] == self.ymin or posc[1] == self.ymax)))
+
+        if ab_boundary and ac_boundary:
+            return -1
+        elif ab_boundary:
+            verts = [current_vert, other_verts[0]]
+        elif ac_boundary:
+            verts = [current_vert, other_verts[1]]
+        else:
+            verts = [current_vert, current_vert]
+        return verts
+
+    def boundary_length(self, boundary_vertices, e):
+        # Computes the length along boundary where the basis functions are non-zero
+        if boundary_vertices[0] == boundary_vertices[1]:
+            verts = self.boundary_nonzero(boundary_vertices[0], e)
+        else:
+            verts = boundary_vertices
         points = np.zeros((2, 2))
-        for i, n in enumerate(boundary_vertices):
+        for i, n in enumerate(verts):
             node = self.node(n)
             points[i] = node.get_position()
         length = np.max(np.abs(points[0] - points[1]))
@@ -181,30 +220,8 @@ class FEGrid():
 
     def gauss_nodes1d(self, boundary_vertices, e):
         # Gauss nodes for 2 point quadrature on boundary
-        if len(boundary_vertices) != 2:
-            raise RuntimeError("You must give two vertices.")
-        length = 0
-        if boundary_vertices[0] == boundary_vertices[1]:
-            # Figure out where on the boundary the basis function is non-zero
-            # Get vertices of element
-            current_vert = boundary_vertices[0]
-            all_verts = self.element(e).get_vertices()
-            idx = np.where(all_verts == current_vert)
-            other_verts = np.delete(all_verts, idx)
-
-            # Position of all the vertices
-            pos_a = self.node(current_vert).get_position()
-            pos_b = self.node(other_verts[0]).get_position()
-            pos_c = self.node(other_verts[1]).get_position()
-
-            # if a and b share a boundary integrate over that
-            if pos_a[0] == pos_b[0] or pos_a[1] == pos_b[1]:
-                length = self.boundary_length([current_vert, other_verts[0]])
-            # if a and c share a boundary integrate over that too
-            if pos_a[0] == pos_c[0] or pos_a[1] == pos_c[1]:
-                length += self.boundary_length([current_vert, other_verts[1]])
-        else:
-            length = self.boundary_length(boundary_vertices)
+        #multiplying by the same basis function
+        length = self.boundary_length(boundary_vertices, e)
         xi = 1/np.sqrt(3)
         half_length = length/2
         nodes = np.array([-half_length*xi + half_length, half_length*xi + half_length])
@@ -272,28 +289,7 @@ class FEGrid():
         # Two point Gaussian Quadrature in one dimension
         # Find length of element on boundary
         # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
-        length = 0
-        if boundary_vertices[0] == boundary_vertices[1]:
-            # Figure out where on the boundary the basis function is non-zero
-            # Get vertices of element
-            current_vert = boundary_vertices[0]
-            all_verts = self.element(e).get_vertices()
-            idx = np.where(all_verts == current_vert)
-            other_verts = np.delete(all_verts, idx)
-
-            # Position of all the vertices
-            pos_a = self.node(current_vert).get_position()
-            pos_b = self.node(other_verts[0]).get_position()
-            pos_c = self.node(other_verts[1]).get_position()
-
-            # if a and b share a boundary integrate over that
-            if pos_a[0] == pos_b[0] or pos_a[1] == pos_b[1]:
-                length = self.boundary_length([current_vert, other_verts[0]])
-            # if a and c share a boundary integrate over that too
-            if pos_a[0] == pos_c[0] or pos_a[1] == pos_c[1]:
-                length += self.boundary_length([current_vert, other_verts[1]])
-        else:
-            length = self.boundary_length(boundary_vertices)
+        length = self.boundary_length(boundary_vertices, e)
         integral = length/2*(f_values[0] + f_values[1])
         return integral
 
@@ -310,41 +306,3 @@ class FEGrid():
         for idir in range(2):
             retval[idir]/=3
         return retval
-
-    # def interpolate_to_centroid(self, f_nodes):
-    #     num_elts = self.get_num_elts()
-    #     centroids = np.zeros(num_elts)
-    #     for e in range(num_elts):
-    #         area = self.element_area(e)
-    #         for n in range(3):
-    #             node = self.get_node(e, n)
-    #             if node.is_interior():
-    #                 id = node.get_interior_node_id()
-    #                 centroids[e] += f_nodes[id]
-    #     centroids /= 3
-    #     return centroids
-
-    # def nearest_neighbor(self, node_id):
-    #     node = self.node(node_id)
-    #     distance = 1e8
-    #     neighbor = None
-    #     nodex, nodey = node.get_position()
-    #     for i in range(self.num_nodes):
-    #         if i==node_id:
-    #             continue
-    #         n = self.node(i)
-    #         x, y = n.get_position()
-    #         norm = np.sqrt((nodex-x)**2 + (nodey-y)**2)
-    #         if norm < distance:
-    #             distance = norm
-    #             neighbor = i
-    #     return self.node(neighbor), distance
-        
-# def reinsert(grid, internal_solution):
-#         nodes = grid.get_num_nodes()
-#         full_vector = np.zeros(nodes)
-#         for i in range(nodes):
-#             n = grid.node(i)
-#             if n.is_interior():
-#                 full_vector[i] = internal_solution[n.get_interior_node_id()]
-#         return full_vector

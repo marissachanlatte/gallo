@@ -90,14 +90,14 @@ class TestFe:
         assert_array_equal(C, self.stdgrid.basis(0))
 
     def test_boundary_length(self):
-        eq_(self.fegrid.boundary_length([0, 5]), .5)
-        eq_(self.fegrid.boundary_length([1, 5]), .5)
-        eq_(self.fegrid.boundary_length([12, 2]), .5)
+        eq_(self.fegrid.boundary_length([0, 5], 9), .5)
+        eq_(self.fegrid.boundary_length([1, 5], 6), .5)
+        eq_(self.fegrid.boundary_length([12, 2], 27), .5)
 
     def test_gauss_nodes1d(self):
         nodes_half = np.array([(-.25*1/np.sqrt(3) + .25),(.25*1/np.sqrt(3) + .25)])
-        assert_array_equal(self.fegrid.gauss_nodes1d([0, 5]), nodes_half)
-        assert_array_equal(self.fegrid.gauss_nodes1d([1, 5]), nodes_half)
+        assert_array_equal(self.fegrid.gauss_nodes1d([0, 5], 9), nodes_half)
+        assert_array_equal(self.fegrid.gauss_nodes1d([1, 5], 6), nodes_half)
         
     def test_gauss_nodes(self):
         C = self.stdgrid.gauss_nodes(0)
@@ -114,8 +114,8 @@ class TestFe:
 
     def test_quad1d(self):
         fvals = [1, 1, 1]
-        eq_(self.fegrid.gauss_quad1d(fvals, [1, 5]), .5)
-        eq_(self.fegrid.gauss_quad1d(fvals, [0, 5]), .5)
+        eq_(self.fegrid.gauss_quad1d(fvals, [1, 5], 6), .5)
+        eq_(self.fegrid.gauss_quad1d(fvals, [0, 5], 9), .5)
         
     def test_quad(self):
         fvals = np.array([1, 1, 1])

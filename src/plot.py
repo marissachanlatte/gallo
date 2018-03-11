@@ -20,7 +20,8 @@ def plot(grid, solution, filename):
     sup = np.max(solution)
     # Plot and save to file
     plt.figure()
-    plt.tricontourf(x, y, triangles, solution, levels=np.linspace(inf, sup, 21))
+    plt.tricontourf(x, y, triangles, solution, levels=np.linspace(inf, sup, 11))
+    plt.triplot(x, y, triangles, 'go-', lw=1.0)
     plt.colorbar()
     plt.savefig(filename)
     plt.clf()
