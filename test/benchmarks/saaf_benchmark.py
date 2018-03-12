@@ -30,13 +30,17 @@ def filename_to_problem(func):
    
 @filename_to_problem
 def test_problem(problem):
-    source = 10*np.ones(problem.n_elements)
-    scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", 0, "reflecting", tol=1e-1)
-    for i in range(4):
-        plot(problem.grid, ang_fluxes[i], "saaf" + str(i))
-    plot(problem.grid, scalar_flux, "scalar_flux")
+    source = np.ones(problem.n_elements)
+    for g in range(problem.num_groups):
+        print("Starting Group ", g)
+        scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
+        print(ang_fluxes[0])
+        for i in range(4):
+            plot(problem.grid, ang_fluxes[i], problem.filename + "_" + str(i) + "_group" + str(g))
+        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
+        print("Finished Group ", g)
 
-problem = to_problem("D.1")
+problem = to_problem("box")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 test_problem(problem.filename)
