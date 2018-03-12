@@ -26,13 +26,13 @@ class Materials():
                 attributes = line.split("|")
                 self.names.append(attributes[2].strip())
                 for j in range(self.num_groups):
-                    self.sig_a[i, j] = float(attributes[3])
-                    self.sig_s[i, j] = float(attributes[4])
-                    self.sig_f[i, j] = float(attributes[5])
-                    self.nu[i, j] = float(attributes[6])
+                    self.sig_t[i, j] = float(attributes[3])
+                    self.sig_a[i, j] = float(attributes[4])
+                    self.sig_s[i, j] = float(attributes[5])
+                    self.sig_f[i, j] = float(attributes[6])
+                    self.nu[i, j] = float(attributes[7])
 
                     # Derived quantities
-                    self.sig_t[i, j] = self.sig_a[i, j] + self.sig_s[i, j]
                     self.D[i, j] = 1/(3*self.sig_t[i, j])
                     self.inv_sigt[i, j] = 1/self.sig_t[i, j]
                     if j==(self.num_groups - 1):
