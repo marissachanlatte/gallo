@@ -20,10 +20,17 @@ class TestSAAF:
 
         cls.stdnode = "test/test_inputs/std.1.node"
         cls.stdele = "test/test_inputs/std.1.ele"
-        cls.stdmat = "test/test_inputs/std.1.mat"
-        cls.stdmats = Materials(cls.matfile)
+        cls.stdmatfile = "test/test_inputs/std.1.mat"
+        cls.stdmats = Materials(cls.stdmatfile)
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
         cls.stdop = SAAF(cls.stdgrid, cls.stdmats)
+
+        cls.nsnode = "test/test_inputs/nonstd.1.node"
+        cls.nsele = "test/test_inputs/nonstd.1.ele"
+        cls.nsmatfile = "test/test_inputs/nonstd.1.mat"
+        cls.nsmats = Materials(cls.nsmatfile)
+        cls.nsgrid = FEGrid(cls.nsnode, cls.nsele)
+        cls.nsop = SAAF(cls.nsgrid, cls.nsmats)
 
         cls.smnode = "test/test_inputs/D.1.node"
         cls.smele = "test/test_inputs/D.1.ele"
@@ -35,18 +42,26 @@ class TestSAAF:
         source = np.ones(self.fegrid.get_num_elts())
         ang_one = .5773503
         ang_two = -.5773503
-        A = self.op.make_lhs(np.array([ang_one, ang_two]))[0]
+        A = self.op.make_lhs(np.array([ang_one, ang_two]), 0)
         nonzero = (A!=A.transpose()).nonzero()
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
 
     def hand_calculation_test(self):
         angles = np.array([.5773503, .5773503])
-        A = self.stdop.make_lhs(angles)[0].todense()
-        print(A)
+        A = self.stdop.make_lhs(angles, 0).todense()
         hand = np.array([[ 0.,          0.,          0.,          0.        ],
                          [ 0.,          0.1924501,   0.09622505,  0.        ],
                          [ 0.,          0.09622505,  0.3849002,   0.09622505],
                          [ 0.,          0.,          0.09622505,  0.1924501 ]])
+        ok_(np.allclose(A, hand, rtol=1e-7))
+
+    def hand_calculation_nonstd_test(self):
+        angles = np.array([.5773503, .5773503])
+        A = self.nsop.make_lhs(angles, 0).todense()
+        hand = np.array([[ 0.        ,  0.        ,  0.        ,  0.        ],
+                         [ 0.        ,  0.3849002 ,  0.1924501 ,  0.        ],
+                         [ 0.        ,  0.1924501 ,  0.5773503 ,  0.09622505],
+                         [ 0.        ,  0.        ,  0.09622505,  0.1924501]]) 
         ok_(np.allclose(A, hand, rtol=1e-7))
 
     def incident_angle_test(self):
