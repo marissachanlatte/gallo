@@ -139,9 +139,6 @@ class FEGrid():
     def node(self, node_number):
         return self.nodes[node_number]
 
-    # def interior_node(self, interior_node_number):
-    #     return self.interior_nodes[interior_node_number]
-
     def get_mat_id(self, elt_number):
         return self.element(elt_number).get_mat_id()
 

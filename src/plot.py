@@ -3,7 +3,7 @@ import matplotlib.tri as tri
 import numpy as np 
 
 
-def plot(grid, solution, filename):
+def plot(grid, solution, filename, mesh_plot=False):
     # Get number of nodes
     nodes = grid.get_num_nodes()
     # Setup xy
@@ -21,28 +21,30 @@ def plot(grid, solution, filename):
     # Plot and save to file
     plt.figure()
     plt.tricontourf(x, y, triangles, solution, levels=np.linspace(inf, sup, 11))
-    plt.triplot(x, y, triangles, 'go-', lw=1.0)
+    if mesh_plot==True:
+        plt.triplot(x, y, triangles, 'go-', lw=1.0)
     plt.colorbar()
     plt.savefig(filename)
     plt.clf()
+    plt.close()
 
-def mesh_plot(grid, filename):
-    # Get number of nodes
-    nodes = grid.get_num_nodes()
-    # Setup xy
-    x = np.zeros(nodes)
-    y = np.zeros(nodes)
-    positions = (grid.node(i).get_position() for i in range(nodes))
-    for i, pos in enumerate(positions):
-        x[i], y[i] = pos
-    # Setup triangles
-    elts = grid.get_num_elts()
-    triangles = np.array([grid.element(i).get_vertices() for i in range(elts)])
-    # Plot mesh
-    plt.figure()
-    plt.gca().set_aspect('equal')
-    plt.triplot(x, y, triangles, 'go-', lw=1.0)
-    plt.savefig(filename + "_mesh")
+# def mesh_plot(grid, filename):
+#     # Get number of nodes
+#     nodes = grid.get_num_nodes()
+#     # Setup xy
+#     x = np.zeros(nodes)
+#     y = np.zeros(nodes)
+#     positions = (grid.node(i).get_position() for i in range(nodes))
+#     for i, pos in enumerate(positions):
+#         x[i], y[i] = pos
+#     # Setup triangles
+#     elts = grid.get_num_elts()
+#     triangles = np.array([grid.element(i).get_vertices() for i in range(elts)])
+#     # Plot mesh
+#     plt.figure()
+#     plt.gca().set_aspect('equal')
+#     plt.triplot(x, y, triangles, 'go-', lw=1.0)
+#     plt.savefig(filename + "_mesh")
     
 # def plot_interior(grid, solution, filename, mesh_plot=False):
 #     # Get number of interior nodes

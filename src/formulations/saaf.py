@@ -47,11 +47,10 @@ class SAAF():
                 nid = n_global.get_node_id()
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
-                if n_global.is_interior():
-                    # Array of values of basis function evaluated at interior gauss nodes
-                    fn_vals = np.zeros(3)
-                    for i in range(3):
-                        fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                # Array of values of basis function evaluated at interior gauss nodes
+                fn_vals = np.zeros(3)
+                for i in range(3):
+                    fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -59,6 +58,29 @@ class SAAF():
                     nsid = ns_global.get_node_id()
                     # Coefficients of basis function
                     bns = coef[:, ns]
+                    # Array of values of basis function evaluated at interior gauss nodes
+                    fns_vals = np.zeros(3)
+                    for i in range(3):
+                        fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
+                                       bns[2] * g_nodes[i, 1])
+                    # Calculate gradients
+                    ngrad = self.fegrid.gradient(e, n)
+                    nsgrad = self.fegrid.gradient(e, ns)
+
+                    # Multiply basis functions together at the gauss nodes
+                    f_vals = np.zeros(3)
+                    for i in range(3):
+                       f_vals[i] = fn_vals[i] * fns_vals[i]
+
+                    # Integrate for A (basis function derivatives)
+                    area = self.fegrid.element_area(e)
+                    A = inv_sigt*(angles@ngrad)*(angles@nsgrad)*area
+
+                    # Integrate for B (basis functions multiplied)
+                    integral = self.fegrid.gauss_quad(e, f_vals)
+                    C = sig_t * integral
+
+                    sparse_matrix[nid, nsid] += A + C
                     # Check if boundary nodes
                     if not n_global.is_interior() and not ns_global.is_interior():  
                         # Assign boundary id, marks end of region along boundary where basis function is nonzero
@@ -93,33 +115,7 @@ class SAAF():
                             boundary_integral = self.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
                             sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                         else:
-                            pass
-                    elif not ns_global.is_interior() or not n_global.is_interior():
-                        pass
-                    else:
-                        # Array of values of basis function evaluated at interior gauss nodes
-                        fns_vals = np.zeros(3)
-                        for i in range(3):
-                            fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
-                                           bns[2] * g_nodes[i, 1])
-                        # Calculate gradients
-                        ngrad = self.fegrid.gradient(e, n)
-                        nsgrad = self.fegrid.gradient(e, ns)
-
-                        # Multiply basis functions together
-                        f_vals = np.zeros(3)
-                        for i in range(3):
-                           f_vals[i] = fn_vals[i] * fns_vals[i]
-
-                        # Integrate for A (basis function derivatives)
-                        area = self.fegrid.element_area(e)
-                        A = inv_sigt*(angles@ngrad)*(angles@nsgrad)*area
-
-                        # Integrate for B (basis functions multiplied)
-                        integral = self.fegrid.gauss_quad(e, f_vals)
-                        C = sig_t * integral
-
-                        sparse_matrix[nid, nsid] += A + C
+                            pass             
         return sparse_matrix
 
     def make_rhs(self, group_id, q, angles, boundary, phi_prev=None, psi_prev=None):
@@ -141,23 +137,23 @@ class SAAF():
                 nid = n_global.get_node_id()
                 ngrad = self.fegrid.gradient(e, n)
                 # Check if boundary node
-                if not n_global.is_interior():
-                    if boundary == "vacuum":
-                        continue
-                    if boundary == "reflecting":
-                        # Figure out normal
-                        verts = self.fegrid.boundary_nonzero(nid, e)
-                        if verts == -1:
-                            normal = self.assign_normal(nid, nid)
-                        else:
-                            normal = self.assign_normal(verts[0], verts[1])
-                        if angles@normal > 0:
-                            incident = self.assign_incident(nid, angles, psi_prev)
-                            rhs_at_node[nid] = incident
-                else:
-                    area = self.fegrid.element_area(e)
-                    Q = sig_s*phi_prev[nid] + q[e]/(4*np.pi)
-                    rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
+                # if not n_global.is_interior():
+                #     if boundary == "vacuum":
+                #         continue
+                #     # if boundary == "reflecting":
+                #     #     # Figure out normal
+                #     #     verts = self.fegrid.boundary_nonzero(nid, e)
+                #     #     if verts == -1:
+                #     #         normal = self.assign_normal(nid, nid)
+                #     #     else:
+                #     #         normal = self.assign_normal(verts[0], verts[1])
+                #     #     if angles@normal > 0:
+                #     #         incident = self.assign_incident(nid, angles, psi_prev)
+                #     #         rhs_at_node[nid] = incident
+                # else:
+                area = self.fegrid.element_area(e)
+                Q = sig_s*phi_prev[nid]/(4*np.pi) + q[e]/(4*np.pi)
+                rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
         return rhs_at_node
 
     def assign_normal(self, nid, bid):
