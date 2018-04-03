@@ -13,8 +13,8 @@ class TestFe:
         cls.elefile = "test/test_inputs/test.ele"
         cls.fegrid = FEGrid(cls.nodefile, cls.elefile)
 
-        cls.stdnode = "test/test_inputs/std.1.node"
-        cls.stdele = "test/test_inputs/std.1.ele"
+        cls.stdnode = "test/test_inputs/std.node"
+        cls.stdele = "test/test_inputs/std.ele"
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
 
     def test_get_boundary(self):
@@ -127,5 +127,4 @@ class TestFe:
     def test_centroid(self):
         eq_(self.stdgrid.centroid(0)[0], 1/3)
         eq_(self.stdgrid.centroid(0)[1], 1/3)
-
 
