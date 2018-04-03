@@ -18,9 +18,9 @@ class TestSAAF:
         cls.mats = Materials(cls.matfile)
         cls.op = SAAF(cls.fegrid, cls.mats)
 
-        cls.stdnode = "test/test_inputs/std.1.node"
-        cls.stdele = "test/test_inputs/std.1.ele"
-        cls.stdmatfile = "test/test_inputs/std.1.mat"
+        cls.stdnode = "test/test_inputs/std.node"
+        cls.stdele = "test/test_inputs/std.ele"
+        cls.stdmatfile = "test/test_inputs/std.mat"
         cls.stdmats = Materials(cls.stdmatfile)
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
         cls.stdop = SAAF(cls.stdgrid, cls.stdmats)
@@ -53,22 +53,45 @@ class TestSAAF:
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
 
     def hand_calculation_test(self):
-        angles = np.array([.5773503, .5773503])
-        A = self.stdop.make_lhs(angles, 0).todense()
-        hand = np.array([[ 0.,          0.,          0.,          0.        ],
-                         [ 0.,          0.1924501,   0.09622505,  0.        ],
-                         [ 0.,          0.09622505,  0.3849002,   0.09622505],
-                         [ 0.,          0.,          0.09622505,  0.1924501 ]])
-        ok_(np.allclose(A, hand, rtol=1e-7))
+        angles0 = np.array([.5773503, .5773503])
+        A0 = self.stdop.make_lhs(angles0, 0).todense()
+        hand0 = np.array([[ 0.75000007, -0.2916667,   0.,         -0.2916667],
+                         [-0.2916667,   0.69245014, -0.19544165,  0.4166667 ],
+                         [ 0.,         -0.19544165,  1.13490027, -0.19544165],
+                         [-0.2916667,   0.4166667,  -0.19544165,  0.69245014]])
+        ok_(np.allclose(A0, hand0, rtol=1e-7))
+        angles1 = np.array([-.5773503, .5773503])
+        A1 = self.stdop.make_lhs(angles1, 0).todense()
+        hand1 = np.array([[ 0.27578343,  0.04166667,  0.        ,  0.13789172],
+                          [ 0.04166667,  0.50000004,  0.04166667, -0.25000004],
+                          [ 0.        ,  0.04166667,  0.27578343,  0.13789172],
+                          [ 0.13789172, -0.25000004,  0.13789172,  0.88490024]])
+        print(A1)
+        ok_(np.allclose(A1, hand1, rtol=1e-7))
+        angles2 = np.array([.5773503, -.5773503])
+        A2 = self.stdop.make_lhs(angles2, 0).todense()
+        hand2 = np.array([[ 0.27578343,  0.13789172,  0.        ,  0.04166667],
+                          [ 0.13789172,  0.88490024,  0.13789172, -0.25000004],
+                          [ 0.        ,  0.13789172,  0.27578343,  0.04166667],
+                          [ 0.04166667, -0.25000004,  0.04166667,  0.50000004]])
+        ok_(np.allclose(A2, hand2, rtol=1e-7))
+        angles3 = np.array([-.5773503, -.5773503])
+        A3 = self.stdop.make_lhs(angles3, 0).todense()
+        hand3 = np.array([[ 1.13490027, -0.19544165,  0.        , -0.19544165],
+                          [-0.19544165,  0.69245014, -0.2916667 ,  0.4166667 ],
+                          [ 0.        , -0.2916667 ,  0.75000007, -0.2916667 ],
+                          [-0.19544165,  0.4166667 , -0.2916667 ,  0.69245014]])
+        ok_(np.allclose(A3, hand3, rtol=1e-7))
 
-    def hand_calculation_nonstd_test(self):
-        angles = np.array([.5773503, .5773503])
-        A = self.nsop.make_lhs(angles, 0).todense()
-        hand = np.array([[ 0.        ,  0.        ,  0.        ,  0.        ],
-                         [ 0.        ,  0.3849002 ,  0.1924501 ,  0.        ],
-                         [ 0.        ,  0.1924501 ,  0.5773503 ,  0.09622505],
-                         [ 0.        ,  0.        ,  0.09622505,  0.1924501]]) 
-        ok_(np.allclose(A, hand, rtol=1e-7))
+
+    # def hand_calculation_nonstd_test(self):
+    #     angles = np.array([.5773503, .5773503])
+    #     A = self.nsop.make_lhs(angles, 0).todense()
+    #     hand = np.array([[ 0.        ,  0.        ,  0.        ,  0.        ],
+    #                      [ 0.        ,  0.3849002 ,  0.1924501 ,  0.        ],
+    #                      [ 0.        ,  0.1924501 ,  0.5773503 ,  0.09622505],
+    #                      [ 0.        ,  0.        ,  0.09622505,  0.1924501]]) 
+    #     ok_(np.allclose(A, hand, rtol=1e-7))
 
     def incident_angle_test(self):
         ang_one = .5773503
@@ -108,77 +131,77 @@ class TestSAAF:
                                 [1,  34, 35, 4,  21, 0, 0, 24, 25, 0, 0, 28, 13, 46, 47, 16]])
         assert_array_equal(psi_new, psi_correct)
 
-    def balance_test(self):
-        # Assumes one group and vacuum boundary conditions
-        n_elts = self.fegrid.get_num_elts()
-        n_nodes = self.fegrid.get_num_nodes()
-        source = np.ones(n_elts)
-        scalar_flux, ang_fluxes = self.op.solve(source, "eigenvalue", 0, "vacuum", tol=1e-3)
-        siga = self.mats.get_siga(0, 0)
+    # def balance_test(self):
+    #     # Assumes one group and vacuum boundary conditions
+    #     n_elts = self.fegrid.get_num_elts()
+    #     n_nodes = self.fegrid.get_num_nodes()
+    #     source = np.ones(n_elts)
+    #     scalar_flux, ang_fluxes = self.op.solve(source, "eigenvalue", 0, "vacuum", tol=1e-3)
+    #     siga = self.mats.get_siga(0, 0)
         
-        # Calculate Total Source
-        total_src = 0
-        for i in range(n_elts):
-            e = self.fegrid.element(i)
-            total_src += self.fegrid.element_area(i)
+    #     # Calculate Total Source
+    #     total_src = 0
+    #     for i in range(n_elts):
+    #         e = self.fegrid.element(i)
+    #         total_src += self.fegrid.element_area(i)
 
-        # Calculate Total Sink
-        total_sink = 0
-        for i in range(n_elts):
-            e = self.fegrid.element(i)
-            area = self.fegrid.element_area(i)
-            vertices = e.get_vertices()
-            phi = 0
-            for v in vertices:
-                phi += scalar_flux[v]
-            phi /= 3
-            total_sink += siga*phi*area
+    #     # Calculate Total Sink
+    #     total_sink = 0
+    #     for i in range(n_elts):
+    #         e = self.fegrid.element(i)
+    #         area = self.fegrid.element_area(i)
+    #         vertices = e.get_vertices()
+    #         phi = 0
+    #         for v in vertices:
+    #             phi += scalar_flux[v]
+    #         phi /= 3
+    #         total_sink += siga*phi*area
 
-        # Calculate Total Out 
-        # CAUTION: Only for S2
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        total_out = 0
-        for i, ang in enumerate(angles):
-            angle_out = 0
-            for e in range(n_elts):
-                # Figure out if element is on boundary
-                vertices = self.symgrid.element(e).get_vertices()
-                interior = -1*np.ones(3)
-                for k, v in enumerate(vertices):
-                    interior[k] = self.symgrid.node(v).is_interior()  
-                if interior.sum() == 0 or interior.sum() == 1:
-                    # Figure out what boundary we're on
-                    # Vertex 0 & 1
-                    if not interior[0] and not interior[1]:
-                        normal = self.symop.assign_normal(vertices[0], vertices[1])
-                        if type(normal) == int:
-                            continue
-                        if ang@normal > 0:
-                            psi = (ang_fluxes[i, vertices[0]] + ang_fluxes[i, vertices[1]])/2
-                            boundary_length = self.symgrid.boundary_length([vertices[0], vertices[1]], e)
-                            angle_out += ang@normal*boundary_length*psi
-                    # Vertex 0 & 2
-                    if not interior[0] and not interior[2]:
-                        normal = self.symop.assign_normal(vertices[0], vertices[2])
-                        if type(normal) == int:
-                            continue
-                        if ang@normal > 0:
-                            psi = (ang_fluxes[i, vertices[0]] + ang_fluxes[i, vertices[2]])/2
-                            boundary_length = self.symgrid.boundary_length([vertices[0], vertices[1]], e)
-                            angle_out += ang@normal*boundary_length*psi
-                    # Vertex 1 & 2
-                    if not interior[1] and not interior[2]:
-                        normal = self.symop.assign_normal(vertices[1], vertices[2])
-                        if type(normal) == int:
-                            continue
-                        if ang@normal > 0:
-                            psi = (ang_fluxes[i, vertices[1]] + ang_fluxes[i, vertices[2]])/2
-                            boundary_length = self.symgrid.boundary_length([vertices[0], vertices[1]], e)
-                            angle_out += ang@normal*boundary_length*psi
-            total_out += np.pi*angle_out
-        eq_(total_src-total_sink, total_out)
+    #     # Calculate Total Out 
+    #     # CAUTION: Only for S2
+    #     ang_one = .5773503
+    #     ang_two = -.5773503
+    #     angles = itr.product([ang_one, ang_two], repeat=2)
+    #     total_out = 0
+    #     for i, ang in enumerate(angles):
+    #         angle_out = 0
+    #         for e in range(n_elts):
+    #             # Figure out if element is on boundary
+    #             vertices = self.symgrid.element(e).get_vertices()
+    #             interior = -1*np.ones(3)
+    #             for k, v in enumerate(vertices):
+    #                 interior[k] = self.symgrid.node(v).is_interior()  
+    #             if interior.sum() == 0 or interior.sum() == 1:
+    #                 # Figure out what boundary we're on
+    #                 # Vertex 0 & 1
+    #                 if not interior[0] and not interior[1]:
+    #                     normal = self.symop.assign_normal(vertices[0], vertices[1])
+    #                     if type(normal) == int:
+    #                         continue
+    #                     if ang@normal > 0:
+    #                         psi = (ang_fluxes[i, vertices[0]] + ang_fluxes[i, vertices[1]])/2
+    #                         boundary_length = self.symgrid.boundary_length([vertices[0], vertices[1]], e)
+    #                         angle_out += ang@normal*boundary_length*psi
+    #                 # Vertex 0 & 2
+    #                 if not interior[0] and not interior[2]:
+    #                     normal = self.symop.assign_normal(vertices[0], vertices[2])
+    #                     if type(normal) == int:
+    #                         continue
+    #                     if ang@normal > 0:
+    #                         psi = (ang_fluxes[i, vertices[0]] + ang_fluxes[i, vertices[2]])/2
+    #                         boundary_length = self.symgrid.boundary_length([vertices[0], vertices[1]], e)
+    #                         angle_out += ang@normal*boundary_length*psi
+    #                 # Vertex 1 & 2
+    #                 if not interior[1] and not interior[2]:
+    #                     normal = self.symop.assign_normal(vertices[1], vertices[2])
+    #                     if type(normal) == int:
+    #                         continue
+    #                     if ang@normal > 0:
+    #                         psi = (ang_fluxes[i, vertices[1]] + ang_fluxes[i, vertices[2]])/2
+    #                         boundary_length = self.symgrid.boundary_length([vertices[0], vertices[1]], e)
+    #                         angle_out += ang@normal*boundary_length*psi
+    #         total_out += np.pi*angle_out
+    #     eq_(total_src-total_sink, total_out)
 
 
 
