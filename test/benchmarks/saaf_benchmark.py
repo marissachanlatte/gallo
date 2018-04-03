@@ -34,16 +34,22 @@ def test_problem(problem):
     for g in range(problem.num_groups):
         print("Starting Group ", g)
         scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
-        print(ang_fluxes[0])
         for i in range(4):
-            plot(problem.grid, ang_fluxes[i], problem.filename + "_" + str(i) + "_group" + str(g))
-        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
+            plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g), mesh_plot=True)
+        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g), mesh_plot=True)
         print("Finished Group ", g)
 
-problem = to_problem("box")
+@filename_to_problem
+def make_lhs(problem):
+    source = np.ones(problem.n_elements)
+    A = problem.op.make_lhs([.5773503, -.5773503], 0)
+    print(A)
+
+problem = to_problem("symmetric")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 test_problem(problem.filename)
+#make_lhs(problem.filename)
 
 
 

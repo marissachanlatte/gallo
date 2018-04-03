@@ -109,11 +109,8 @@ class SAAF():
                             continue
                         if angles@normal > 0:
                             # Get Gauss Nodes for the element
-                            print("IDs: ", nid, nsid)
                             xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
-                            print("gauss_nodes: ", xis)
                             boundary_integral = self.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
-                            print("Integral: ", boundary_integral)
                             sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                         else:
                             pass             
