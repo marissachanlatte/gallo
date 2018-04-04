@@ -134,21 +134,6 @@ class SAAF():
                 # Get node ids
                 nid = n_global.get_node_id()
                 ngrad = self.fegrid.gradient(e, n)
-                # Check if boundary node
-                # if not n_global.is_interior():
-                #     if boundary == "vacuum":
-                #         continue
-                #     # if boundary == "reflecting":
-                #     #     # Figure out normal
-                #     #     verts = self.fegrid.boundary_nonzero(nid, e)
-                #     #     if verts == -1:
-                #     #         normal = self.assign_normal(nid, nid)
-                #     #     else:
-                #     #         normal = self.assign_normal(verts[0], verts[1])
-                #     #     if angles@normal > 0:
-                #     #         incident = self.assign_incident(nid, angles, psi_prev)
-                #     #         rhs_at_node[nid] = incident
-                # else:
                 area = self.fegrid.element_area(e)
                 Q = sig_s*phi_prev[nid]/(4*np.pi) + q[e]/(4*np.pi)
                 rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
@@ -205,7 +190,6 @@ class SAAF():
         else:
             boundary_integral = 0
             return boundary_integral
-        print("Gauss Nodes: ", gauss_nodes)
         # Value of first basis function at boundary gauss nodes
         gn_vals = np.zeros(2)
         gn_vals[0] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[0])

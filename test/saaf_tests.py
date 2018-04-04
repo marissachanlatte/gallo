@@ -52,7 +52,7 @@ class TestSAAF:
         nonzero = (A!=A.transpose()).nonzero()
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
 
-    def hand_calculation_test(self):
+    def hand_calculation_lhs_test(self):
         angles0 = np.array([.5773503, .5773503])
         A0 = self.stdop.make_lhs(angles0, 0).todense()
         hand0 = np.array([[ 0.75000007, -0.2916667,   0.,         -0.2916667],
@@ -83,6 +83,25 @@ class TestSAAF:
                           [-0.19544165,  0.4166667 , -0.2916667 ,  0.69245014]])
         ok_(np.allclose(A3, hand3, rtol=1e-7))
 
+    def hand_calculation_rhs_test(self):
+        q = np.ones(4)
+        phi_prev = np.zeros(4)
+        angles0 = np.array([.5773503, .5773503])
+        b0 = self.stdop.make_rhs(0, q, angles0, "vacuum", phi_prev=phi_prev)
+        hand0 = np.array([-0.03268117,  0.02652582,  0.05920699,  0.02652582])
+        ok_(np.allclose(b0, hand0, rtol=1e-7))
+        angles1 = np.array([-.5773503, .5773503])
+        b1 = self.stdop.make_rhs(0, q, angles1, "vacuum", phi_prev=phi_prev)
+        hand1 = np.array([ 0.01326291, -0.01941825,  0.01326291,  0.0724699])
+        ok_(np.allclose(b1, hand1, rtol=1e-7))
+        angles2 = np.array([.5773503, -.5773503])
+        b2 = self.stdop.make_rhs(0, q, angles2, "vacuum", phi_prev=phi_prev)
+        hand2 = np.array([ 0.01326291,  0.0724699 ,  0.01326291, -0.01941825])
+        ok_(np.allclose(b2, hand2, rtol=1e-7))
+        angles3 = np.array([-.5773503, -.5773503])
+        b3 = self.stdop.make_rhs(0, q, angles3, "vacuum", phi_prev=phi_prev)
+        hand3 = np.array([ 0.05920699,  0.02652582, -0.03268117,  0.02652582])
+        ok_(np.allclose(b3, hand3, rtol=1e-7))
 
     # def hand_calculation_nonstd_test(self):
     #     angles = np.array([.5773503, .5773503])
