@@ -25,6 +25,13 @@ class TestSAAF:
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
         cls.stdop = SAAF(cls.stdgrid, cls.stdmats)
 
+        cls.std3node = "test/test_inputs/std3.node"
+        cls.std3ele = "test/test_inputs/std3.ele"
+        cls.std3matfile = "test/test_inputs/std3.mat"
+        cls.std3mats = Materials(cls.std3matfile)
+        cls.std3grid = FEGrid(cls.std3node, cls.std3ele)
+        cls.std3op = SAAF(cls.std3grid, cls.std3mats)
+
         cls.nsnode = "test/test_inputs/nonstd.1.node"
         cls.nsele = "test/test_inputs/nonstd.1.ele"
         cls.nsmatfile = "test/test_inputs/nonstd.1.mat"
@@ -59,6 +66,7 @@ class TestSAAF:
                          [-0.2916667,   0.69245014, -0.19544165,  0.4166667 ],
                          [ 0.,         -0.19544165,  1.13490027, -0.19544165],
                          [-0.2916667,   0.4166667,  -0.19544165,  0.69245014]])
+        print(A0)
         ok_(np.allclose(A0, hand0, rtol=1e-7))
         angles1 = np.array([-.5773503, .5773503])
         A1 = self.stdop.make_lhs(angles1, 0).todense()
@@ -66,7 +74,6 @@ class TestSAAF:
                           [ 0.04166667,  0.50000004,  0.04166667, -0.25000004],
                           [ 0.        ,  0.04166667,  0.27578343,  0.13789172],
                           [ 0.13789172, -0.25000004,  0.13789172,  0.88490024]])
-        print(A1)
         ok_(np.allclose(A1, hand1, rtol=1e-7))
         angles2 = np.array([.5773503, -.5773503])
         A2 = self.stdop.make_lhs(angles2, 0).todense()
@@ -103,14 +110,29 @@ class TestSAAF:
         hand3 = np.array([ 0.05920699,  0.02652582, -0.03268117,  0.02652582])
         ok_(np.allclose(b3, hand3, rtol=1e-7))
 
-    # def hand_calculation_nonstd_test(self):
-    #     angles = np.array([.5773503, .5773503])
-    #     A = self.nsop.make_lhs(angles, 0).todense()
-    #     hand = np.array([[ 0.        ,  0.        ,  0.        ,  0.        ],
-    #                      [ 0.        ,  0.3849002 ,  0.1924501 ,  0.        ],
-    #                      [ 0.        ,  0.1924501 ,  0.5773503 ,  0.09622505],
-    #                      [ 0.        ,  0.        ,  0.09622505,  0.1924501]]) 
-    #     ok_(np.allclose(A, hand, rtol=1e-7))
+    def hand_calculation_8cell_test(self):
+        angles0 = np.array([.5773503, .5773503])
+        A0 = self.std3op.make_lhs(angles0, 0).todense()
+        hand0 = np.array([[ 0.37500004,  0.        ,  0.        ,  0.        , -0.31250004,
+                             0.01041667,  0.        ,  0.        ,  0.01041667],
+                           [ 0.        ,  0.47122509,  0.        ,  0.        ,  0.3541667 ,
+                             0.        ,  0.        , -0.27480418, -0.3229167 ],
+                           [ 0.        ,  0.        ,  0.56745014,  0.        , -0.31250004,
+                             0.        ,  0.05852919,  0.05852919,  0.        ],
+                           [ 0.        ,  0.        ,  0.        ,  0.47122509,  0.3541667 ,
+                            -0.3229167 , -0.27480418,  0.        ,  0.        ],
+                           [-0.31250004,  0.3541667 , -0.31250004,  0.3541667 ,  1.50000014,
+                            -0.31250004, -0.31250004, -0.31250004, -0.31250004],
+                           [ 0.01041667,  0.        ,  0.        , -0.3229167 , -0.31250004,
+                             0.7083334 ,  0.        ,  0.        ,  0.        ],
+                           [ 0.        ,  0.        ,  0.05852919, -0.27480418, -0.31250004,
+                             0.        ,  0.9007835 ,  0.        ,  0.        ],
+                           [ 0.        , -0.27480418,  0.05852919,  0.        , -0.31250004,
+                             0.        ,  0.        ,  0.9007835 ,  0.        ],
+                           [ 0.01041667, -0.3229167 ,  0.        ,  0.        , -0.31250004,
+                             0.        ,  0.        ,  0.        ,  0.7083334 ]])
+        ok_(np.allclose(A0, hand0, rtol=1e-7))
+
 
     def incident_angle_test(self):
         ang_one = .5773503

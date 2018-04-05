@@ -202,7 +202,7 @@ class FEGrid():
             verts = [current_vert, current_vert]
         return verts
 
-    def boundary_length(self, boundary_vertices, e):
+    def boundary_edges(self, boundary_vertices, e):
         # Computes the length along boundary where the basis functions are non-zero
         if boundary_vertices[0] == boundary_vertices[1]:
             verts = self.boundary_nonzero(boundary_vertices[0], e)
@@ -212,16 +212,34 @@ class FEGrid():
         for i, n in enumerate(verts):
             node = self.node(n)
             points[i] = node.get_position()
-        length = np.max(np.abs(points[0] - points[1]))
-        return length 
+        a = None
+        b = None
+        if points[0, 0] == points[1, 0]:
+            if points[0, 1] > points[1, 1]:
+                a = points[1, 1]
+                b = points[0, 1]
+            elif points[0, 1] < points[1, 1] or points[0, 1] == points[1, 1]:
+                a = points[0, 1]
+                b = points[1, 1]
+        elif points[0, 1] == points[1, 1]:
+            if points[0, 0] > points[1, 0]:
+                a = points[1, 0]
+                b = points[0, 0]
+            elif points[0, 0] < points[1, 0]:
+                a = points[0, 0]
+                b = points[1, 0]
+        if a==None and b==None:
+            raise RuntimeError("Boundary Edge Error")
+        else:
+            return a, b
 
     def gauss_nodes1d(self, boundary_vertices, e):
         # Gauss nodes for 2 point quadrature on boundary
-        #multiplying by the same basis function
-        length = self.boundary_length(boundary_vertices, e)
+        # multiplying by the same basis function
+        # Find position of boundary vertices
+        a, b = self.boundary_edges(boundary_vertices, e)
         xi = 1/np.sqrt(3)
-        half_length = length/2
-        nodes = np.array([-half_length*xi + half_length, half_length*xi + half_length])
+        nodes = np.array([-(b-a)/2*xi + (b+a)/2, (b-a)/2*xi + (b+a)/2])
         return nodes
 
     def gauss_nodes(self, elt_number):
@@ -286,8 +304,8 @@ class FEGrid():
         # Two point Gaussian Quadrature in one dimension
         # Find length of element on boundary
         # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
-        length = self.boundary_length(boundary_vertices, e)
-        integral = length/2*(f_values[0] + f_values[1])
+        a, b = self.boundary_edges(boundary_vertices, e)
+        integral = (b-a)/2*(f_values[0] + f_values[1])
         return integral
 
     def centroid(self, elt_number):
