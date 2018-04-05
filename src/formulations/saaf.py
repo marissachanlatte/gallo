@@ -174,8 +174,6 @@ class SAAF():
     def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
         pos_n = self.fegrid.node(nid).get_position()
         pos_ns = self.fegrid.node(bid).get_position()
-        if nid==2 and bid==6:
-            print(xis)
         gauss_nodes = np.zeros((2, 2))
         if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
             gauss_nodes[0] = [self.xmax, xis[0]]
