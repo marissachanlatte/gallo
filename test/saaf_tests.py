@@ -18,6 +18,13 @@ class TestSAAF:
         cls.mats = Materials(cls.matfile)
         cls.op = SAAF(cls.fegrid, cls.mats)
 
+        cls.node2file = "test/test_inputs/mesh2.node"
+        cls.ele2file = "test/test_inputs/mesh2.ele"
+        cls.mat2file = "test/test_inputs/mesh2.mat"
+        cls.fe2grid = FEGrid(cls.node2file, cls.ele2file)
+        cls.mats2 = Materials(cls.mat2file)
+        cls.op2 = SAAF(cls.fe2grid, cls.mats2)
+
         cls.stdnode = "test/test_inputs/std.node"
         cls.stdele = "test/test_inputs/std.ele"
         cls.stdmatfile = "test/test_inputs/std.mat"
@@ -66,7 +73,6 @@ class TestSAAF:
                          [-0.2916667,   0.69245014, -0.19544165,  0.4166667 ],
                          [ 0.,         -0.19544165,  1.13490027, -0.19544165],
                          [-0.2916667,   0.4166667,  -0.19544165,  0.69245014]])
-        print(A0)
         ok_(np.allclose(A0, hand0, rtol=1e-7))
         angles1 = np.array([-.5773503, .5773503])
         A1 = self.stdop.make_lhs(angles1, 0).todense()
@@ -214,38 +220,76 @@ class TestSAAF:
                     interior[k] = self.symgrid.node(v).is_interior()  
                 if interior.sum() == 0 or interior.sum() == 1:
                     # Figure out what boundary we're on
-                    # Vertex 0 & 1
-                    if not interior[0] and not interior[1]:
-                        normal = self.symop.assign_normal(vertices[0], vertices[1])
-                        if type(normal) == int:
-                            continue
-                        if ang@normal > 0:
-                            psi = (ang_fluxes[i, vertices[0]] + ang_fluxes[i, vertices[1]])/2
-                            a, b = self.symgrid.boundary_edges([vertices[0], vertices[1]], e)
-                            boundary_length = b - a
-                            angle_out += ang@normal*boundary_length*psi
-                    # Vertex 0 & 2
-                    if not interior[0] and not interior[2]:
-                        normal = self.symop.assign_normal(vertices[0], vertices[2])
-                        if type(normal) == int:
-                            continue
-                        if ang@normal > 0:
-                            psi = (ang_fluxes[i, vertices[0]] + ang_fluxes[i, vertices[2]])/2
-                            a, b= self.symgrid.boundary_edges([vertices[0], vertices[1]], e)
-                            boundary_length = b - a
-                            angle_out += ang@normal*boundary_length*psi
-                    # Vertex 1 & 2
-                    if not interior[1] and not interior[2]:
-                        normal = self.symop.assign_normal(vertices[1], vertices[2])
-                        if type(normal) == int:
-                            continue
-                        if ang@normal > 0:
-                            psi = (ang_fluxes[i, vertices[1]] + ang_fluxes[i, vertices[2]])/2
-                            a, b = self.symgrid.boundary_edges([vertices[1], vertices[2]], e)
-                            boundary_length = b - a
-                            angle_out += ang@normal*boundary_length*psi
-            total_out += np.pi*angle_out
-        assert_almost_equals(total_src-total_sink, total_out, places=5)
+                    for idx in [[0, 1], [0, 2], [1, 2]]:
+                        m = idx[0]
+                        n = idx[1]
+                        if not interior[m] and not interior[n]:
+                            normal = self.symop.assign_normal(vertices[m], vertices[n])
+                            if type(normal) == int:
+                                continue
+                            if ang@normal > 0:
+                                psi = (ang_fluxes[i, vertices[m]] + ang_fluxes[i, vertices[n]])/2
+                                a, b = self.symgrid.boundary_edges([vertices[m], vertices[n]], e)
+                                boundary_length = b - a
+                                angle_out += ang@normal*boundary_length*psi
+            total_out += np.pi*angle_out 
+        assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)
+        # Assumes one group and vacuum boundary conditions
+        n_elts = self.fe2grid.get_num_elts()
+        n_nodes = self.fe2grid.get_num_nodes()
+        source = np.ones(n_elts)
+        scalar_flux, ang_fluxes = self.op2.solve(source, "eigenvalue", 0, "vacuum", tol=1e-5)
+        siga = self.mats2.get_siga(0, 0)
+        
+        # Calculate Total Source
+        total_src = 0
+        for i in range(n_elts):
+            e = self.fe2grid.element(i)
+            total_src += self.fe2grid.element_area(i)
+
+        # Calculate Total Sink
+        total_sink = 0
+        for i in range(n_elts):
+            e = self.fe2grid.element(i)
+            area = self.fe2grid.element_area(i)
+            vertices = e.get_vertices()
+            phi = 0
+            for v in vertices:
+                phi += scalar_flux[v]
+            phi /= 3
+            total_sink += siga*phi*area
+
+        # Calculate Total Out 
+        # CAUTION: Only for S2
+        ang_one = .5773503
+        ang_two = -.5773503
+        angles = itr.product([ang_one, ang_two], repeat=2)
+        total_out = 0
+        for i, ang in enumerate(angles):
+            angle_out = 0
+            for e in range(n_elts):
+                # Figure out if element is on boundary
+                vertices = self.fe2grid.element(e).get_vertices()
+                interior = -1*np.ones(3)
+                for k, v in enumerate(vertices):
+                    interior[k] = self.fe2grid.node(v).is_interior()  
+                if interior.sum() == 0 or interior.sum() == 1:
+                    # Figure out what boundary we're on
+                    for idx in [[0, 1], [0, 2], [1, 2]]:
+                        m = idx[0]
+                        n = idx[1]
+                        if not interior[m] and not interior[n]:
+                            normal = self.op2.assign_normal(vertices[m], vertices[n])
+                            if type(normal) == int:
+                                continue
+                            if ang@normal > 0:
+                                psi = (ang_fluxes[i, vertices[m]] + ang_fluxes[i, vertices[n]])/2
+                                a, b = self.fe2grid.boundary_edges([vertices[m], vertices[n]], e)
+                                boundary_length = b - a
+                                angle_out += ang@normal*boundary_length*psi
+            total_out += np.pi*angle_out 
+        assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)
+
 
 
 

@@ -30,7 +30,7 @@ def filename_to_problem(func):
    
 @filename_to_problem
 def test_problem(problem):
-    source = np.ones(problem.n_elements)
+    source = 10*np.ones(problem.n_elements)
     for g in range(problem.num_groups):
         print("Starting Group ", g)
         scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
@@ -40,15 +40,42 @@ def test_problem(problem):
         print("Finished Group ", g)
 
 @filename_to_problem
+def test_1d(problem):
+    source = 10*np.ones(problem.n_elements)
+    for g in range(problem.num_groups):
+        scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
+        plot1d(scalar_flux, problem.filename + "_scalar_flux_1d", 0)
+
+@filename_to_problem
 def make_lhs(problem):
     source = np.ones(problem.n_elements)
     A = problem.op.make_lhs([.5773503, -.5773503], 0)
     print(A)
 
-problem = to_problem("symmetric")
+def plot1d(sol, filename, y):
+    if y==0.125:
+        nodes = np.array([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1])
+        flux = np.array([sol[72], sol[33], sol[62], sol[32], sol[48], sol[28], sol[56], sol[36], sol[77]])
+        i = 2
+    if y==0.0625:
+        nodes = np.array([0.0625, 0.1875, 0.3125, 0.4375, 0.5625, 0.6875, 0.8125, 0.9375])
+        flux = np.array([sol[118], sol[117], sol[138], sol[89], sol[137], sol[112], sol[96], sol[124]])
+        i = 1
+    if y==0:
+        nodes = np.array([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1])
+        flux = np.array([sol[0], sol[71], sol[17], sol[49], sol[8], sol[69], sol[24], sol[78], sol[1]])
+        i=0
+    plt.plot(nodes, flux, marker="o")
+    plt.title("Scalar Flux Line Out at y=" + str(y))
+    plt.savefig(filename + str(i))
+    plt.clf()
+    plt.close()
+
+problem = to_problem("symmetric_fine")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
-test_problem(problem.filename)
+#plot1d(problem.filename)
+test_1d(problem.filename)
 #make_lhs(problem.filename)
 
 

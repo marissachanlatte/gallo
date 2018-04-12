@@ -17,7 +17,7 @@ def plot(grid, solution, filename, mesh_plot=False):
     triangles = np.array([grid.element(i).get_vertices() for i in range(elts)])
     triang = tri.Triangulation(x, y, triangles=triangles)
     # Interpolate to Refined Triangular Grid
-    interp_lin = tri.CubicTriInterpolator(triang, solution)
+    interp_lin = tri.LinearTriInterpolator(triang, solution)
     refiner = tri.UniformTriRefiner(triang)
     tri_refi, sol_refi = refiner.refine_field(solution, triinterpolator=interp_lin, subdiv=3)
     # Setup colorbar
