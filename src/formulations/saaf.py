@@ -166,17 +166,15 @@ class SAAF():
                 # Multiply Phi & Basis Function
                 product = fn_vals*phi_vals
                 integral_product = self.fegrid.gauss_quad(e, product)
-                rhs_at_node += (sig_s/(4*np.pi)) * integral_product
+                rhs_at_node[nid] += (sig_s/(4*np.pi)) * integral_product
                 # Second Scattering Term
                 integral = self.fegrid.gauss_quad(e, phi_vals*(angles@ngrad))
-                rhs_at_node += inv_sigt*sig_s/(4*np.pi)*integral
+                rhs_at_node[nid] += inv_sigt*sig_s/(4*np.pi)*integral
                 # First Fixed Source Term
                 q_fixed = q[e]/(4*np.pi)
                 rhs_at_node[nid] += q_fixed*(area/3)
                 # Second Fixed Source Term
                 rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
-                #Q = sig_s*phi_prev[nid]/(4*np.pi) + q[e]/(4*np.pi)
-                #rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
         return rhs_at_node
 
     def assign_normal(self, nid, bid):
