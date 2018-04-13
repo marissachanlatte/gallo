@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
+import matplotlib.tri as tri
 import itertools as itr
 import sys
 from fe import *
@@ -123,20 +124,59 @@ class SAAF():
         # Get num interior nodes
         n = self.fegrid.get_num_nodes()
         rhs_at_node = np.zeros(n)
+        # Interpolate Phi
+        # Setup xy
+        x = np.zeros(n)
+        y = np.zeros(n)
+        positions = (self.fegrid.node(i).get_position() for i in range(n))
+        for i, pos in enumerate(positions):
+            x[i], y[i] = pos
+        # Setup triangles
+        elts = self.fegrid.get_num_elts()
+        triangles = np.array([self.fegrid.element(i).get_vertices() for i in range(elts)])
+        triang = tri.Triangulation(x, y, triangles=triangles)
+        phi_interp = tri.LinearTriInterpolator(triang, phi_prev)
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             sig_t = self.mat_data.get_sigt(midx, group_id)
             sig_s = self.mat_data.get_sigs(midx, group_id)
             coef = self.fegrid.basis(e)
+            # Determine basis functions for element
+            coef = self.fegrid.basis(e)
+            # Determine Gauss Nodes for element
+            g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
+                # Coefficients of basis functions b[0] + b[1]x + b[2]y
+                bn = coef[:, n]
+                # Array of values of basis function evaluated at interior gauss nodes
+                fn_vals = np.zeros(3)
+                for i in range(3):
+                    fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
                 # Get node ids
                 nid = n_global.get_node_id()
                 ngrad = self.fegrid.gradient(e, n)
                 area = self.fegrid.element_area(e)
-                Q = sig_s*phi_prev[nid]/(4*np.pi) + q[e]/(4*np.pi)
-                rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
+                # Find Phi at Gauss Nodes
+                phi_vals = np.zeros(3)
+                for i in range(3):
+                    phi_vals[i] = phi_interp(g_nodes[i, 0], g_nodes[i, 1])
+                # First Scattering Term 
+                # Multiply Phi & Basis Function
+                product = fn_vals*phi_vals
+                integral_product = self.fegrid.gauss_quad(e, product)
+                rhs_at_node += (sig_s/(4*np.pi)) * integral_product
+                # Second Scattering Term
+                integral = self.fegrid.gauss_quad(e, phi_vals*(angles@ngrad))
+                rhs_at_node += inv_sigt*sig_s/(4*np.pi)*integral
+                # First Fixed Source Term
+                q_fixed = q[e]/(4*np.pi)
+                rhs_at_node[nid] += q_fixed*(area/3)
+                # Second Fixed Source Term
+                rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
+                #Q = sig_s*phi_prev[nid]/(4*np.pi) + q[e]/(4*np.pi)
+                #rhs_at_node[nid] += Q*area/3 + inv_sigt*Q*(angles@ngrad)*area
         return rhs_at_node
 
     def assign_normal(self, nid, bid):
