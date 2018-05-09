@@ -13,35 +13,35 @@ class TestSAAF:
     def setup_class(cls):
         cls.nodefile = "test/test_inputs/mesh0.node"
         cls.elefile = "test/test_inputs/mesh0.ele"
-        cls.matfile = "test/test_inputs/mesh0.mat"
+        cls.matfile = "test/test_inputs/mesh0_test.mat"
         cls.fegrid = FEGrid(cls.nodefile, cls.elefile)
         cls.mats = Materials(cls.matfile)
         cls.op = SAAF(cls.fegrid, cls.mats)
 
         cls.node2file = "test/test_inputs/mesh2.node"
         cls.ele2file = "test/test_inputs/mesh2.ele"
-        cls.mat2file = "test/test_inputs/mesh2.mat"
+        cls.mat2file = "test/test_inputs/mesh2_test.mat"
         cls.fe2grid = FEGrid(cls.node2file, cls.ele2file)
         cls.mats2 = Materials(cls.mat2file)
         cls.op2 = SAAF(cls.fe2grid, cls.mats2)
 
         cls.stdnode = "test/test_inputs/std.node"
         cls.stdele = "test/test_inputs/std.ele"
-        cls.stdmatfile = "test/test_inputs/std.mat"
+        cls.stdmatfile = "test/test_inputs/std_test.mat"
         cls.stdmats = Materials(cls.stdmatfile)
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
         cls.stdop = SAAF(cls.stdgrid, cls.stdmats)
 
         cls.std3node = "test/test_inputs/std3.node"
         cls.std3ele = "test/test_inputs/std3.ele"
-        cls.std3matfile = "test/test_inputs/std3.mat"
+        cls.std3matfile = "test/test_inputs/std3_test.mat"
         cls.std3mats = Materials(cls.std3matfile)
         cls.std3grid = FEGrid(cls.std3node, cls.std3ele)
         cls.std3op = SAAF(cls.std3grid, cls.std3mats)
 
         cls.nsnode = "test/test_inputs/nonstd.1.node"
         cls.nsele = "test/test_inputs/nonstd.1.ele"
-        cls.nsmatfile = "test/test_inputs/nonstd.1.mat"
+        cls.nsmatfile = "test/test_inputs/nonstd_test.mat"
         cls.nsmats = Materials(cls.nsmatfile)
         cls.nsgrid = FEGrid(cls.nsnode, cls.nsele)
         cls.nsop = SAAF(cls.nsgrid, cls.nsmats)
@@ -53,7 +53,7 @@ class TestSAAF:
 
         cls.symnode = "test/test_inputs/symmetric_fine.node"
         cls.symele = "test/test_inputs/symmetric_fine.ele"
-        cls.symmatfile = "test/test_inputs/symmetric_fine.mat"
+        cls.symmatfile = "test/test_inputs/symmetricfine_test.mat"
         cls.symmat = Materials(cls.symmatfile)
         cls.symgrid = FEGrid(cls.symnode, cls.symele)
         cls.symop = SAAF(cls.symgrid, cls.symmat)
