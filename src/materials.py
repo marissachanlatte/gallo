@@ -28,7 +28,10 @@ class Materials():
                 for j in range(self.num_groups):
                     self.sig_t[i, j] = float(attributes[3])
                     self.sig_a[i, j] = float(attributes[4])
-                    self.sig_s[i, j] = float(attributes[5])
+                    # Collapse Scattering Matrix
+                    scat = np.array(attributes[5].split())
+                    scat = scat.astype(float)
+                    self.sig_s[i, j] = scat.sum()
                     self.sig_f[i, j] = float(attributes[6])
                     self.nu[i, j] = float(attributes[7])
 

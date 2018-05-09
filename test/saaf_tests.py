@@ -179,6 +179,7 @@ class TestSAAF:
         assert_array_equal(psi_new, psi_correct)
 
     @nottest
+    # Slow test, only enable when necessary
     def balance_test(self):
         # Assumes one group and vacuum boundary conditions
         n_elts = self.symgrid.get_num_elts()
