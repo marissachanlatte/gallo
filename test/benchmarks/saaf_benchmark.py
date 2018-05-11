@@ -71,12 +71,18 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
+@filename_to_problem
+def plot_mats(problem):
+    plot_mesh(problem.grid, problem.mats, 'meshplot')
+
 problem = to_problem("symmetric_fine")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 #plot1d(problem.filename)
-test_1d(problem.filename)
+#test_1d(problem.filename)
 #make_lhs(problem.filename)
+test_problem(problem.filename)
+#plot_mats(problem.filename)
 
 
 

@@ -3,7 +3,7 @@ import matplotlib.tri as tri
 import numpy as np 
 
 
-def plot(grid, solution, filename, mesh_plot=False):
+def setup_trianlges(grid):
     # Get number of nodes
     nodes = grid.get_num_nodes()
     # Setup xy
@@ -16,6 +16,10 @@ def plot(grid, solution, filename, mesh_plot=False):
     elts = grid.get_num_elts()
     triangles = np.array([grid.element(i).get_vertices() for i in range(elts)])
     triang = tri.Triangulation(x, y, triangles=triangles)
+    return triang
+
+def plot(grid, solution, filename, mesh_plot=False):
+    triang = setup_trianlges(grid)
     # Interpolate to Refined Triangular Grid
     interp_lin = tri.LinearTriInterpolator(triang, solution)
     refiner = tri.UniformTriRefiner(triang)
@@ -31,4 +35,19 @@ def plot(grid, solution, filename, mesh_plot=False):
     plt.savefig(filename)
     plt.clf()
     plt.close()
+
+def plot_mesh(grid, mats, filename):
+    triang = setup_trianlges(grid)
+    elts = grid.get_num_elts()
+    mats = np.zeros(elts)
+    for i in range(elts):
+        el = grid.element(i)
+        mats[i] = el.get_mat_id()
+    plt.figure()
+    plt.tripcolor(triang, mats, shading='flat')
+    plt.colorbar()
+    plt.savefig(filename)
+    plt.clf()
+    plt.close()
+
 
