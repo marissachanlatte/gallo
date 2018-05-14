@@ -268,17 +268,14 @@ class SAAF():
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def solve(self, source, problem_type, group_id, max_iter=1000, tol=1e-4):
+    def solve_in_group(self, source, group_id, max_iter=1000, tol=1e-4):
+        print("Starting Group ", group_id)
         E = self.fegrid.get_num_elts()
         N = self.fegrid.get_num_nodes()
         phi_prev = np.zeros(N)
         psi_prev = np.ones((4, N))
         for i in range(max_iter):
-            #if boundary == "vacuum":
             phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
-            # if boundary == "reflecting":
-            #     phi, ang_fluxes = self.get_scalar_flux(group_id, source, boundary, phi_prev, psi_prev)
-            #     psi_prev = ang_fluxes
             norm = np.linalg.norm(phi-phi_prev, 2)
             if norm < tol:
                 break
@@ -288,7 +285,17 @@ class SAAF():
 
         if i==max_iter:
             print("Warning: maximum number of iterations reached in solver")
-
+        print("Finished Group ", group_id)
         print("Number of Iterations: ", i)
         print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
+
+    def solve_outer(self, source):
+        G = self.num_groups
+        phis = []
+        ang_fluxes = []
+        for g in range(G):
+            p, a = self.solve_in_group(source, g)
+            phis.append(p)
+            ang_fluxes.append(a)
+        return phis, ang_fluxes

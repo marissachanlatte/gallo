@@ -185,7 +185,7 @@ class TestSAAF:
         n_elts = self.symgrid.get_num_elts()
         n_nodes = self.symgrid.get_num_nodes()
         source = np.ones(n_elts)
-        scalar_flux, ang_fluxes = self.symop.solve(source, "eigenvalue", 0, tol=1e-3)
+        scalar_flux, ang_fluxes = self.symop.solve_outer(source, tol=1e-3)
         siga = self.symmat.get_siga(0, 0)
 
         # Calculate Total Source

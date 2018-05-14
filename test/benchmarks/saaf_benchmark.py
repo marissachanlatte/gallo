@@ -27,17 +27,31 @@ def filename_to_problem(func):
     def _filename_to_problem(filename):
         return func(problem=to_problem(filename))
     return _filename_to_problem
-   
+
+# @filename_to_problem
+# def test_problem(problem):
+#     source = 10*np.ones(problem.n_elements)
+#     for g in range(problem.num_groups):
+#         print("Starting Group ", g)
+#         scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
+#         for i in range(4):
+#             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g), mesh_plot=True)
+#         plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g), mesh_plot=True)
+#         print("Finished Group ", g)
+#     print("Max Flux: ", np.max(scalar_flux))
+
 @filename_to_problem
 def test_problem(problem):
     source = 10*np.ones(problem.n_elements)
+    phis, angs = problem.op.solve_outer(source)
+
+    # Plot Everything
     for g in range(problem.num_groups):
-        print("Starting Group ", g)
-        scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
+        scalar_flux = phis[g]
+        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g), mesh_plot=True)
+        ang_fluxes = angs[g]
         for i in range(4):
             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g), mesh_plot=True)
-        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g), mesh_plot=True)
-        print("Finished Group ", g)
 
 @filename_to_problem
 def test_1d(problem):
@@ -83,16 +97,3 @@ print("Total XS: ", problem.mats.get_sigt(0, 0))
 #make_lhs(problem.filename)
 test_problem(problem.filename)
 #plot_mats(problem.filename)
-
-
-
-
-
-
-
-
-
-
-
-
-
