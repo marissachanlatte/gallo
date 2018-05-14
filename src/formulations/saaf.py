@@ -36,7 +36,6 @@ class SAAF():
             # Get sigt and precomputed inverse
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             sig_t = self.mat_data.get_sigt(midx, group_id)
-            sig_s = self.mat_data.get_sigs(midx, group_id)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
@@ -135,12 +134,17 @@ class SAAF():
         elts = self.fegrid.get_num_elts()
         triangles = np.array([self.fegrid.element(i).get_vertices() for i in range(elts)])
         triang = tri.Triangulation(x, y, triangles=triangles)
-        phi_interp = tri.LinearTriInterpolator(triang, phi_prev)
+        # Interpolate Phis in All Groups
+        G = self.num_groups
+        phi_interp = []
+        # for g in range(G):
+        #     phi_interp = tri.LinearTriInterpolator(triang, phi_prev[g])
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             sig_t = self.mat_data.get_sigt(midx, group_id)
-            sig_s = self.mat_data.get_sigs(midx, group_id)
+            # Get scattering matrix
+            scatmat = self.mat_data.get_sigs(midx)
             coef = self.fegrid.basis(e)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
@@ -159,17 +163,29 @@ class SAAF():
                 ngrad = self.fegrid.gradient(e, n)
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
-                phi_vals = np.zeros(3)
-                for i in range(3):
-                    phi_vals[i] = phi_interp(g_nodes[i, 0], g_nodes[i, 1])
+                phi_vals = np.zeros((G, 3))
+                for g in range(G):
+                    interp = tri.LinearTriInterpolator(triang, phi_prev[g])
+                    for i in range(3):
+                        phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
                 # First Scattering Term
                 # Multiply Phi & Basis Function
                 product = fn_vals*phi_vals
-                integral_product = self.fegrid.gauss_quad(e, product)
-                rhs_at_node[nid] += (sig_s/(4*np.pi)) * integral_product
+                integral_product = np.zeros(G)
+                for g in range(G):
+                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
+                for g_prime in range(G):
+                    for g in range(G):
+                        ssource = scatmat[g, g_prime]*integral_product[g_prime]
+                rhs_at_node[nid] += ssource/(4*np.pi)
                 # Second Scattering Term
-                integral = self.fegrid.gauss_quad(e, phi_vals*(angles@ngrad))
-                rhs_at_node[nid] += inv_sigt*sig_s/(4*np.pi)*integral
+                integral = np.zeros(G)
+                for g in range(G):
+                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
+                for g_prime in range(G):
+                    for g in range(G):
+                        ssource = scatmat[g, g_prime]*integral[g_prime]
+                rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 # First Fixed Source Term
                 q_fixed = q[e]/(4*np.pi)
                 rhs_at_node[nid] += q_fixed*(area/3)
@@ -254,10 +270,7 @@ class SAAF():
         # Iterate over all angle possibilities
         for i, ang in enumerate(angles):
             ang = np.array(ang)
-            # if boundary == "vacuum":
             ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, phi_prev)
-            # if boundary == "reflecting":
-            #     ang_fluxes[i] = self.get_ang_flux(group_id, source, ang,  phi_prev, psi_prev)
             # Multiplying by weight and summing for quadrature
             scalar_flux += np.pi*ang_fluxes[i]
         return scalar_flux, ang_fluxes
@@ -268,18 +281,18 @@ class SAAF():
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def solve_in_group(self, source, group_id, max_iter=1000, tol=1e-4):
+    def solve_in_group(self, source, group_id, phi_prev, max_iter=1000, tol=1e-4):
         print("Starting Group ", group_id)
         E = self.fegrid.get_num_elts()
         N = self.fegrid.get_num_nodes()
-        phi_prev = np.zeros(N)
+        # psi_prev is legacy from when we were trying to implement reflecting bd, ignore
         psi_prev = np.ones((4, N))
         for i in range(max_iter):
             phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
-            norm = np.linalg.norm(phi-phi_prev, 2)
+            norm = np.linalg.norm(phi-phi_prev[group_id], 2)
             if norm < tol:
                 break
-            phi_prev = phi
+            phi_prev[group_id] = phi
             print("Iteration: ", i)
             print("Norm: ", norm)
 
@@ -292,10 +305,11 @@ class SAAF():
 
     def solve_outer(self, source):
         G = self.num_groups
-        phis = []
+        N = self.fegrid.get_num_nodes()
+        phis = np.zeros((G, N))
         ang_fluxes = []
         for g in range(G):
-            p, a = self.solve_in_group(source, g)
-            phis.append(p)
+            p, a = self.solve_in_group(source, g, phis)
+            phis[g] = p
             ang_fluxes.append(a)
         return phis, ang_fluxes

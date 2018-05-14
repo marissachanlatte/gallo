@@ -56,8 +56,8 @@ class Materials():
     def get_siga(self, mat_id, group_id):
         return self.sig_a[mat_id, group_id]
 
-    def get_sigs(self, mat_id, group_id):
-        return self.sig_s[mat_id, group_id]
+    def get_sigs(self, mat_id):
+        return self.sig_s[mat_id]
 
     def get_sigf(self, mat_id, group_id):
         return self.sig_f[mat_id, group_id]

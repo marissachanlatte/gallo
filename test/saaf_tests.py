@@ -58,6 +58,9 @@ class TestSAAF:
         cls.symgrid = FEGrid(cls.symnode, cls.symele)
         cls.symop = SAAF(cls.symgrid, cls.symmat)
 
+        cls.multimat =  "test/test_inputs/c5g7.mat"
+        cls.multiop = SAAF(cls.symgrid, cls.multimat)
+
     def symmetry_test(self):
         source = np.ones(self.fegrid.get_num_elts())
         ang_one = .5773503

@@ -16,6 +16,7 @@ def to_problem(mesh, mats):
     nodefile = "../test_inputs/" + mesh + ".node"
     elefile = "../test_inputs/" + mesh + ".ele"
     matfile = "../test_inputs/" + mats + ".mat"
+    print(matfile)
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
     op = SAAF(grid, mats)
@@ -77,11 +78,10 @@ def plot1d(sol, filename, y):
 def plot_mats(problem):
     plot_mesh(problem.grid, problem.mats, 'meshplot')
 
-problem = to_problem("symmetric_fine", "symmetricfine_test")
-print("Scattering XS: ", problem.mats.get_sigs(0, 0))
+problem = to_problem("symmetric_fine", "c5g7mod")
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 #plot1d(problem.filename)
 #test_1d(problem.filename)
 #make_lhs(problem.filename)
-test_problem("symmetric_fine", "symmetric_fine")
+test_problem("symmetric_fine", "c5g7mod")
 #plot_mats(problem.filename)
