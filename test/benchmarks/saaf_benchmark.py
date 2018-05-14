@@ -12,33 +12,21 @@ from materials import Materials
 from problem import Problem
 from plot import *
 
-def to_problem(filename):
-    nodefile = "../test_inputs/" + filename + ".node"
-    elefile = "../test_inputs/" + filename + ".ele"
-    matfile = "../test_inputs/" + filename + ".mat"
+def to_problem(mesh, mats):
+    nodefile = "../test_inputs/" + mesh + ".node"
+    elefile = "../test_inputs/" + mesh + ".ele"
+    matfile = "../test_inputs/" + mats + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
     op = SAAF(grid, mats)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
-    return Problem(op=op, mats=mats, grid=grid, filename=filename)
+    return Problem(op=op, mats=mats, grid=grid, filename=mesh)
 
 def filename_to_problem(func):
-    def _filename_to_problem(filename):
-        return func(problem=to_problem(filename))
+    def _filename_to_problem(mesh, mats):
+        return func(problem=to_problem(mesh, mats))
     return _filename_to_problem
-
-# @filename_to_problem
-# def test_problem(problem):
-#     source = 10*np.ones(problem.n_elements)
-#     for g in range(problem.num_groups):
-#         print("Starting Group ", g)
-#         scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
-#         for i in range(4):
-#             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g), mesh_plot=True)
-#         plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g), mesh_plot=True)
-#         print("Finished Group ", g)
-#     print("Max Flux: ", np.max(scalar_flux))
 
 @filename_to_problem
 def test_problem(problem):
@@ -89,11 +77,11 @@ def plot1d(sol, filename, y):
 def plot_mats(problem):
     plot_mesh(problem.grid, problem.mats, 'meshplot')
 
-problem = to_problem("symmetric_fine")
+problem = to_problem("symmetric_fine", "symmetricfine_test")
 print("Scattering XS: ", problem.mats.get_sigs(0, 0))
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 #plot1d(problem.filename)
 #test_1d(problem.filename)
 #make_lhs(problem.filename)
-test_problem(problem.filename)
+test_problem("symmetric_fine", "symmetric_fine")
 #plot_mats(problem.filename)
