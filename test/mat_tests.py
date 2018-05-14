@@ -14,7 +14,6 @@ class TestMaterials:
         cls.filename = "test/test_inputs/test.mat"
         cls.materials = Materials(cls.filename)
         cls.multigroup = "test/test_inputs/multigroup_test.mat"
-        cls.multi_mats = Materials(cls.multigroup)
 
     def test_read(self):
         eq_(self.materials.num_mats, 2, "number of materials")
@@ -24,10 +23,10 @@ class TestMaterials:
         eq_(self.materials.get_siga(0, 1), 3, "siga")
         eq_(self.materials.get_siga(1, 0), 3, "siga")
         eq_(self.materials.get_siga(1, 1), 2, "siga")
-        eq_(self.materials.get_sigs(0, 0), 1, "sigs")
-        eq_(self.materials.get_sigs(0, 1), 2, "sigs")
-        eq_(self.materials.get_sigs(1, 0), 3, "sigs")
-        eq_(self.materials.get_sigs(1, 1), 1, "sigs")
+        # eq_(self.materials.get_sigs(0, 0), 1, "sigs")
+        # eq_(self.materials.get_sigs(0, 1), 2, "sigs")
+        # eq_(self.materials.get_sigs(1, 0), 3, "sigs")
+        # eq_(self.materials.get_sigs(1, 1), 1, "sigs")
         eq_(self.materials.get_sigf(0, 0), 3, "sigf")
         eq_(self.materials.get_sigf(0, 1), 1, "sigf")
         eq_(self.materials.get_sigf(1, 0), 0, "sigf")
@@ -37,9 +36,17 @@ class TestMaterials:
         eq_(self.materials.get_nu(1, 0), 0, "nu")
         eq_(self.materials.get_nu(1, 1), 0, "nu")
 
-    def test_multigroup(self):
-        eq_(self.multi_mats.get_sigs(0, 0), .01)
-        eq_(self.multi_mats.get_sigs(0, 1), .02)
-
-
-
+        # Test scattering
+        mats1 = self.materials.get_sigs(0, 0)
+        mats2 = np.array([1, 0])
+        print(mats1)
+        ok_(np.allclose(mats1, mats2, rtol=1e-12))
+        mats1 = self.materials.get_sigs(0, 1)
+        mats2 = np.array([0, 2])
+        ok_(np.allclose(mats1, mats2, rtol=1e-12))
+        mats1 = self.materials.get_sigs(1, 0)
+        mats2 = np.array([3, 0])
+        ok_(np.allclose(mats1, mats2, rtol=1e-12))
+        mats1 = self.materials.get_sigs(1, 1)
+        mats2 = np.array([0, 1])
+        ok_(np.allclose(mats1, mats2, rtol=1e-12))

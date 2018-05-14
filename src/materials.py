@@ -2,7 +2,7 @@ import numpy as np
 import os
 class Materials():
     def __init__(self, filename):
-        """Constructor of materials object. Stores material data for all 
+        """Constructor of materials object. Stores material data for all
         materials """
 
         # Verify file exists
@@ -16,7 +16,7 @@ class Materials():
             self.names = []
             self.sig_t = np.zeros((self.num_mats, self.num_groups))
             self.sig_a = np.zeros((self.num_mats, self.num_groups))
-            self.sig_s = np.zeros((self.num_mats, self.num_groups))
+            self.sig_s = np.zeros((self.num_mats, self.num_groups, self.num_groups))
             self.sig_f = np.zeros((self.num_mats, self.num_groups))
             self.D = np.zeros((self.num_mats, self.num_groups))
             self.nu = np.zeros((self.num_mats, self.num_groups))
@@ -30,8 +30,7 @@ class Materials():
                     self.sig_a[i, j] = float(attributes[4])
                     # Collapse Scattering Matrix
                     scat = np.array(attributes[5].split())
-                    scat = scat.astype(float)
-                    self.sig_s[i, j] = scat.sum()
+                    self.sig_s[i, j] = scat.astype(float)
                     self.sig_f[i, j] = float(attributes[6])
                     self.nu[i, j] = float(attributes[7])
 
@@ -43,14 +42,14 @@ class Materials():
                     else:
                         line = fp.readline()
                         attributes = line.split("|")
-                
+
 
     def get_name(self, mat_id):
         return self.names[mat_id]
 
     def get_num_groups(self):
         return self.num_groups
-        
+
     def get_sigt(self, mat_id, group_id):
         return self.sig_t[mat_id, group_id]
 
@@ -71,4 +70,3 @@ class Materials():
 
     def get_inv_sigt(self, mat_id, group_id):
         return self.inv_sigt[mat_id, group_id]
-
