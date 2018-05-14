@@ -100,19 +100,19 @@ class TestSAAF:
         q = np.ones(4)
         phi_prev = np.zeros(4)
         angles0 = np.array([.5773503, .5773503])
-        b0 = self.stdop.make_rhs(0, q, angles0, "vacuum", phi_prev=phi_prev)
+        b0 = self.stdop.make_rhs(0, q, angles0, phi_prev=phi_prev)
         hand0 = np.array([-0.03268117,  0.02652582,  0.05920699,  0.02652582])
         ok_(np.allclose(b0, hand0, rtol=1e-7))
         angles1 = np.array([-.5773503, .5773503])
-        b1 = self.stdop.make_rhs(0, q, angles1, "vacuum", phi_prev=phi_prev)
+        b1 = self.stdop.make_rhs(0, q, angles1, phi_prev=phi_prev)
         hand1 = np.array([ 0.01326291, -0.01941825,  0.01326291,  0.0724699])
         ok_(np.allclose(b1, hand1, rtol=1e-7))
         angles2 = np.array([.5773503, -.5773503])
-        b2 = self.stdop.make_rhs(0, q, angles2, "vacuum", phi_prev=phi_prev)
+        b2 = self.stdop.make_rhs(0, q, angles2, phi_prev=phi_prev)
         hand2 = np.array([ 0.01326291,  0.0724699 ,  0.01326291, -0.01941825])
         ok_(np.allclose(b2, hand2, rtol=1e-7))
         angles3 = np.array([-.5773503, -.5773503])
-        b3 = self.stdop.make_rhs(0, q, angles3, "vacuum", phi_prev=phi_prev)
+        b3 = self.stdop.make_rhs(0, q, angles3, phi_prev=phi_prev)
         hand3 = np.array([ 0.05920699,  0.02652582, -0.03268117,  0.02652582])
         ok_(np.allclose(b3, hand3, rtol=1e-7))
 
@@ -165,16 +165,16 @@ class TestSAAF:
         angles = itr.product([ang_one, ang_two], repeat=2)
         psi_prev = np.array([[1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16],
                              [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
-                             [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48], 
+                             [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
                              [49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]])
         psi_new = np.zeros((4, 16))
         for i, ang in enumerate(angles):
             for nid in range(16):
                 if not self.smgrid.node(nid).is_interior():
                     psi_new[i, nid] = self.smop.assign_incident(nid, ang, psi_prev)
-        psi_correct = np.array([[49, 18, 19, 52, 37, 0, 0, 40, 41, 0, 0, 44, 61, 30, 31, 64], 
-                                [33, 2,  3,  36, 53, 0, 0, 56, 57, 0, 0, 60, 45, 14, 15, 48], 
-                                [17, 50, 51, 20, 5,  0, 0, 8,  9,  0, 0, 12, 29, 62, 63, 32], 
+        psi_correct = np.array([[49, 18, 19, 52, 37, 0, 0, 40, 41, 0, 0, 44, 61, 30, 31, 64],
+                                [33, 2,  3,  36, 53, 0, 0, 56, 57, 0, 0, 60, 45, 14, 15, 48],
+                                [17, 50, 51, 20, 5,  0, 0, 8,  9,  0, 0, 12, 29, 62, 63, 32],
                                 [1,  34, 35, 4,  21, 0, 0, 24, 25, 0, 0, 28, 13, 46, 47, 16]])
         assert_array_equal(psi_new, psi_correct)
 
@@ -185,9 +185,9 @@ class TestSAAF:
         n_elts = self.symgrid.get_num_elts()
         n_nodes = self.symgrid.get_num_nodes()
         source = np.ones(n_elts)
-        scalar_flux, ang_fluxes = self.symop.solve(source, "eigenvalue", 0, "vacuum", tol=1e-3)
+        scalar_flux, ang_fluxes = self.symop.solve(source, "eigenvalue", 0, tol=1e-3)
         siga = self.symmat.get_siga(0, 0)
-        
+
         # Calculate Total Source
         total_src = 0
         for i in range(n_elts):
@@ -206,7 +206,7 @@ class TestSAAF:
             phi /= 3
             total_sink += siga*phi*area
 
-        # Calculate Total Out 
+        # Calculate Total Out
         # CAUTION: Only for S2
         ang_one = .5773503
         ang_two = -.5773503
@@ -219,7 +219,7 @@ class TestSAAF:
                 vertices = self.symgrid.element(e).get_vertices()
                 interior = -1*np.ones(3)
                 for k, v in enumerate(vertices):
-                    interior[k] = self.symgrid.node(v).is_interior()  
+                    interior[k] = self.symgrid.node(v).is_interior()
                 if interior.sum() == 0 or interior.sum() == 1:
                     # Figure out what boundary we're on
                     for idx in [[0, 1], [0, 2], [1, 2]]:
@@ -234,15 +234,15 @@ class TestSAAF:
                                 a, b = self.symgrid.boundary_edges([vertices[m], vertices[n]], e)
                                 boundary_length = b - a
                                 angle_out += ang@normal*boundary_length*psi
-            total_out += np.pi*angle_out 
+            total_out += np.pi*angle_out
         assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)
         # Assumes one group and vacuum boundary conditions
         n_elts = self.fe2grid.get_num_elts()
         n_nodes = self.fe2grid.get_num_nodes()
         source = np.ones(n_elts)
-        scalar_flux, ang_fluxes = self.op2.solve(source, "eigenvalue", 0, "vacuum", tol=1e-5)
+        scalar_flux, ang_fluxes = self.op2.solve(source, "eigenvalue", 0, tol=1e-5)
         siga = self.mats2.get_siga(0, 0)
-        
+
         # Calculate Total Source
         total_src = 0
         for i in range(n_elts):
@@ -261,7 +261,7 @@ class TestSAAF:
             phi /= 3
             total_sink += siga*phi*area
 
-        # Calculate Total Out 
+        # Calculate Total Out
         # CAUTION: Only for S2
         ang_one = .5773503
         ang_two = -.5773503
@@ -274,7 +274,7 @@ class TestSAAF:
                 vertices = self.fe2grid.element(e).get_vertices()
                 interior = -1*np.ones(3)
                 for k, v in enumerate(vertices):
-                    interior[k] = self.fe2grid.node(v).is_interior()  
+                    interior[k] = self.fe2grid.node(v).is_interior()
                 if interior.sum() == 0 or interior.sum() == 1:
                     # Figure out what boundary we're on
                     for idx in [[0, 1], [0, 2], [1, 2]]:
@@ -289,15 +289,5 @@ class TestSAAF:
                                 a, b = self.fe2grid.boundary_edges([vertices[m], vertices[n]], e)
                                 boundary_length = b - a
                                 angle_out += ang@normal*boundary_length*psi
-            total_out += np.pi*angle_out 
+            total_out += np.pi*angle_out
         assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)
-
-
-
-
-
-                
-
-
-
-                

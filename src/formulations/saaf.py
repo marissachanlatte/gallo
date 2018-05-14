@@ -23,7 +23,7 @@ class SAAF():
         self.angs = np.zeros((4, 2))
         for i, ang in enumerate(angles):
             self.angs[i] = ang
-     
+
     def make_lhs(self, angles, group_id):
         k = self.fegrid.get_num_nodes()
         E = self.fegrid.get_num_elts()
@@ -81,11 +81,11 @@ class SAAF():
 
                     sparse_matrix[nid, nsid] += A + C
                     #Check if boundary nodes
-                    if not n_global.is_interior() and not ns_global.is_interior():  
+                    if not n_global.is_interior() and not ns_global.is_interior():
                         # Assign boundary id, marks end of region along boundary where basis function is nonzero
-                        bid = nsid      
+                        bid = nsid
                         # Figure out what boundary you're on
-                        if (nid==nsid) and (self.fegrid.is_corner(nid)):  
+                        if (nid==nsid) and (self.fegrid.is_corner(nid)):
                             # If on a corner, figure out what normal we should use
                             verts = self.fegrid.boundary_nonzero(nid, e)
                             if verts == -1: # Means the whole element is a corner
@@ -114,10 +114,10 @@ class SAAF():
                             boundary_integral = self.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
                             sparse_matrix[nid, nsid] += angles@normal*boundary_integral
                         else:
-                            pass             
+                            pass
         return sparse_matrix
 
-    def make_rhs(self, group_id, q, angles, boundary, phi_prev=None, psi_prev=None):
+    def make_rhs(self, group_id, q, angles, phi_prev=None, psi_prev=None):
         angles = np.array(angles)
         # Get num elements
         E = self.fegrid.get_num_elts()
@@ -162,7 +162,7 @@ class SAAF():
                 phi_vals = np.zeros(3)
                 for i in range(3):
                     phi_vals[i] = phi_interp(g_nodes[i, 0], g_nodes[i, 1])
-                # First Scattering Term 
+                # First Scattering Term
                 # Multiply Phi & Basis Function
                 product = fn_vals*phi_vals
                 integral_product = self.fegrid.gauss_quad(e, product)
@@ -189,7 +189,7 @@ class SAAF():
         elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
             normal = np.array([0, -1])
         else:
-            return -1 
+            return -1
         return normal
 
     def assign_incident(self, nid, angles, psi_prev):
@@ -219,7 +219,7 @@ class SAAF():
         elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
             gauss_nodes[0] = [self.xmin, xis[0]]
             gauss_nodes[1] = [self.xmin, xis[1]]
-        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax): 
+        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
             gauss_nodes[0] = [xis[0], self.ymax]
             gauss_nodes[1] = [xis[1], self.ymax]
         elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
@@ -242,43 +242,43 @@ class SAAF():
         boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
         return boundary_integral
 
-    def get_scalar_flux(self, group_id, source, boundary, phi_prev, psi_prev=None):
+    def get_scalar_flux(self, group_id, source, phi_prev, psi_prev=None):
         # TODO: S4 Angular Quadrature for 2D
         #S2 quadrature
         ang_one = .5773503
         ang_two = -.5773503
         angles = itr.product([ang_one, ang_two], repeat=2)
-        scalar_flux = 0   
+        scalar_flux = 0
         N = self.fegrid.get_num_nodes()
-        ang_fluxes = np.zeros((4, N))     
+        ang_fluxes = np.zeros((4, N))
         # Iterate over all angle possibilities
         for i, ang in enumerate(angles):
             ang = np.array(ang)
-            if boundary == "vacuum":
-                ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, boundary, phi_prev)
-            if boundary == "reflecting":
-                ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, boundary, phi_prev, psi_prev)
+            # if boundary == "vacuum":
+            ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, phi_prev)
+            # if boundary == "reflecting":
+            #     ang_fluxes[i] = self.get_ang_flux(group_id, source, ang,  phi_prev, psi_prev)
             # Multiplying by weight and summing for quadrature
             scalar_flux += np.pi*ang_fluxes[i]
         return scalar_flux, ang_fluxes
 
-    def get_ang_flux(self, group_id, source, ang, boundary, phi_prev, psi_prev=None):
+    def get_ang_flux(self, group_id, source, ang, phi_prev, psi_prev=None):
         lhs = self.make_lhs(ang, group_id)
-        rhs = self.make_rhs(group_id, source, ang, boundary, phi_prev, psi_prev)
+        rhs = self.make_rhs(group_id, source, ang, phi_prev, psi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def solve(self, source, problem_type, group_id, boundary, max_iter=1000, tol=1e-4):
+    def solve(self, source, problem_type, group_id, max_iter=1000, tol=1e-4):
         E = self.fegrid.get_num_elts()
         N = self.fegrid.get_num_nodes()
         phi_prev = np.zeros(N)
         psi_prev = np.ones((4, N))
         for i in range(max_iter):
-            if boundary == "vacuum":
-                phi, ang_fluxes = self.get_scalar_flux(group_id, source, boundary, phi_prev)
-            if boundary == "reflecting":
-                phi, ang_fluxes = self.get_scalar_flux(group_id, source, boundary, phi_prev, psi_prev)
-                psi_prev = ang_fluxes
+            #if boundary == "vacuum":
+            phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
+            # if boundary == "reflecting":
+            #     phi, ang_fluxes = self.get_scalar_flux(group_id, source, boundary, phi_prev, psi_prev)
+            #     psi_prev = ang_fluxes
             norm = np.linalg.norm(phi-phi_prev, 2)
             if norm < tol:
                 break
@@ -292,19 +292,3 @@ class SAAF():
         print("Number of Iterations: ", i)
         print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
