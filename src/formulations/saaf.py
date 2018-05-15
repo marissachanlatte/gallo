@@ -136,15 +136,10 @@ class SAAF():
         triang = tri.Triangulation(x, y, triangles=triangles)
         # Interpolate Phis in All Groups
         G = self.num_groups
-        phi_interp = []
-        # for g in range(G):
-        #     phi_interp = tri.LinearTriInterpolator(triang, phi_prev[g])
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             sig_t = self.mat_data.get_sigt(midx, group_id)
-            # Get scattering matrix
-            scatmat = self.mat_data.get_sigs(midx)
             coef = self.fegrid.basis(e)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
@@ -174,17 +169,13 @@ class SAAF():
                 integral_product = np.zeros(G)
                 for g in range(G):
                     integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                for g_prime in range(G):
-                    for g in range(G):
-                        ssource = scatmat[g, g_prime]*integral_product[g_prime]
+                ssource = self.compute_scattering_source(midx, integral_product, group_id)
                 rhs_at_node[nid] += ssource/(4*np.pi)
                 # Second Scattering Term
                 integral = np.zeros(G)
                 for g in range(G):
                     integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                for g_prime in range(G):
-                    for g in range(G):
-                        ssource = scatmat[g, g_prime]*integral[g_prime]
+                ssource = self.compute_scattering_source(midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 # First Fixed Source Term
                 q_fixed = q[e]/(4*np.pi)
@@ -192,6 +183,21 @@ class SAAF():
                 # Second Fixed Source Term
                 rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
+
+    def compute_scattering_source(self, midx, phi, group_id):
+        scatmat = self.mat_data.get_sigs(midx)
+        G = self.num_groups
+        ssource = 0
+        for g_prime in range(G):
+            for g in range(G):
+                ss = scatmat[g, g_prime]
+                if ss != 0:
+                    if g < group_id:
+                        if g_prime <= g:
+                            ssource += scatmat[g, g_prime]*phi[g_prime]
+                    elif g >= group_id:
+                        ssource += scatmat[g, g_prime]*phi[g_prime]
+        return ssource
 
     def assign_normal(self, nid, bid):
         pos_n = self.fegrid.node(nid).get_position()
@@ -281,35 +287,44 @@ class SAAF():
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def solve_in_group(self, source, group_id, phi_prev, max_iter=1000, tol=1e-4):
+    def solve_in_group(self, source, group_id, phi_prev, max_iter=50, tol=1e-2):
         print("Starting Group ", group_id)
         E = self.fegrid.get_num_elts()
         N = self.fegrid.get_num_nodes()
-        # psi_prev is legacy from when we were trying to implement reflecting bd, ignore
-        psi_prev = np.ones((4, N))
         for i in range(max_iter):
             phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
             norm = np.linalg.norm(phi-phi_prev[group_id], 2)
             if norm < tol:
                 break
-            phi_prev[group_id] = phi
-            print("Iteration: ", i)
+            phi_prev[group_id] = np.copy(phi)
+            print("Within-Group Iteration: ", i)
             print("Norm: ", norm)
 
         if i==max_iter:
             print("Warning: maximum number of iterations reached in solver")
         print("Finished Group ", group_id)
-        print("Number of Iterations: ", i)
+        print("Number of Within-Group Iterations: ", i)
         print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
 
-    def solve_outer(self, source):
+    def solve_outer(self, source, max_iter=50, tol=1e-2):
         G = self.num_groups
         N = self.fegrid.get_num_nodes()
         phis = np.zeros((G, N))
-        ang_fluxes = []
-        for g in range(G):
-            p, a = self.solve_in_group(source, g, phis)
-            phis[g] = p
-            ang_fluxes.append(a)
+        ang_fluxes = np.zeros((G, 4, N))
+        it = 0
+        res = 100
+        while res > tol:
+            it += 1
+            print("Gauss-Seidel Iteration: ", it)
+            phis_prev = np.copy(phis)
+            for g in range(G):
+                p, a = self.solve_in_group(source, g, phis)
+                phis[g] = p
+                ang_fluxes[g] = a
+            res = np.max(np.abs(phis_prev - phis))
+            print("GS Norm: ", res)
+            if it > max_iter:
+                print("Exeeded Max Gauss-Seidel Iterations")
+                break
         return phis, ang_fluxes
