@@ -180,19 +180,16 @@ class TestSAAF:
 
     def gauss_seidel_test(self):
         n = 4
-        #A = np.random.rand(n, n)
-        #b = np.random.rand(n)
-        # initialize the matrix
-        A = np.array([[10., -1., 2., 0.],
-                      [-1., 11., -1., 3.],
-                      [2., -1., 10., -1.],
-                      [0., 3., -1., 8.]])
-        # initialize the RHS vector
-        b = np.array([6., 25., -11., 15.])
+        A = np.random.rand(n, n)
+        # ensure symmetric positive definite
+        A = 0.5*(A+A.transpose())
+        A = A + n*np.eye(n)
+        b = np.random.rand(n)
         tol = 1e-5
         guess = np.zeros(n)
         x = np.linalg.solve(A, b)
         gs = self.op.gauss_seidel(A, b, guess, tol)
+        print("GS: ", gs)
         assert_array_almost_equal(gs, x, decimal=5)
 
     @nottest
