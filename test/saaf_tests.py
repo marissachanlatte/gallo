@@ -58,9 +58,6 @@ class TestSAAF:
         cls.symgrid = FEGrid(cls.symnode, cls.symele)
         cls.symop = SAAF(cls.symgrid, cls.symmat)
 
-        cls.multimat =  "test/test_inputs/c5g7.mat"
-        cls.multiop = SAAF(cls.symgrid, cls.multimat)
-
     def symmetry_test(self):
         source = np.ones(self.fegrid.get_num_elts())
         ang_one = .5773503
@@ -101,7 +98,7 @@ class TestSAAF:
 
     def hand_calculation_rhs_test(self):
         q = np.ones(4)
-        phi_prev = np.zeros(4)
+        phi_prev = np.zeros((1, 4))
         angles0 = np.array([.5773503, .5773503])
         b0 = self.stdop.make_rhs(0, q, angles0, phi_prev=phi_prev)
         hand0 = np.array([-0.03268117,  0.02652582,  0.05920699,  0.02652582])
@@ -180,6 +177,23 @@ class TestSAAF:
                                 [17, 50, 51, 20, 5,  0, 0, 8,  9,  0, 0, 12, 29, 62, 63, 32],
                                 [1,  34, 35, 4,  21, 0, 0, 24, 25, 0, 0, 28, 13, 46, 47, 16]])
         assert_array_equal(psi_new, psi_correct)
+
+    def gauss_seidel_test(self):
+        n = 4
+        #A = np.random.rand(n, n)
+        #b = np.random.rand(n)
+        # initialize the matrix
+        A = np.array([[10., -1., 2., 0.],
+                      [-1., 11., -1., 3.],
+                      [2., -1., 10., -1.],
+                      [0., 3., -1., 8.]])
+        # initialize the RHS vector
+        b = np.array([6., 25., -11., 15.])
+        tol = 1e-5
+        guess = np.zeros(n)
+        x = np.linalg.solve(A, b)
+        gs = self.op.gauss_seidel(A, b, guess, tol)
+        assert_array_almost_equal(gs, x, decimal=5)
 
     @nottest
     # Slow test, only enable when necessary

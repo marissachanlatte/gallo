@@ -4,6 +4,7 @@ import scipy.sparse.linalg as linalg
 import matplotlib.tri as tri
 import itertools as itr
 import sys
+from numba import jit
 from fe import *
 
 class SAAF():
@@ -23,7 +24,7 @@ class SAAF():
         self.angs = np.zeros((4, 2))
         for i, ang in enumerate(angles):
             self.angs[i] = ang
-
+    #@jit
     def make_lhs(self, angles, group_id):
         k = self.fegrid.get_num_nodes()
         E = self.fegrid.get_num_elts()
@@ -116,6 +117,7 @@ class SAAF():
                             pass
         return sparse_matrix
 
+    #@jit
     def make_rhs(self, group_id, q, angles, phi_prev=None, psi_prev=None):
         angles = np.array(angles)
         # Get num elements
@@ -189,16 +191,12 @@ class SAAF():
         G = self.num_groups
         ssource = 0
         for g_prime in range(G):
-            for g in range(G):
-                ss = scatmat[g, g_prime]
-                if ss != 0:
-                    if g < group_id:
-                        if g_prime <= g:
-                            ssource += scatmat[g, g_prime]*phi[g_prime]
-                    elif g >= group_id:
-                        ssource += scatmat[g, g_prime]*phi[g_prime]
+            ss = scatmat[g_prime, group_id]
+            if ss != 0:
+                ssource += scatmat[group_id, g_prime]*phi[g_prime]
         return ssource
 
+    #@jit
     def assign_normal(self, nid, bid):
         pos_n = self.fegrid.node(nid).get_position()
         pos_ns = self.fegrid.node(bid).get_position()
@@ -214,6 +212,7 @@ class SAAF():
             return -1
         return normal
 
+    #@jit
     def assign_incident(self, nid, angles, psi_prev):
         pos = self.fegrid.node(nid).get_position()
         # figure out which boundary
@@ -231,6 +230,7 @@ class SAAF():
         incident_flux = psi_prev[ia_idx, nid]
         return incident_flux
 
+    #@jit
     def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
         pos_n = self.fegrid.node(nid).get_position()
         pos_ns = self.fegrid.node(bid).get_position()
@@ -264,6 +264,7 @@ class SAAF():
         boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
         return boundary_integral
 
+    #@jit
     def get_scalar_flux(self, group_id, source, phi_prev, psi_prev=None):
         # TODO: S4 Angular Quadrature for 2D
         #S2 quadrature
@@ -281,11 +282,59 @@ class SAAF():
             scalar_flux += np.pi*ang_fluxes[i]
         return scalar_flux, ang_fluxes
 
+    #@jit
     def get_ang_flux(self, group_id, source, ang, phi_prev, psi_prev=None):
         lhs = self.make_lhs(ang, group_id)
         rhs = self.make_rhs(group_id, source, ang, phi_prev, psi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
+
+    def build_scattering_matrix(self):
+        k = self.fegrid.get_num_nodes()
+        E = self.fegrid.get_num_elts()
+        G = self.num_groups
+        scattering_matrix = sps.lil_matrix((G, G, k, k))
+        for g in range(G):
+            for g_prime in range(G):
+                for e in range(E):
+                    midx = self.fegrid.get_mat_id(e)
+                    scatmat = self.mat_data.get_sigs(midx)
+                    coef = self.fegrid.basis(e)
+                    sig_s = scatmat[g, g_prime]
+                    for n in range(3):
+                        n_global = self.fegrid.get_node(e, n)
+                        nid = n_global.get_node_id()
+                        bn = coef[:, n]
+                        fn_vals = np.zeros(3)
+                        for i in range(3):
+                            fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                        for ns in range(3):
+                            ns_global = self.fegrid.get_node(e, ns)
+                            nsid = ns_global.get_node_id()
+                            bns = coef[:, ns]
+                            fns_vals = np.zeros(3)
+                            for i in range(3):
+                                fns_vals[i] = self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+                            f_vals = np.zeros(3)
+                            for i in range(3):
+                               f_vals[i] = fn_vals[i] * fns_vals[i]
+                            integral = self.fegrid.gauss_quad(e, f_vals)
+                            scattering_matrix[g, g_prime, nid, nsid] += sig_s*integral
+        return scattering_matrix
+
+    def make_external_source(self, q):
+        E = self.fegrid.get_num_elts()
+        n = self.fegrid.get_num_nodes()
+        external_source = np.zeros(n)
+        for e in range(E):
+            for n in range(3):
+                n_global = self.fegrid.get_node(e, n)
+                nid = n_global.get_node_id()
+                ngrad = self.fegrid.gradient(e, n)
+                area = self.fegrid.element_area(e)
+                q_fixed = q[e]/(4*np.pi)
+                external_source[nid] += q_fixed*(area/3)
+        return external_source
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=50, tol=1e-2):
         print("Starting Group ", group_id)
@@ -307,15 +356,27 @@ class SAAF():
         print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
 
+    def gauss_seidel(self, A, b, phi, tol):
+        m, n = np.shape(A)
+        for it_count in range(1000):
+            phi_prev = np.copy(phi)
+            for i in range(m):
+                s = sum(A[i, j]*phi[j] for j in range(n) if i != j)
+                phi[i] = (b[i] - s)/A[i, i]
+            if np.allclose(phi, phi_prev, rtol=tol):
+                break
+        return phi
+
     def solve_outer(self, source, max_iter=50, tol=1e-2):
         G = self.num_groups
         N = self.fegrid.get_num_nodes()
+        H = self.build_scattering_matrix()
+        q = make_external_source(self, source)
         phis = np.zeros((G, N))
         ang_fluxes = np.zeros((G, 4, N))
         it = 0
         res = 100
         while res > tol:
-            it += 1
             print("Gauss-Seidel Iteration: ", it)
             phis_prev = np.copy(phis)
             for g in range(G):
@@ -327,4 +388,5 @@ class SAAF():
             if it > max_iter:
                 print("Exeeded Max Gauss-Seidel Iterations")
                 break
+            it += 1
         return phis, ang_fluxes

@@ -1,5 +1,6 @@
 from nose.tools import *
 import numpy as np
+from numpy.testing import *
 import sys
 sys.path.append('../src')
 
@@ -33,16 +34,11 @@ class TestMaterials:
         eq_(self.materials.get_nu(1, 1), 0, "nu")
 
         # Test scattering
-        mats1 = self.materials.get_sigs(0, 0)
-        mats2 = np.array([1, 0])
-        print(mats1)
-        ok_(np.allclose(mats1, mats2, rtol=1e-12))
-        mats1 = self.materials.get_sigs(0, 1)
-        mats2 = np.array([0, 2])
-        ok_(np.allclose(mats1, mats2, rtol=1e-12))
-        mats1 = self.materials.get_sigs(1, 0)
-        mats2 = np.array([3, 0])
-        ok_(np.allclose(mats1, mats2, rtol=1e-12))
-        mats1 = self.materials.get_sigs(1, 1)
-        mats2 = np.array([0, 1])
-        ok_(np.allclose(mats1, mats2, rtol=1e-12))
+        mats1 = self.materials.get_sigs(0)
+        mats2 = np.array([[1, 0],
+                          [0, 2]])
+        assert_array_equal(mats1, mats2)
+        mats1 = self.materials.get_sigs(1)
+        mats2 = np.array([[3, 0],
+                          [0, 1]])
+        assert_array_equal(mats1, mats2)
