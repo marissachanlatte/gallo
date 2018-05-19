@@ -189,12 +189,13 @@ class SAAF():
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
         G = self.num_groups
-        ssource = 0
-        for g_prime in range(G):
-            ss = scatmat[g_prime, group_id]
-            if ss != 0:
-                ssource += scatmat[group_id, g_prime]*phi[g_prime]
-        return ssource
+        s = sum(scatmat[group_id, g_prime]*phi[g_prime] for g_prime in range(G) if group_id != g_prime)
+        s += scatmat[group_id, group_id]*phi[group_id]
+        # for g in range(G):
+        #     ss = scatmat[g_prime, group_id]
+        #     if ss != 0:
+        #         ssource += scatmat[group_id, group_id]*phi[g_prime]
+        return s
 
     #@jit
     def assign_normal(self, nid, bid):
@@ -289,70 +290,70 @@ class SAAF():
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def build_scattering_matrix(self):
-        k = self.fegrid.get_num_nodes()
-        E = self.fegrid.get_num_elts()
-        G = self.num_groups
-        scattering_matrix = sps.lil_matrix((G, G, k, k))
-        for g in range(G):
-            for g_prime in range(G):
-                for e in range(E):
-                    midx = self.fegrid.get_mat_id(e)
-                    scatmat = self.mat_data.get_sigs(midx)
-                    coef = self.fegrid.basis(e)
-                    sig_s = scatmat[g, g_prime]
-                    for n in range(3):
-                        n_global = self.fegrid.get_node(e, n)
-                        nid = n_global.get_node_id()
-                        bn = coef[:, n]
-                        fn_vals = np.zeros(3)
-                        for i in range(3):
-                            fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-                        for ns in range(3):
-                            ns_global = self.fegrid.get_node(e, ns)
-                            nsid = ns_global.get_node_id()
-                            bns = coef[:, ns]
-                            fns_vals = np.zeros(3)
-                            for i in range(3):
-                                fns_vals[i] = self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-                            f_vals = np.zeros(3)
-                            for i in range(3):
-                               f_vals[i] = fn_vals[i] * fns_vals[i]
-                            integral = self.fegrid.gauss_quad(e, f_vals)
-                            scattering_matrix[g, g_prime, nid, nsid] += sig_s*integral
-        return scattering_matrix
-
-    def make_external_source(self, q):
-        E = self.fegrid.get_num_elts()
-        n = self.fegrid.get_num_nodes()
-        external_source = np.zeros(n)
-        for e in range(E):
-            for n in range(3):
-                n_global = self.fegrid.get_node(e, n)
-                nid = n_global.get_node_id()
-                ngrad = self.fegrid.gradient(e, n)
-                area = self.fegrid.element_area(e)
-                q_fixed = q[e]/(4*np.pi)
-                external_source[nid] += q_fixed*(area/3)
-        return external_source
+    # def build_scattering_matrix(self):
+    #     k = self.fegrid.get_num_nodes()
+    #     E = self.fegrid.get_num_elts()
+    #     G = self.num_groups
+    #     scattering_matrix = np.zeros((G, G, k, k))
+    #     for g in range(G):
+    #         for g_prime in range(G):
+    #             for e in range(E):
+    #                 midx = self.fegrid.get_mat_id(e)
+    #                 scatmat = self.mat_data.get_sigs(midx)
+    #                 sig_s = scatmat[g, g_prime]
+    #                 coef = self.fegrid.basis(e)
+    #                 g_nodes = self.fegrid.gauss_nodes(e)
+    #                 for n in range(3):
+    #                     n_global = self.fegrid.get_node(e, n)
+    #                     nid = n_global.get_node_id()
+    #                     bn = coef[:, n]
+    #                     fn_vals = np.zeros(3)
+    #                     for i in range(3):
+    #                         fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+    #                     for ns in range(3):
+    #                         ns_global = self.fegrid.get_node(e, ns)
+    #                         nsid = ns_global.get_node_id()
+    #                         bns = coef[:, ns]
+    #                         fns_vals = np.zeros(3)
+    #                         for i in range(3):
+    #                             fns_vals[i] = self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+    #                         f_vals = np.zeros(3)
+    #                         for i in range(3):
+    #                            f_vals[i] = fn_vals[i] * fns_vals[i]
+    #                         integral = self.fegrid.gauss_quad(e, f_vals)
+    #                         scattering_matrix[g, g_prime, nid, nsid] += sig_s*integral
+    #     return scattering_matrix
+    #
+    # def make_external_source(self, q):
+    #     E = self.fegrid.get_num_elts()
+    #     n = self.fegrid.get_num_nodes()
+    #     external_source = np.zeros(n)
+    #     for e in range(E):
+    #         for n in range(3):
+    #             n_global = self.fegrid.get_node(e, n)
+    #             nid = n_global.get_node_id()
+    #             ngrad = self.fegrid.gradient(e, n)
+    #             area = self.fegrid.element_area(e)
+    #             q_fixed = q[e]/(4*np.pi)
+    #             external_source[nid] += q_fixed*(area/3)
+    #     return external_source
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=50, tol=1e-2):
         print("Starting Group ", group_id)
         E = self.fegrid.get_num_elts()
         N = self.fegrid.get_num_nodes()
         for i in range(max_iter):
+            print("Within-Group Iteration: ", i)
             phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
             norm = np.linalg.norm(phi-phi_prev[group_id], 2)
+            print("Norm: ", norm)
             if norm < tol:
                 break
             phi_prev[group_id] = np.copy(phi)
-            print("Within-Group Iteration: ", i)
-            print("Norm: ", norm)
-
         if i==max_iter:
             print("Warning: maximum number of iterations reached in solver")
         print("Finished Group ", group_id)
-        print("Number of Within-Group Iterations: ", i)
+        print("Number of Within-Group Iterations: ", i+1)
         print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
 
@@ -370,14 +371,10 @@ class SAAF():
     def solve_outer(self, source, max_iter=50, tol=1e-2):
         G = self.num_groups
         N = self.fegrid.get_num_nodes()
-        H = self.build_scattering_matrix()
-        q = make_external_source(self, source)
         phis = np.zeros((G, N))
         ang_fluxes = np.zeros((G, 4, N))
-        it = 0
-        res = 100
-        while res > tol:
-            print("Gauss-Seidel Iteration: ", it)
+        for it_count in range(1000):
+            print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
             for g in range(G):
                 p, a = self.solve_in_group(source, g, phis)
@@ -385,8 +382,30 @@ class SAAF():
                 ang_fluxes[g] = a
             res = np.max(np.abs(phis_prev - phis))
             print("GS Norm: ", res)
-            if it > max_iter:
-                print("Exeeded Max Gauss-Seidel Iterations")
+            if np.allclose(phis, phis_prev, rtol=tol):
                 break
-            it += 1
         return phis, ang_fluxes
+
+    # def solve_outer(self, source, max_iter=50, tol=1e-2):
+    #     G = self.num_groups
+    #     N = self.fegrid.get_num_nodes()
+    #     phis = np.zeros((G, N))
+    #     ang_fluxes = np.zeros((G, 4, N))
+    #     it = 0
+    #     res = 100
+    #     for it_count in range(1000):
+    #         print("Gauss-Seidel Iteration: ", it_count)
+    #         phis_prev = np.copy(phis)
+    #         for g in range(G):
+    #             p, a = self.solve_in_group(source, g, phis)
+    #             phis[g] = p
+    #             ang_fluxes[g] = a
+    #             # GS Update
+    #             s = sum(np.matmul(H[g, g_prime], phis[g_prime]) for g_prime in range(G) if g != g_prime)
+    #             H_inv = np.linalg.inv(H[g, g])
+    #             phis[g] = np.matmul(H_inv, (q - s))
+    #         res = np.max(np.abs(phis_prev - phis))
+    #         print("GS Norm: ", res)
+    #         if np.allclose(phis, phis_prev, rtol=tol):
+    #             break
+    #     return phis, ang_fluxes
