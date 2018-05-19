@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import matplotlib.pyplot as plt
+import cProfile
 from itertools import product
 import sys
 sys.path.append('../../src')
@@ -12,7 +13,7 @@ from materials import Materials
 from problem import Problem
 from plot import *
 
-def to_problem(mesh, mats):
+def to_problem(mesh, mats, filename):
     nodefile = "../test_inputs/" + mesh + ".node"
     elefile = "../test_inputs/" + mesh + ".ele"
     matfile = "../test_inputs/" + mats + ".mat"
@@ -22,16 +23,16 @@ def to_problem(mesh, mats):
     op = SAAF(grid, mats)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
-    return Problem(op=op, mats=mats, grid=grid, filename=mesh)
+    return Problem(op=op, mats=mats, grid=grid, filename=filename)
 
 def filename_to_problem(func):
-    def _filename_to_problem(mesh, mats):
-        return func(problem=to_problem(mesh, mats))
+    def _filename_to_problem(mesh, mats, filename):
+        return func(problem=to_problem(mesh, mats, filename))
     return _filename_to_problem
 
 @filename_to_problem
 def test_problem(problem):
-    source = 10*np.ones(problem.n_elements)
+    source = np.ones(problem.n_elements)
     phis, angs = problem.op.solve_outer(source)
 
     # Plot Everything
@@ -54,6 +55,19 @@ def make_lhs(problem):
     source = np.ones(problem.n_elements)
     A = problem.op.make_lhs([.5773503, -.5773503], 0)
     print(A)
+
+@filename_to_problem
+def profiling(problem):
+    source = 10*np.ones(problem.n_elements)
+    cProfile.run('problem.op.solve_outer(10*np.ones(problem.n_elements))')
+
+@filename_to_problem
+def test_multigroup(problem):
+    H = problem.op.build_scattering_matrix()
+    source = np.ones(problem.n_elements)
+    q = problem.op.make_external_source(source)
+    phi = np.zeros(problem.n_nodes)
+    print(problem.op.gauss_seidel(H[0, 0], q, phi, tol=1e-5))
 
 def plot1d(sol, filename, y):
     if y==0.125:
@@ -78,10 +92,12 @@ def plot1d(sol, filename, y):
 def plot_mats(problem):
     plot_mesh(problem.grid, problem.mats, 'meshplot')
 
-problem = to_problem("symmetric_fine", "c5g7mod")
+problem = to_problem("symmetric", "c5g7mod", "test")
 print("Total XS: ", problem.mats.get_sigt(0, 0))
 #plot1d(problem.filename)
 #test_1d(problem.filename)
 #make_lhs(problem.filename)
-test_problem("symmetric_fine", "c5g7mod")
+test_problem("symmetric", "c5g7mod", "test")
+#test_multigroup("std", "scattering1g", "test")
+#profiling("symmetric_fine", "scattering1g", "test")
 #plot_mats(problem.filename)

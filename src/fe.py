@@ -1,6 +1,6 @@
 import os
+
 import numpy as np
-import sys
 
 class Element():
     def __init__(self, el_id, vertices, mat_id):
@@ -21,6 +21,7 @@ class Element():
     def get_mat_id(self):
         return self.mat_id
 
+
 class Node():
     def __init__(self, position, node_id, interior_node_id, isinterior):
         self.position = position
@@ -40,6 +41,7 @@ class Node():
     def is_interior(self):
         return self.isinterior
 
+
 class FEGrid():
     def __init__(self, node_file, ele_file):
         # verify files exists
@@ -47,7 +49,7 @@ class FEGrid():
             + " does not exist"
         assert os.path.exists(ele_file), "Ele file: " + ele_file\
             + " does not exist"
-        
+
         with open(node_file) as nf:
             line = nf.readline()
             data = line.split(" ")
@@ -63,8 +65,8 @@ class FEGrid():
                 node_id, x, y, boundary = data
                 x = float(x)
                 y = float(y)
-                # Set boundary data 
-                if i==0:
+                # Set boundary data
+                if i == 0:
                     self.xmin = x
                     self.ymin = y
                     self.xmax = x
@@ -80,11 +82,14 @@ class FEGrid():
                         self.ymax = y
                 is_interior = not int(boundary)
                 interior_node_id = -1
-                if is_interior: 
+                if is_interior:
                     interior_node_id = self.num_interior_nodes
                     self.num_interior_nodes += 1
-                    self.interior_nodes.append(Node([x, y], int(node_id), interior_node_id, is_interior))
-                self.nodes.append(Node([x, y], int(node_id), interior_node_id, is_interior))
+                    self.interior_nodes.append(
+                        Node([x, y], int(node_id), interior_node_id,
+                             is_interior))
+                self.nodes.append(
+                    Node([x, y], int(node_id), interior_node_id, is_interior))
 
         with open(ele_file) as ef:
             line = ef.readline()
@@ -101,17 +106,17 @@ class FEGrid():
                 self.elts.append(Element(int(el_id), vertices, int(mat_id)))
 
     def get_boundary(self, which_boundary):
-        if which_boundary=="xmin":
+        if which_boundary == "xmin":
             return self.xmin
-        elif which_boundary=="ymin":
+        elif which_boundary == "ymin":
             return self.ymin
-        elif which_boundary=="xmax":
+        elif which_boundary == "xmax":
             return self.xmax
-        elif which_boundary=="ymax":
+        elif which_boundary == "ymax":
             return self.ymax
         else:
             raise RuntimeError("Boundary must be xmin, ymin, xmax, or ymax")
-    
+
     def is_corner(self, node_number):
         x, y = self.node(node_number).get_position()
         on_xboundary = (x == self.xmax or x == self.xmin)
@@ -145,35 +150,35 @@ class FEGrid():
     def evaluate_basis_function(self, coefficients, point):
         # Evaluates linear basis functions of the form c1 + c2x + c3y at the point x, y
         if len(coefficients) != 3:
-            raise RuntimeError("Must be linear basis function with 3 coefficients")
+            raise RuntimeError(
+                "Must be linear basis function with 3 coefficients")
         if len(point) != 2:
             raise RuntimeError("Must be 2D point, (x,y)")
-        return coefficients[0] + coefficients[1]*point[0] + coefficients[2]*point[1]
+        return coefficients[0] + coefficients[1] * point[0] + coefficients[2] * point[1]
 
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
-        e = self.elts[elt_number].get_vertices()
-        n = self.get_node(elt_number, local_node_number)
-        xbase = n.get_position()
+        element = self.elts[elt_number].get_vertices()
+        xbase = self.get_node(elt_number, local_node_number).get_position()
         dx = np.zeros((2, 2))
         for ivert in range(2):
-            other_node_number = e[(local_node_number + ivert + 1)%3]
+            other_node_number = element[(local_node_number + ivert + 1) % 3]
             dx[ivert] = self.nodes[other_node_number].get_position()
             dx[ivert] -= xbase
-        det = dx[0, 0]*dx[1, 1] - dx[1, 0]*dx[0, 1]
+        det = dx[0, 0] * dx[1, 1] - dx[1, 0] * dx[0, 1]
         retval = np.zeros(2)
-        retval[0] = (-(dx[1, 1] - dx[0, 1])/det)
-        retval[1] = ((dx[1, 0] - dx[0, 0])/det)
+        retval[0] = (-(dx[1, 1] - dx[0, 1]) / det)
+        retval[1] = ((dx[1, 0] - dx[0, 0]) / det)
         return retval
 
     def basis(self, elt_number):
-        V = np.zeros((3, 3))
+        vandermonde = np.zeros((3, 3))
         for i in range(3):
-            V[i, 0] = 1
-            V[i, 1] = self.get_node(elt_number, i).get_position()[0]
-            V[i, 2] = self.get_node(elt_number, i).get_position()[1]
-        C = np.linalg.inv(V)
-        return C
+            vandermonde[i, 0] = 1
+            vandermonde[i, 1] = self.get_node(elt_number, i).get_position()[0]
+            vandermonde[i, 2] = self.get_node(elt_number, i).get_position()[1]
+        coefficients = np.linalg.inv(vandermonde)
+        return coefficients
 
     def boundary_nonzero(self, current_vert, e):
         # returns the points on the boundary where the basis function is non zero
@@ -185,12 +190,15 @@ class FEGrid():
         posa = self.node(current_vert).get_position()
         posb = self.node(other_verts[0]).get_position()
         posc = self.node(other_verts[1]).get_position()
-        
-        
-        ab_boundary = (((posa[0] == posb[0]) and (posb[0] == self.xmin or posb[0] == self.xmax)) 
-                    or ((posa[1] == posb[1]) and (posb[1] == self.ymin or posb[1] == self.ymax)))
-        ac_boundary = (((posa[0] == posc[0]) and (posc[0] == self.xmin or posc[0] == self.xmax)) 
-                    or ((posa[1] == posc[1]) and (posc[1] == self.ymin or posc[1] == self.ymax)))
+
+        ab_boundary = (((posa[0] == posb[0]) and
+                        (posb[0] == self.xmin or posb[0] == self.xmax))
+                       or ((posa[1] == posb[1]) and
+                           (posb[1] == self.ymin or posb[1] == self.ymax)))
+        ac_boundary = (((posa[0] == posc[0]) and
+                        (posc[0] == self.xmin or posc[0] == self.xmax))
+                       or ((posa[1] == posc[1]) and
+                           (posc[1] == self.ymin or posc[1] == self.ymax)))
 
         if ab_boundary and ac_boundary:
             return -1
@@ -228,7 +236,7 @@ class FEGrid():
             elif points[0, 0] < points[1, 0]:
                 a = points[0, 0]
                 b = points[1, 0]
-        if a==None and b==None:
+        if a is None and b is None:
             raise RuntimeError("Boundary Edge Error")
         else:
             return a, b
@@ -238,8 +246,9 @@ class FEGrid():
         # multiplying by the same basis function
         # Find position of boundary vertices
         a, b = self.boundary_edges(boundary_vertices, e)
-        xi = 1/np.sqrt(3)
-        nodes = np.array([-(b-a)/2*xi + (b+a)/2, (b-a)/2*xi + (b+a)/2])
+        xi = 1 / np.sqrt(3)
+        nodes = np.array(
+            [-(b - a) / 2 * xi + (b + a) / 2, (b - a) / 2 * xi + (b + a) / 2])
         return nodes
 
     def gauss_nodes(self, elt_number):
@@ -261,14 +270,16 @@ class FEGrid():
         # Transformation Function
         # x(u, v) = alpha + u(beta - alpha) + v(gamma - alpha)
         # Transform of the node (0, .5)
-        g_nodes[0, 0] = (apos[0] + .5*(cpos[0] - apos[0]))
-        g_nodes[0, 1] = (apos[1] + .5*(cpos[1] - apos[1]))
+        g_nodes[0, 0] = (apos[0] + .5 * (cpos[0] - apos[0]))
+        g_nodes[0, 1] = (apos[1] + .5 * (cpos[1] - apos[1]))
         # Transform of the node (.5, 0)
-        g_nodes[1, 0] = (apos[0] + .5*(bpos[0] - apos[0]))
-        g_nodes[1, 1] = (apos[1] + .5*(bpos[1] - apos[1]))
+        g_nodes[1, 0] = (apos[0] + .5 * (bpos[0] - apos[0]))
+        g_nodes[1, 1] = (apos[1] + .5 * (bpos[1] - apos[1]))
         # Transform of the node (.5, .5)
-        g_nodes[2, 0] = (apos[0] + .5*(bpos[0] - apos[0]) + .5*(cpos[0] - apos[0]))
-        g_nodes[2, 1] = (apos[1] + .5*(bpos[1] - apos[1]) + .5*(cpos[1] - apos[1]))
+        g_nodes[2, 0] = (
+            apos[0] + .5 * (bpos[0] - apos[0]) + .5 * (cpos[0] - apos[0]))
+        g_nodes[2, 1] = (
+            apos[1] + .5 * (bpos[1] - apos[1]) + .5 * (cpos[1] - apos[1]))
 
         return g_nodes
 
@@ -281,23 +292,16 @@ class FEGrid():
             other_node_number = e[ivert]
             dx[ivert - 1, :] = self.nodes[other_node_number].get_position()
             for idir in range(2):
-                dx[ivert-1, idir] -= xbase[idir]
+                dx[ivert - 1, idir] -= xbase[idir]
         # WARNING: the following calculation is correct for triangles in 2D *only*.
-        area = np.abs(dx[0, 0]*dx[1, 1] - dx[1, 0]*dx[0, 1])/2
+        area = np.abs(dx[0, 0] * dx[1, 1] - dx[1, 0] * dx[0, 1]) / 2
         return area
 
-    def average_element_area(self):
-        area = 0
-        for i in range(self.get_num_elts()):
-            area += self.element_area(i)
-        area /= self.get_num_elts()
-        return area
-        
     def gauss_quad(self, elt_number, f_values):
         # Using second order Gaussian Quadrature formula
         # 1/3*Area*[f(0, .5) + f(.5, 0) + f(.5, .5)]
         area = self.element_area(elt_number)
-        integral = 1/3 * area*(np.sum(f_values))
+        integral = 1 / 3 * area * (np.sum(f_values))
         return integral
 
     def gauss_quad1d(self, f_values, boundary_vertices, e):
@@ -305,7 +309,7 @@ class FEGrid():
         # Find length of element on boundary
         # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
         a, b = self.boundary_edges(boundary_vertices, e)
-        integral = (b-a)/2*(f_values[0] + f_values[1])
+        integral = (b - a) / 2 * (f_values[0] + f_values[1])
         return integral
 
     def centroid(self, elt_number):
@@ -319,5 +323,5 @@ class FEGrid():
             for idir in range(2):
                 retval[idir] += x[idir]
         for idir in range(2):
-            retval[idir]/=3
+            retval[idir] /= 3
         return retval

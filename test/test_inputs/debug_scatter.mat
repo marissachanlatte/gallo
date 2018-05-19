@@ -1,0 +1,4 @@
+1 | 2
+0 | 0 | 'test' | 2 | 1 | 1 0 | 0 | 0
+0 | 1 | 'test' | 3 | 1 | 1 1 | 0 | 0
+MAT ID | GROUP ID | 'MAT NAME' | TOTAL | ABSORPTION | SCATTERING | FISSION | NU

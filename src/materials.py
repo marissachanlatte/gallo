@@ -1,5 +1,7 @@
-import numpy as np
 import os
+import numpy as np
+
+
 class Materials():
     def __init__(self, filename):
         """Constructor of materials object. Stores material data for all
@@ -16,7 +18,8 @@ class Materials():
             self.names = []
             self.sig_t = np.zeros((self.num_mats, self.num_groups))
             self.sig_a = np.zeros((self.num_mats, self.num_groups))
-            self.sig_s = np.zeros((self.num_mats, self.num_groups, self.num_groups))
+            self.sig_s = np.zeros((self.num_mats, self.num_groups,
+                                   self.num_groups))
             self.sig_f = np.zeros((self.num_mats, self.num_groups))
             self.D = np.zeros((self.num_mats, self.num_groups))
             self.nu = np.zeros((self.num_mats, self.num_groups))
@@ -35,14 +38,13 @@ class Materials():
                     self.nu[i, j] = float(attributes[7])
 
                     # Derived quantities
-                    self.D[i, j] = 1/(3*self.sig_t[i, j])
-                    self.inv_sigt[i, j] = 1/self.sig_t[i, j]
-                    if j==(self.num_groups - 1):
+                    self.D[i, j] = 1 / (3 * self.sig_t[i, j])
+                    self.inv_sigt[i, j] = 1 / self.sig_t[i, j]
+                    if j == (self.num_groups - 1):
                         continue
                     else:
                         line = fp.readline()
                         attributes = line.split("|")
-
 
     def get_name(self, mat_id):
         return self.names[mat_id]

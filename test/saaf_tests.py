@@ -144,59 +144,6 @@ class TestSAAF:
                              0.        ,  0.        ,  0.        ,  0.7083334 ]])
         ok_(np.allclose(A0, hand0, rtol=1e-7))
 
-
-    # def incident_angle_test(self):
-    #     ang_one = .5773503
-    #     ang_two = -.5773503
-    #     angles = itr.product([ang_one, ang_two], repeat=2)
-    #     psi_prev = np.array([[0, 1, 2, 3],
-    #                          [4, 5, 6, 7],
-    #                          [8, 9, 10, 11],
-    #                          [12, 13, 14, 15]])
-    #     psi_new = np.zeros((4, 4))
-    #     for i, ang in enumerate(angles):
-    #         for nid in range(4):
-    #             psi_new[i, nid] = self.stdop.assign_incident(nid, ang, psi_prev)
-    #     psi_correct = np.array([[12, 13, 14, 15],
-    #                             [8, 9, 10, 11],
-    #                             [4, 5, 6, 7],
-    #                             [0, 1, 2, 3]])
-    #
-    #     assert_array_equal(psi_new, psi_correct)
-
-    # def incident_angle_test2(self):
-    #     ang_one = .5773503
-    #     ang_two = -.5773503
-    #     angles = itr.product([ang_one, ang_two], repeat=2)
-    #     psi_prev = np.array([[1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16],
-    #                          [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
-    #                          [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
-    #                          [49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]])
-    #     psi_new = np.zeros((4, 16))
-    #     for i, ang in enumerate(angles):
-    #         for nid in range(16):
-    #             if not self.smgrid.node(nid).is_interior():
-    #                 psi_new[i, nid] = self.smop.assign_incident(nid, ang, psi_prev)
-    #     psi_correct = np.array([[49, 18, 19, 52, 37, 0, 0, 40, 41, 0, 0, 44, 61, 30, 31, 64],
-    #                             [33, 2,  3,  36, 53, 0, 0, 56, 57, 0, 0, 60, 45, 14, 15, 48],
-    #                             [17, 50, 51, 20, 5,  0, 0, 8,  9,  0, 0, 12, 29, 62, 63, 32],
-    #                             [1,  34, 35, 4,  21, 0, 0, 24, 25, 0, 0, 28, 13, 46, 47, 16]])
-    #     assert_array_equal(psi_new, psi_correct)
-
-    def gauss_seidel_test(self):
-        n = 4
-        A = np.random.rand(n, n)
-        # ensure symmetric positive definite
-        A = 0.5*(A+A.transpose())
-        A = A + n*np.eye(n)
-        b = np.random.rand(n)
-        tol = 1e-5
-        guess = np.zeros(n)
-        x = np.linalg.solve(A, b)
-        gs = self.op.gauss_seidel(A, b, guess, tol)
-        print("GS: ", gs)
-        assert_array_almost_equal(gs, x, decimal=5)
-
     @nottest
     # Slow test, only enable when necessary
     def balance_test(self):

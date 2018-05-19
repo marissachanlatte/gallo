@@ -18,7 +18,7 @@ def _setup_trianlges(grid):
     triang = tri.Triangulation(x, y, triangles=triangles)
     return triang
 
-def plot(grid, solution, filename, mesh_plot=False):
+def plot(grid, solution, filename):
     triang = _setup_trianlges(grid)
     # Interpolate to Refined Triangular Grid
     interp_lin = tri.LinearTriInterpolator(triang, solution)
