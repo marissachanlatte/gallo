@@ -145,143 +145,43 @@ class TestSAAF:
         ok_(np.allclose(A0, hand0, rtol=1e-7))
 
 
-    def incident_angle_test(self):
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        psi_prev = np.array([[0, 1, 2, 3],
-                             [4, 5, 6, 7],
-                             [8, 9, 10, 11],
-                             [12, 13, 14, 15]])
-        psi_new = np.zeros((4, 4))
-        for i, ang in enumerate(angles):
-            for nid in range(4):
-                psi_new[i, nid] = self.stdop.assign_incident(nid, ang, psi_prev)
-        psi_correct = np.array([[12, 13, 14, 15],
-                                [8, 9, 10, 11],
-                                [4, 5, 6, 7],
-                                [0, 1, 2, 3]])
+    # def incident_angle_test(self):
+    #     ang_one = .5773503
+    #     ang_two = -.5773503
+    #     angles = itr.product([ang_one, ang_two], repeat=2)
+    #     psi_prev = np.array([[0, 1, 2, 3],
+    #                          [4, 5, 6, 7],
+    #                          [8, 9, 10, 11],
+    #                          [12, 13, 14, 15]])
+    #     psi_new = np.zeros((4, 4))
+    #     for i, ang in enumerate(angles):
+    #         for nid in range(4):
+    #             psi_new[i, nid] = self.stdop.assign_incident(nid, ang, psi_prev)
+    #     psi_correct = np.array([[12, 13, 14, 15],
+    #                             [8, 9, 10, 11],
+    #                             [4, 5, 6, 7],
+    #                             [0, 1, 2, 3]])
+    #
+    #     assert_array_equal(psi_new, psi_correct)
 
-        assert_array_equal(psi_new, psi_correct)
-
-    def incident_angle_test2(self):
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        psi_prev = np.array([[1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16],
-                             [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
-                             [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
-                             [49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]])
-        psi_new = np.zeros((4, 16))
-        for i, ang in enumerate(angles):
-            for nid in range(16):
-                if not self.smgrid.node(nid).is_interior():
-                    psi_new[i, nid] = self.smop.assign_incident(nid, ang, psi_prev)
-        psi_correct = np.array([[49, 18, 19, 52, 37, 0, 0, 40, 41, 0, 0, 44, 61, 30, 31, 64],
-                                [33, 2,  3,  36, 53, 0, 0, 56, 57, 0, 0, 60, 45, 14, 15, 48],
-                                [17, 50, 51, 20, 5,  0, 0, 8,  9,  0, 0, 12, 29, 62, 63, 32],
-                                [1,  34, 35, 4,  21, 0, 0, 24, 25, 0, 0, 28, 13, 46, 47, 16]])
-        assert_array_equal(psi_new, psi_correct)
-
-    def scattering_matrix_test(self):
-        scattering = self.scatop.build_scattering_matrix()
-        A = np.zeros((1, 1, 4, 4))
-        A[0, 0, 3, 3] += 1/12
-        A[0, 0, 3, 0] += 1/24
-        A[0, 0, 3, 1] += 1/24
-        A[0, 0, 0, 3] += 1/24
-        A[0, 0, 0, 0] += 1/12
-        A[0, 0, 0, 1] += 1/24
-        A[0, 0, 1, 3] += 1/24
-        A[0, 0, 1, 0] += 1/24
-        A[0, 0, 1, 1] += 1/12
-        A[0, 0, 1, 1] += 1/12
-        A[0, 0, 1, 2] += 1/24
-        A[0, 0, 1, 3] += 1/24
-        A[0, 0, 2, 1] += 1/24
-        A[0, 0, 2, 2] += 1/12
-        A[0, 0, 2, 3] += 1/24
-        A[0, 0, 3, 1] += 1/24
-        A[0, 0, 3, 2] += 1/24
-        A[0, 0, 3, 3] += 1/12
-        A *= self.scatmat.get_sigs(0)[0, 0]
-        assert_array_almost_equal(scattering, A, decimal=5)
-        scattering = self.scat3op.build_scattering_matrix()
-        A = np.zeros((1, 1, 9, 9))
-        A[0, 0, 0, 0] += 1/48
-        A[0, 0, 0, 8] += 1/96
-        A[0, 0, 0, 4] += 1/96
-        A[0, 0, 8, 0] += 1/96
-        A[0, 0, 8, 8] += 1/48
-        A[0, 0, 8, 4] += 1/96
-        A[0, 0, 4, 0] += 1/96
-        A[0, 0, 4, 8] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 1, 1] += 1/48
-        A[0, 0, 1, 8] += 1/96
-        A[0, 0, 1, 4] += 1/96
-        A[0, 0, 8, 1] += 1/96
-        A[0, 0, 8, 8] += 1/48
-        A[0, 0, 8, 4] += 1/96
-        A[0, 0, 4, 1] += 1/96
-        A[0, 0, 4, 8] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 1, 1] += 1/48
-        A[0, 0, 1, 7] += 1/96
-        A[0, 0, 1, 4] += 1/96
-        A[0, 0, 7, 1] += 1/96
-        A[0, 0, 7, 7] += 1/48
-        A[0, 0, 7, 4] += 1/96
-        A[0, 0, 4, 1] += 1/96
-        A[0, 0, 4, 7] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 2, 2] += 1/48
-        A[0, 0, 2, 7] += 1/96
-        A[0, 0, 2, 4] += 1/96
-        A[0, 0, 7, 2] += 1/96
-        A[0, 0, 7, 7] += 1/48
-        A[0, 0, 7, 4] += 1/96
-        A[0, 0, 4, 2] += 1/96
-        A[0, 0, 4, 7] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 2, 2] += 1/48
-        A[0, 0, 2, 6] += 1/96
-        A[0, 0, 2, 4] += 1/96
-        A[0, 0, 6, 2] += 1/96
-        A[0, 0, 6, 6] += 1/48
-        A[0, 0, 6, 4] += 1/96
-        A[0, 0, 4, 2] += 1/96
-        A[0, 0, 4, 6] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 3, 3] += 1/48
-        A[0, 0, 3, 6] += 1/96
-        A[0, 0, 3, 4] += 1/96
-        A[0, 0, 6, 3] += 1/96
-        A[0, 0, 6, 6] += 1/48
-        A[0, 0, 6, 4] += 1/96
-        A[0, 0, 4, 3] += 1/96
-        A[0, 0, 4, 6] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 3, 3] += 1/48
-        A[0, 0, 3, 5] += 1/96
-        A[0, 0, 3, 4] += 1/96
-        A[0, 0, 5, 3] += 1/96
-        A[0, 0, 5, 5] += 1/48
-        A[0, 0, 5, 4] += 1/96
-        A[0, 0, 4, 3] += 1/96
-        A[0, 0, 4, 5] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A[0, 0, 0, 0] += 1/48
-        A[0, 0, 0, 5] += 1/96
-        A[0, 0, 0, 4] += 1/96
-        A[0, 0, 5, 0] += 1/96
-        A[0, 0, 5, 5] += 1/48
-        A[0, 0, 5, 4] += 1/96
-        A[0, 0, 4, 0] += 1/96
-        A[0, 0, 4, 5] += 1/96
-        A[0, 0, 4, 4] += 1/48
-        A *= self.scatmat.get_sigs(0)[0, 0]
-        assert_array_almost_equal(scattering, A, decimal=5)
+    # def incident_angle_test2(self):
+    #     ang_one = .5773503
+    #     ang_two = -.5773503
+    #     angles = itr.product([ang_one, ang_two], repeat=2)
+    #     psi_prev = np.array([[1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16],
+    #                          [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    #                          [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+    #                          [49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]])
+    #     psi_new = np.zeros((4, 16))
+    #     for i, ang in enumerate(angles):
+    #         for nid in range(16):
+    #             if not self.smgrid.node(nid).is_interior():
+    #                 psi_new[i, nid] = self.smop.assign_incident(nid, ang, psi_prev)
+    #     psi_correct = np.array([[49, 18, 19, 52, 37, 0, 0, 40, 41, 0, 0, 44, 61, 30, 31, 64],
+    #                             [33, 2,  3,  36, 53, 0, 0, 56, 57, 0, 0, 60, 45, 14, 15, 48],
+    #                             [17, 50, 51, 20, 5,  0, 0, 8,  9,  0, 0, 12, 29, 62, 63, 32],
+    #                             [1,  34, 35, 4,  21, 0, 0, 24, 25, 0, 0, 28, 13, 46, 47, 16]])
+    #     assert_array_equal(psi_new, psi_correct)
 
     def gauss_seidel_test(self):
         n = 4

@@ -24,7 +24,7 @@ class SAAF():
         self.angs = np.zeros((4, 2))
         for i, ang in enumerate(angles):
             self.angs[i] = ang
-    #@jit
+
     def make_lhs(self, angles, group_id):
         k = self.fegrid.get_num_nodes()
         E = self.fegrid.get_num_elts()
@@ -48,10 +48,10 @@ class SAAF():
                 nid = n_global.get_node_id()
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
-                # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.zeros(3)
-                for i in range(3):
-                    fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                # Array of values of basis function evaluated at gauss nodes
+                fn_vals = np.array(
+                    [self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(3)])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -59,28 +59,22 @@ class SAAF():
                     nsid = ns_global.get_node_id()
                     # Coefficients of basis function
                     bns = coef[:, ns]
-                    # Array of values of basis function evaluated at interior gauss nodes
-                    fns_vals = np.zeros(3)
-                    for i in range(3):
-                        fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
-                                       bns[2] * g_nodes[i, 1])
+                    # Array of values of basis function evaluated at gauss nodes
+                    fns_vals = np.array(
+                        [self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+                        for i in range(3)])
                     # Calculate gradients
-                    ngrad = self.fegrid.gradient(e, n)
-                    nsgrad = self.fegrid.gradient(e, ns)
-
+                    grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
                     # Multiply basis functions together at the gauss nodes
-                    f_vals = np.zeros(3)
-                    for i in range(3):
-                       f_vals[i] = fn_vals[i] * fns_vals[i]
+                    f_vals = fn_vals * fns_vals
                     # Integrate for A (basis function derivatives)
                     area = self.fegrid.element_area(e)
-                    A = inv_sigt*(angles@ngrad)*(angles@nsgrad)*area
+                    A = inv_sigt*(angles@grad[0])*(angles@grad[1])*area
                     # Integrate for B (basis functions multiplied)
                     integral = self.fegrid.gauss_quad(e, f_vals)
                     C = sig_t * integral
-
                     sparse_matrix[nid, nsid] += A + C
-                    #Check if boundary nodes
+                    # Check if boundary nodes
                     if not n_global.is_interior() and not ns_global.is_interior():
                         # Assign boundary id, marks end of region along boundary where basis function is nonzero
                         bid = nsid
@@ -91,7 +85,8 @@ class SAAF():
                             if verts == -1: # Means the whole element is a corner
                                 # We have to calculate boundary integral twice, once for each other vertex
                                 # Find the other vertices
-                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                all_verts = np.array(
+                                    self.fegrid.element(e).get_vertices())
                                 vert_local_idx = np.where(all_verts == nid)[0][0]
                                 other_verts = np.delete(all_verts, vert_local_idx)
                                 # Calculate boundary integrals for other vertices
@@ -117,8 +112,7 @@ class SAAF():
                             pass
         return sparse_matrix
 
-    #@jit
-    def make_rhs(self, group_id, q, angles, phi_prev=None, psi_prev=None):
+    def make_rhs(self, group_id, q, angles, phi_prev=None):
         angles = np.array(angles)
         # Get num elements
         E = self.fegrid.get_num_elts()
@@ -191,13 +185,8 @@ class SAAF():
         G = self.num_groups
         s = sum(scatmat[group_id, g_prime]*phi[g_prime] for g_prime in range(G) if group_id != g_prime)
         s += scatmat[group_id, group_id]*phi[group_id]
-        # for g in range(G):
-        #     ss = scatmat[g_prime, group_id]
-        #     if ss != 0:
-        #         ssource += scatmat[group_id, group_id]*phi[g_prime]
         return s
 
-    #@jit
     def assign_normal(self, nid, bid):
         pos_n = self.fegrid.node(nid).get_position()
         pos_ns = self.fegrid.node(bid).get_position()
@@ -213,25 +202,23 @@ class SAAF():
             return -1
         return normal
 
-    #@jit
-    def assign_incident(self, nid, angles, psi_prev):
-        pos = self.fegrid.node(nid).get_position()
-        # figure out which boundary
-        reflection = np.ones(2)
-        if self.fegrid.is_corner(nid):
-            reflection = np.array([-1, -1])
-        elif pos[0] == self.xmax or pos[0] == self.xmin:
-            reflection = np.array([-1, 1])
-        elif pos[1] == self.ymax or pos[1] == self.ymin:
-            reflection = np.array([1, -1])
-        else:
-            raise RuntimeError("Boundary Error")
-        incident_angle = angles*reflection
-        ia_idx = np.where((self.angs == incident_angle).all(axis=1))[0][0]
-        incident_flux = psi_prev[ia_idx, nid]
-        return incident_flux
+    # def assign_incident(self, nid, angles, psi_prev):
+    #     pos = self.fegrid.node(nid).get_position()
+    #     # figure out which boundary
+    #     reflection = np.ones(2)
+    #     if self.fegrid.is_corner(nid):
+    #         reflection = np.array([-1, -1])
+    #     elif pos[0] == self.xmax or pos[0] == self.xmin:
+    #         reflection = np.array([-1, 1])
+    #     elif pos[1] == self.ymax or pos[1] == self.ymin:
+    #         reflection = np.array([1, -1])
+    #     else:
+    #         raise RuntimeError("Boundary Error")
+    #     incident_angle = angles*reflection
+    #     ia_idx = np.where((self.angs == incident_angle).all(axis=1))[0][0]
+    #     incident_flux = psi_prev[ia_idx, nid]
+    #     return incident_flux
 
-    #@jit
     def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
         pos_n = self.fegrid.node(nid).get_position()
         pos_ns = self.fegrid.node(bid).get_position()
@@ -265,8 +252,7 @@ class SAAF():
         boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
         return boundary_integral
 
-    #@jit
-    def get_scalar_flux(self, group_id, source, phi_prev, psi_prev=None):
+    def get_scalar_flux(self, group_id, source, phi_prev):
         # TODO: S4 Angular Quadrature for 2D
         #S2 quadrature
         ang_one = .5773503
@@ -283,60 +269,11 @@ class SAAF():
             scalar_flux += np.pi*ang_fluxes[i]
         return scalar_flux, ang_fluxes
 
-    #@jit
-    def get_ang_flux(self, group_id, source, ang, phi_prev, psi_prev=None):
+    def get_ang_flux(self, group_id, source, ang, phi_prev):
         lhs = self.make_lhs(ang, group_id)
-        rhs = self.make_rhs(group_id, source, ang, phi_prev, psi_prev)
+        rhs = self.make_rhs(group_id, source, ang, phi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
-
-    # def build_scattering_matrix(self):
-    #     k = self.fegrid.get_num_nodes()
-    #     E = self.fegrid.get_num_elts()
-    #     G = self.num_groups
-    #     scattering_matrix = np.zeros((G, G, k, k))
-    #     for g in range(G):
-    #         for g_prime in range(G):
-    #             for e in range(E):
-    #                 midx = self.fegrid.get_mat_id(e)
-    #                 scatmat = self.mat_data.get_sigs(midx)
-    #                 sig_s = scatmat[g, g_prime]
-    #                 coef = self.fegrid.basis(e)
-    #                 g_nodes = self.fegrid.gauss_nodes(e)
-    #                 for n in range(3):
-    #                     n_global = self.fegrid.get_node(e, n)
-    #                     nid = n_global.get_node_id()
-    #                     bn = coef[:, n]
-    #                     fn_vals = np.zeros(3)
-    #                     for i in range(3):
-    #                         fn_vals[i] = self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-    #                     for ns in range(3):
-    #                         ns_global = self.fegrid.get_node(e, ns)
-    #                         nsid = ns_global.get_node_id()
-    #                         bns = coef[:, ns]
-    #                         fns_vals = np.zeros(3)
-    #                         for i in range(3):
-    #                             fns_vals[i] = self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-    #                         f_vals = np.zeros(3)
-    #                         for i in range(3):
-    #                            f_vals[i] = fn_vals[i] * fns_vals[i]
-    #                         integral = self.fegrid.gauss_quad(e, f_vals)
-    #                         scattering_matrix[g, g_prime, nid, nsid] += sig_s*integral
-    #     return scattering_matrix
-    #
-    # def make_external_source(self, q):
-    #     E = self.fegrid.get_num_elts()
-    #     n = self.fegrid.get_num_nodes()
-    #     external_source = np.zeros(n)
-    #     for e in range(E):
-    #         for n in range(3):
-    #             n_global = self.fegrid.get_node(e, n)
-    #             nid = n_global.get_node_id()
-    #             ngrad = self.fegrid.gradient(e, n)
-    #             area = self.fegrid.element_area(e)
-    #             q_fixed = q[e]/(4*np.pi)
-    #             external_source[nid] += q_fixed*(area/3)
-    #     return external_source
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=50, tol=1e-2):
         print("Starting Group ", group_id)
@@ -385,27 +322,3 @@ class SAAF():
             if np.allclose(phis, phis_prev, rtol=tol):
                 break
         return phis, ang_fluxes
-
-    # def solve_outer(self, source, max_iter=50, tol=1e-2):
-    #     G = self.num_groups
-    #     N = self.fegrid.get_num_nodes()
-    #     phis = np.zeros((G, N))
-    #     ang_fluxes = np.zeros((G, 4, N))
-    #     it = 0
-    #     res = 100
-    #     for it_count in range(1000):
-    #         print("Gauss-Seidel Iteration: ", it_count)
-    #         phis_prev = np.copy(phis)
-    #         for g in range(G):
-    #             p, a = self.solve_in_group(source, g, phis)
-    #             phis[g] = p
-    #             ang_fluxes[g] = a
-    #             # GS Update
-    #             s = sum(np.matmul(H[g, g_prime], phis[g_prime]) for g_prime in range(G) if g != g_prime)
-    #             H_inv = np.linalg.inv(H[g, g])
-    #             phis[g] = np.matmul(H_inv, (q - s))
-    #         res = np.max(np.abs(phis_prev - phis))
-    #         print("GS Norm: ", res)
-    #         if np.allclose(phis, phis_prev, rtol=tol):
-    #             break
-    #     return phis, ang_fluxes
