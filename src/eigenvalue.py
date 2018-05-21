@@ -8,7 +8,7 @@ def power_iteration(A, v0, max_iter=50, tol=1e-2):
         print("Starting Eigenvalue Iteration: ", it)
         w = np.matmul(A, vec)
         vec_new = w/np.linalg.norm(w, ord=2)
-        eigenvalue_new = np.matmul(vec.transpose(), np.matmul(A, vec))
+        eigenvalue_new = np.matmul(vec_new.transpose(), np.matmul(A, vec_new))
         res = np.abs(eigenvalue_new - eigenvalue)
         print("Norm: ", res)
         if res < tol:
