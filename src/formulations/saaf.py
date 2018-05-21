@@ -126,7 +126,7 @@ class SAAF():
                             pass
         return sparse_matrix
 
-    def make_rhs(self, group_id, q, angles, phi_prev=None):
+    def make_rhs(self, group_id, q, angles, phi_prev=None, eigenvalue=False):
         angles = np.array(angles)
         # Get num elements
         E = self.fegrid.get_num_elts()
@@ -150,6 +150,9 @@ class SAAF():
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
+            if eigenvalue:
+                sigf = self.mat_data.get_sigf(midx, group_id)
+                nu = self.mat_data.get_nu()
             coef = self.fegrid.basis(e)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
@@ -190,13 +193,18 @@ class SAAF():
                         e, phi_vals[g] * (angles @ ngrad))
                 ssource = self.compute_scattering_source(
                     midx, integral, group_id)
-                rhs_at_node[nid] += inv_sigt * ssource / (4 * np.pi)
-                # First Fixed Source Term
-                q_fixed = q[e] / (4 * np.pi)
-                rhs_at_node[nid] += q_fixed * (area / 3)
-                # Second Fixed Source Term
-                rhs_at_node[
-                    nid] += inv_sigt * q_fixed * (angles @ ngrad) * area
+                rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
+                # First Fixed/Fission Source Term
+                if eigenvalue:
+                    rhs_at_node += nu*sigf*integral_product[group_id]
+                else:
+                    q_fixed = q[e] / (4 * np.pi)
+                    rhs_at_node[nid] += q_fixed * (area / 3)
+                # Second Fixed/Fission Source Term
+                if eigenvalue:
+                    rhs_at_node[nid] += inv_sigt*nu*sigf*integral[group_id]
+                else:
+                    rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
 
     def compute_scattering_source(self, midx, phi, group_id):
@@ -313,3 +321,32 @@ class SAAF():
             if np.allclose(phis, phis_prev, rtol=tol):
                 break
         return phis, ang_fluxes
+
+    def power_iteration(self, source, max_iter=50, tol=1e-2):
+        G = self.num_groups
+        N = self.fegrid.get_num_nodes()
+        phis = np.zeros((G, N))
+        ang_fluxes = np.zeros((G, 4, N))
+        eigenvalues = np.zeros(G)
+        for it_count in range(max_iter):
+            print("Eigenvalue Iteration: ", it_count)
+            phis, ang_fluxes = self.solve_outer(source)
+            new_vecs = np.array([phis[i]/np.linalg.norm(phis[i], ord=2)
+                                 for i in range(G)])
+            new_eigenvalues = np.array([np.matmul(new_vecs[i].transpose(), phis[i])
+                                        for i in range(G)])
+            res = np.max(np.abs(new_eigenvalues - eigenvalues))
+            print("Norm: ", res)
+            if res < tol:
+                break
+            vecs = new_vecs
+            eigenvalues = new_eigenvalues
+        return phis, ang_fluxes, eigenvalues
+
+    def solve(self, source, eigenvalue=False):
+        if eigenvalue:
+            phis, ang_fluxes, eigenvalues = self.power_iteration(source)
+            return phis, ang_fluxes, eigenvalues
+        else:
+            phis, ang_fluxes = self.solve_outer(source)
+            return phis, ang_fluxes 
