@@ -24,6 +24,7 @@ class Materials():
             self.D = np.zeros((self.num_mats, self.num_groups))
             self.nu = np.zeros((self.num_mats, self.num_groups))
             self.inv_sigt = np.zeros((self.num_mats, self.num_groups))
+            self.chi = np.zeros((self.num_mats, self.num_groups))
             for i in range(self.num_mats):
                 line = fp.readline()
                 attributes = line.split("|")
@@ -31,11 +32,11 @@ class Materials():
                 for j in range(self.num_groups):
                     self.sig_t[i, j] = float(attributes[3])
                     self.sig_a[i, j] = float(attributes[4])
-                    # Collapse Scattering Matrix
                     scat = np.array(attributes[5].split())
-                    self.sig_s[i, j] = scat.astype(float)
+                    self.sig_s[i, :, j] = scat.astype(float)
                     self.sig_f[i, j] = float(attributes[6])
                     self.nu[i, j] = float(attributes[7])
+                    self.chi[i, j] = float(attributes[8])
 
                     # Derived quantities
                     self.D[i, j] = 1 / (3 * self.sig_t[i, j])
@@ -48,6 +49,9 @@ class Materials():
 
     def get_name(self, mat_id):
         return self.names[mat_id]
+
+    def get_num_mats(self):
+        return self.num_mats
 
     def get_num_groups(self):
         return self.num_groups
@@ -64,6 +68,9 @@ class Materials():
     def get_sigf(self, mat_id, group_id):
         return self.sig_f[mat_id, group_id]
 
+    def get_chi(self, mat_id, group_id):
+        return self.chi[mat_id, group_id]
+        
     def get_diff(self, mat_id, group_id):
         return self.D[mat_id, group_id]
 
