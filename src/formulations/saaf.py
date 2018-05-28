@@ -360,31 +360,31 @@ class SAAF():
     def power_iteration(self, source, max_iter=50, tol=1e-2):
         G = self.num_groups
         N = self.fegrid.get_num_nodes()
-        phis = np.zeros((G, N))
+        eig_vecs = np.ones((G, N))
         ang_fluxes = np.zeros((G, 4, N))
         eigenvalues = np.zeros(G)
         # initialize fission Source
         fission_source = np.ones((G, 4, 2, N))
         for it_count in range(max_iter):
             print("Eigenvalue Iteration: ", it_count)
-            phis, ang_fluxes = self.solve_outer(source, True, fission_source=fission_source)
-            new_vecs = np.array([phis[i]/np.linalg.norm(phis[i], ord=2)
+            vec_products, ang_fluxes = self.solve_outer(source, True, fission_source=fission_source)
+            new_eig_vecs = np.array([vec_products[i]/np.linalg.norm(vec_products[i], ord=2)
                                  for i in range(G)])
-            new_eigenvalues = np.array([np.matmul(new_vecs[i].transpose(), phis[i])
-                                        for i in range(G)])
-            res = np.max(np.abs(new_eigenvalues - eigenvalues))
+            #new_eigenvalues = np.array([np.matmul(new_vecs[i].transpose(), phis[i])
+            #                            for i in range(G)])
+            res = np.max(np.abs(new_eig_vecs - eig_vecs))
             print("Norm: ", res)
             if res < tol:
                 break
             # Calculate new fission Source
             for g in range(G):
                 for i, ang in enumerate(self.angs):
-                    fission_source[g, i] = self.make_rhs(g, source, ang, phi_prev=phis, fission=True)
+                    fission_source[g, i] = self.make_rhs(g, source, ang, phi_prev=vec_products, fission=True)
             print("Fission Source: ", fission_source)
-            vecs = new_vecs
-            eigenvalues = new_eigenvalues
+            eig_vecs = new_eig_vecs
+        eigenvalues = np.array([np.matmul(eig_vecs[i].transpose(), vec_products[i]) for i in range(G)])
         print("Eigenvalues are: ", eigenvalues)
-        return phis, ang_fluxes, eigenvalues
+        return vec_products, ang_fluxes, eigenvalues
 
     def solve(self, source, eigenvalue=False):
         if eigenvalue:
