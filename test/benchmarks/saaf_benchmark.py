@@ -32,16 +32,17 @@ def filename_to_problem(func):
 
 @filename_to_problem
 def test_problem(problem):
-    source = np.ones(problem.n_elements)
-    phis, angs = problem.op.solve_outer(source)
+    source = 10*np.ones((problem.num_groups, problem.n_elements))
+    #phis, angs, eigenvalues = problem.op.solve(source, eigenvalue=True)
+    phis, angs = problem.op.solve(source, eigenvalue=False)
 
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
-        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g), mesh_plot=True)
+        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
         ang_fluxes = angs[g]
         for i in range(4):
-            plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g), mesh_plot=True)
+            plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g))
 
 @filename_to_problem
 def test_1d(problem):
@@ -55,6 +56,20 @@ def make_lhs(problem):
     source = np.ones(problem.n_elements)
     A = problem.op.make_lhs([.5773503, -.5773503], 0)
     print(A)
+@filename_to_problem
+def get_mat_stats(problem):
+    num_mats = problem.mats.get_num_mats()
+    num_groups = problem.mats.get_num_groups()
+    for mat in range(num_mats):
+        print("Material Name: ", problem.mats.get_name(mat))
+        print("Scattering Matrix")
+        print(problem.mats.get_sigs(mat))
+        for group in range(num_groups):
+            print("Group Number ", group)
+            print("Total XS: ", problem.mats.get_sigt(mat, group))
+            print("Fission XS: ", problem.mats.get_sigf(mat, group))
+            print("Absorption XS: ", problem.mats.get_siga(mat, group))
+            print("Nu: ", problem.mats.get_nu(mat, group))
 
 @filename_to_problem
 def profiling(problem):
@@ -92,12 +107,11 @@ def plot1d(sol, filename, y):
 def plot_mats(problem):
     plot_mesh(problem.grid, problem.mats, 'meshplot')
 
-problem = to_problem("symmetric", "c5g7mod", "test")
-print("Total XS: ", problem.mats.get_sigt(0, 0))
 #plot1d(problem.filename)
 #test_1d(problem.filename)
 #make_lhs(problem.filename)
-test_problem("symmetric", "c5g7mod", "test")
+test_problem("symmetric_fine", "scattering1g", "test1")
+#get_mat_stats("3A", "3A", "3A")
 #test_multigroup("std", "scattering1g", "test")
 #profiling("symmetric_fine", "scattering1g", "test")
 #plot_mats(problem.filename)

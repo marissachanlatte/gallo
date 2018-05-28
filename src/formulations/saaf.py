@@ -130,7 +130,7 @@ class SAAF():
         angles = np.array(angles)
         # Get num elements
         E = self.fegrid.get_num_elts()
-        # Get num interior nodes
+        # Get num nodes
         n = self.fegrid.get_num_nodes()
         if fission:
             rhs_at_node = np.zeros((2, n))
@@ -148,7 +148,7 @@ class SAAF():
         triangles = np.array(
             [self.fegrid.element(i).get_vertices() for i in range(elts)])
         triang = tri.Triangulation(x, y, triangles=triangles)
-        # Interpolate Phis in All Groups
+
         G = self.num_groups
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
@@ -195,26 +195,24 @@ class SAAF():
                 integral = np.zeros(G)
                 for g in range(G):
                     integral[g] = self.fegrid.gauss_quad(
-                        e, phi_vals[g] * (angles @ ngrad))
+                        e, phi_vals[g]*(angles@ngrad))
                 ssource = self.compute_scattering_source(
                     midx, integral, group_id)
                 if not fission:
                     rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 # First Fixed/Fission Source Term
                 if eigenvalue:
-                    #rhs_at_node[nid] += chi*nu*sigf*integral_product[group_id]
-                    rhs_at_node[nid] += fission_source[0, nid]
+                    rhs_at_node[nid] += fission_source[0, nid] * (area / 3)
                 elif fission:
-                    rhs_at_node[0, nid] += chi*nu*sigf*integral_product[group_id]
+                    rhs_at_node[0, nid] += chi*nu*sigf*integral_product[group_id]/(4*np.pi) # store 1/4*pi as a constant to increase speed
                 else:
-                    q_fixed = q[e] / (4 * np.pi)
+                    q_fixed = q[group_id, e] / (4 * np.pi)
                     rhs_at_node[nid] += q_fixed * (area / 3)
                 # Second Fixed/Fission Source Term
                 if eigenvalue:
-                    #rhs_at_node[nid] += inv_sigt*chi*nu*sigf*integral[group_id]
-                    rhs_at_node[nid] += fission_source[1, nid]
+                    rhs_at_node[nid] += fission_source[1, nid] * area
                 elif fission:
-                    rhs_at_node[1, nid] += inv_sigt*chi*nu*sigf*integral[group_id]
+                    rhs_at_node[1, nid] += inv_sigt*chi*nu*sigf*integral[group_id]/(4*np.pi)
                 else:
                     rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
@@ -336,7 +334,7 @@ class SAAF():
                 ang_fluxes[g] = a
             res = np.max(np.abs(phis_prev - phis))
             print("GS Norm: ", res)
-            if np.allclose(phis, phis_prev, rtol=tol):
+            if res < tol:
                 break
         return phis, ang_fluxes
 
@@ -351,8 +349,6 @@ class SAAF():
         for it_count in range(max_iter):
             print("Eigenvalue Iteration: ", it_count)
             phis, ang_fluxes = self.solve_outer(source, True, fission_source=fission_source)
-            for g in range(G):
-                print("LINALG NORMS: ", np.linalg.norm(phis[g]))
             new_vecs = np.array([phis[i]/np.linalg.norm(phis[i], ord=2)
                                  for i in range(G)])
             new_eigenvalues = np.array([np.matmul(new_vecs[i].transpose(), phis[i])
