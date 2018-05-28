@@ -301,10 +301,22 @@ class SAAF():
 
     def solve_in_group(self, source, group_id, phi_prev, eig_bool, fission_source=None, max_iter=50,
                        tol=1e-2):
-        print("Starting Group ", group_id)
+        num_mats = self.mat_data.get_num_mats()
+        num_groups = self.mat_data.get_num_groups()
+        for mat in range(num_mats):
+            scatmat = self.mat_data.get_sigs(mat)
+            if np.count_nonzero(scatmat) == 0:
+                scattering = False
+            else:
+                scattering = True
+        if num_groups > 1:
+            print("Starting Group ", group_id)
         for i in range(max_iter):
-            print("Within-Group Iteration: ", i)
+            if scattering:
+                print("Within-Group Iteration: ", i)
             phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev, eig_bool, fission_source=fission_source)
+            if not scattering:
+                break
             norm = np.linalg.norm(phi - phi_prev[group_id], 2)
             print("Norm: ", norm)
             if norm < tol:
@@ -312,9 +324,11 @@ class SAAF():
             phi_prev[group_id] = np.copy(phi)
         if i == max_iter:
             print("Warning: maximum number of iterations reached in solver")
-        print("Finished Group ", group_id)
-        print("Number of Within-Group Iterations: ", i + 1)
-        print("Final Phi Norm: ", norm)
+        if num_groups > 1:
+            print("Finished Group ", group_id)
+        if scattering:
+            print("Number of Within-Group Iterations: ", i + 1)
+            print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
 
     def solve_outer(self, source, eig_bool, fission_source=None, max_iter=50, tol=1e-2):
@@ -323,7 +337,8 @@ class SAAF():
         phis = np.ones((G, N))
         ang_fluxes = np.zeros((G, 4, N))
         for it_count in range(max_iter):
-            print("Gauss-Seidel Iteration: ", it_count)
+            if G != 1:
+                print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
             for g in range(G):
                 if eig_bool:
@@ -332,8 +347,12 @@ class SAAF():
                     p, a = self.solve_in_group(source, g, phis, eig_bool, fission_source=None)
                 phis[g] = p
                 ang_fluxes[g] = a
-            res = np.max(np.abs(phis_prev - phis))
-            print("GS Norm: ", res)
+            if G == 1:
+                break
+            else:
+                res = np.max(np.abs(phis_prev - phis))
+                print("GS Norm: ", res)
+
             if res < tol:
                 break
         return phis, ang_fluxes
@@ -361,6 +380,7 @@ class SAAF():
             for g in range(G):
                 for i, ang in enumerate(self.angs):
                     fission_source[g, i] = self.make_rhs(g, source, ang, phi_prev=phis, fission=True)
+            print("Fission Source: ", fission_source)
             vecs = new_vecs
             eigenvalues = new_eigenvalues
         print("Eigenvalues are: ", eigenvalues)
