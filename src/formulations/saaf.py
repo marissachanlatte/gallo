@@ -175,7 +175,8 @@ class SAAF():
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 if eigenvalue:
-                    rhs_at_node[nid] += source[group_id, e]*(area/3)
+                    angle_id = np.where(self.angs==angles)[0][0]
+                    rhs_at_node[nid] += source[group_id, angle_id, nid]*(area/3)
                 else:
                     # First Fixed Source Term
                     q_fixed = source[group_id, e] / (4 * np.pi)
@@ -369,7 +370,7 @@ class SAAF():
                 break
         return phis, ang_fluxes
 
-    def power_iteration(self, source, max_iter=50, tol=1e-2):
+    def power_iteration(self, max_iter=50, tol=1e-2):
         eig_vecs = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         eigenvalues = np.zeros(self.num_groups)
@@ -379,7 +380,7 @@ class SAAF():
             print("Eigenvalue Iteration: ", it_count)
             vec_products, ang_fluxes = self.solve_outer(fission_source, True)
             new_eig_vecs = np.array([vec_products[i]/np.linalg.norm(vec_products[i], ord=2)
-                                 for i in range(G)])
+                                 for i in range(self.num_groups)])
             #new_eigenvalues = np.array([np.matmul(new_vecs[i].transpose(), phis[i])
             #                            for i in range(G)])
             res = np.max(np.abs(new_eig_vecs - eig_vecs))
@@ -397,7 +398,7 @@ class SAAF():
 
     def solve(self, source, eigenvalue=False):
         if eigenvalue:
-            phis, ang_fluxes, eigenvalues = self.power_iteration(source)
+            phis, ang_fluxes, eigenvalues = self.power_iteration()
             return phis, ang_fluxes, eigenvalues
         else:
             eig_bool = False
