@@ -3,7 +3,7 @@ import matplotlib.tri as tri
 import numpy as np
 
 
-def _setup_trianlges(grid):
+def _setup_triangles(grid):
     # Get number of nodes
     nodes = grid.get_num_nodes()
     # Setup xy
@@ -19,7 +19,7 @@ def _setup_trianlges(grid):
     return triang
 
 def plot(grid, solution, filename):
-    triang = _setup_trianlges(grid)
+    triang = _setup_triangles(grid)
     # Interpolate to Refined Triangular Grid
     interp_lin = tri.LinearTriInterpolator(triang, solution)
     refiner = tri.UniformTriRefiner(triang)
@@ -30,14 +30,17 @@ def plot(grid, solution, filename):
     # Plot and save to file
     plt.figure()
     plt.triplot(triang)
-    plt.tricontourf(tri_refi, sol_refi, levels=np.linspace(inf, sup, 11))
+    if inf != sup:
+        plt.tricontourf(tri_refi, sol_refi, levels=np.linspace(inf, sup, 11))
+    else:
+        plt.tricontourf(tri_refi, sol_refi)
     plt.colorbar()
     plt.savefig(filename)
     plt.clf()
     plt.close()
 
-def plot_mesh(grid, mats, filename):
-    triang = _setup_trianlges(grid)
+def plot_mesh(grid, filename):
+    triang = _setup_triangles(grid)
     elts = grid.get_num_elts()
     mats = np.zeros(elts)
     for i in range(elts):
