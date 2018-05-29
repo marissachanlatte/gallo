@@ -152,11 +152,7 @@ class SAAF():
                 ngrad = self.fegrid.gradient(e, n)
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
-                phi_vals = np.zeros((self.num_groups, 3))
-                for g in range(self.num_groups):
-                    interp = tri.LinearTriInterpolator(triang, phi_prev[g])
-                    for i in range(3):
-                        phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
+                phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # First Scattering Term
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
@@ -175,8 +171,8 @@ class SAAF():
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 if eigenvalue:
-                    angle_id = np.where(self.angs==angles)[0][0]
-                    rhs_at_node[nid] += source[group_id, angle_id, nid]*(area/3)
+                     rhs_at_node[nid] += source[group_id, nid]*(area/3)
+                     rhs_at_node[nid] += inv_sigt*source[group_id, nid]*(angles@ngrad)*area
                 else:
                     # First Fixed Source Term
                     q_fixed = source[group_id, e] / (4 * np.pi)
@@ -197,19 +193,24 @@ class SAAF():
         triang = tri.Triangulation(x, y, triangles=triangles)
         return triang
 
-    def make_fission_source(self, group_id, angles, phi_prev):
-        angles = np.array(angles)
+    def phi_at_gauss_nodes(self, triang, phi_prev, g_nodes):
+        phi_vals = np.zeros((self.num_groups, 3))
+        for g in range(self.num_groups):
+            interp = tri.LinearTriInterpolator(triang, phi_prev[g])
+            for i in range(3):
+                phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
+        return phi_vals
+
+    def make_fission_source(self, group_id, phi_prev):
         E = self.fegrid.get_num_elts()
         fission_source = np.zeros(self.num_nodes)
         triang = self.setup_triangulation()
-        # Interpolate Phi
-        G = self.num_groups
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             chi = self.mat_data.get_chi(midx, group_id)
-            sigf = self.mat_data.get_sigf(midx, group_id)
-            nu = self.mat_data.get_nu(midx, group_id)
+            sigf = np.array([self.mat_data.get_sigf(midx, g_prime) for g_prime in range(self.num_groups)])
+            nu = np.array([self.mat_data.get_nu(midx, g_prime) for g_prime in range(self.num_groups)])
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
@@ -228,30 +229,20 @@ class SAAF():
                 ngrad = self.fegrid.gradient(e, n)
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
-                phi_vals = np.zeros((G, 3))
-                for g in range(G):
-                    interp = tri.LinearTriInterpolator(triang, phi_prev[g])
-                    for i in range(3):
-                        phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
-                # Multiply Phi & Basis Function
+                phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 product = fn_vals * phi_vals
-                integral_product = np.zeros(G)
-                for g in range(G):
+                integral_product = np.zeros(self.num_groups)
+                for g in range(self.num_groups):
                     integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                integral = np.zeros(G)
-                for g in range(G):
-                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                # First Fission Source Term
-                fission_source[nid] += chi*nu*sigf*integral_product[group_id]/(4*np.pi)
-                # Second Fission Source Term
-                fission_source[nid] += inv_sigt*chi*nu*sigf*integral[group_id]/(4*np.pi)
+                fiss = np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
+                        for g_prime in range(self.num_groups)]))
+                fission_source[nid] += chi*fiss/(4*np.pi)
         return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        G = self.num_groups
         s = sum(scatmat[group_id, g_prime] * phi[g_prime]
-                for g_prime in range(G) if group_id != g_prime)
+                for g_prime in range(self.num_groups) if group_id != g_prime)
         s += scatmat[group_id, group_id] * phi[group_id]
         return s
 
@@ -370,36 +361,49 @@ class SAAF():
                 break
         return phis, ang_fluxes
 
+    def compute_collapsed_fission(self, phi):
+        triang = self.setup_triangulation()
+        collapsed_fission = 0
+        for g in range(self.num_groups):
+            for e in range(self.elts):
+                midx = self.fegrid.get_mat_id(e)
+                nu = self.mat_data.get_nu(midx, g)
+                sig_f = self.mat_data.get_sigf(midx, g)
+                g_nodes = self.fegrid.gauss_nodes(e)
+                phi_vals = self.phi_at_gauss_nodes(triang, phi, g_nodes)
+                phi_integral = self.fegrid.gauss_quad(e, phi_vals[g])
+                collapsed_fission += nu*sig_f*phi_integral
+        return collapsed_fission
+
     def power_iteration(self, max_iter=50, tol=1e-2):
-        eig_vecs = np.ones((self.num_groups, self.num_nodes))
-        ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
-        eigenvalues = np.zeros(self.num_groups)
-        # initialize fission Source
-        fission_source = np.ones((self.num_groups, 4, self.num_nodes))
+        # Initialize Guesses
+        k = 1
+        phi = np.ones((self.num_groups, self.num_nodes))
+        fiss_collapsed = self.compute_collapsed_fission(phi)
         for it_count in range(max_iter):
             print("Eigenvalue Iteration: ", it_count)
-            vec_products, ang_fluxes = self.solve_outer(fission_source, True)
-            new_eig_vecs = np.array([vec_products[i]/np.linalg.norm(vec_products[i], ord=2)
-                                 for i in range(self.num_groups)])
-            #new_eigenvalues = np.array([np.matmul(new_vecs[i].transpose(), phis[i])
-            #                            for i in range(G)])
-            res = np.max(np.abs(new_eig_vecs - eig_vecs))
-            print("Norm: ", res)
-            if res < tol:
+            fission_source = np.array([self.make_fission_source(g, phi)/k
+                                for g in range(self.num_groups)])
+            new_phi, psi = self.solve_outer(fission_source, True)
+            new_fiss_collapsed = self.compute_collapsed_fission(new_phi)
+            new_k = k*new_fiss_collapsed/fiss_collapsed
+            err_k = np.abs((new_k - k))/np.abs(new_k)
+            err_phi = np.max(np.array([np.linalg.norm(new_phi[g] - phi[g], ord=2)
+                                       /np.linalg.norm(new_phi[g], ord=2)
+                                       for g in range(self.num_groups)]))
+            print("Eigenvalue Norm: ", err_k)
+            if err_k < tol and err_phi < tol:
                 break
-            # Calculate new fission Source
-            for g in range(self.num_groups):
-                for i, ang in enumerate(self.angs):
-                    fission_source[g, i] = self.make_fission_source(g, ang, vec_products)
-            eig_vecs = new_eig_vecs
-        eigenvalues = np.array([np.matmul(eig_vecs[i].transpose(), vec_products[i]) for i in range(G)])
-        print("Eigenvalues are: ", eigenvalues)
-        return vec_products, ang_fluxes, eigenvalues
+            phi = new_phi
+            k = new_k
+            fiss_collapsed = new_fiss_collapsed
+        print("k-effective: ", k)
+        return phi, psi, k
 
     def solve(self, source, eigenvalue=False):
         if eigenvalue:
-            phis, ang_fluxes, eigenvalues = self.power_iteration()
-            return phis, ang_fluxes, eigenvalues
+            phis, ang_fluxes, eigenvalue = self.power_iteration()
+            return phis, ang_fluxes, eigenvalue
         else:
             eig_bool = False
             phis, ang_fluxes = self.solve_outer(source, eig_bool)

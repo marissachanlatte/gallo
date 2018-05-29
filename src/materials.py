@@ -70,7 +70,10 @@ class Materials():
 
     def get_chi(self, mat_id, group_id):
         return self.chi[mat_id, group_id]
-        
+
+    def get_all_chi(self):
+        return np.array([self.chi[0]]).transpose()
+
     def get_diff(self, mat_id, group_id):
         return self.D[mat_id, group_id]
 
