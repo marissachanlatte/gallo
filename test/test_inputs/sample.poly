@@ -1,0 +1,26 @@
+### PROBLEM TITLE ###
+### of Vertices/Dimension ###
+4   2    0    0
+### Vertex/X/Y ###
+0   0  0  0
+1   1  0  0
+2   1  1  0
+3   0  1  0
+### Number of Segments ###
+4 0
+### Segment Number/Endpoint/Endpoint ###
+0   0   1
+1   1   2
+2   2   3
+3   3   0
+### Number of Holes ###
+0
+### Number of Materials ###
+1
+############################
+###   MATERIALS LEGEND   ###
+###   Test            0  ###
+############################
+
+### Region Number/X/Y/Material ###
+0   .5      .5      0
