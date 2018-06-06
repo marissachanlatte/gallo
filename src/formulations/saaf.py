@@ -126,7 +126,7 @@ class SAAF():
                             pass
         return sparse_matrix
 
-    def make_rhs(self, group_id, source, angles, phi_prev=None, eigenvalue=False):
+    def make_rhs(self, group_id, source, angles, angle_id, phi_prev=None, eigenvalue=False):
         angles = np.array(angles)
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi
@@ -165,14 +165,12 @@ class SAAF():
                 # Second Scattering Term
                 integral = np.zeros(self.num_groups)
                 for g in range(self.num_groups):
-                    integral[g] = self.fegrid.gauss_quad(
-                        e, phi_vals[g]*(angles@ngrad))
+                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
                 ssource = self.compute_scattering_source(
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 if eigenvalue:
-                     rhs_at_node[nid] += source[group_id, nid]*(area/3)
-                     rhs_at_node[nid] += inv_sigt*source[group_id, nid]*(angles@ngrad)*area
+                    rhs_at_node += source[group_id, angle_id, nid]
                 else:
                     # First Fixed Source Term
                     q_fixed = source[group_id, e] / (4 * np.pi)
@@ -201,7 +199,7 @@ class SAAF():
                 phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
         return phi_vals
 
-    def make_fission_source(self, group_id, phi_prev):
+    def make_fission_source(self, group_id, angles, phi_prev):
         E = self.fegrid.get_num_elts()
         fission_source = np.zeros(self.num_nodes)
         triang = self.setup_triangulation()
@@ -231,12 +229,21 @@ class SAAF():
                 # Find Phi at Gauss Nodes
                 phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 product = fn_vals * phi_vals
+                # First Fission Term
+                # Integrate over Element
                 integral_product = np.zeros(self.num_groups)
                 for g in range(self.num_groups):
                     integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                fiss = np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
-                        for g_prime in range(self.num_groups)]))
-                fission_source[nid] += chi*fiss/(4*np.pi)
+                fiss = np.sum(np.array([chi*nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
+                    for g_prime in range(self.num_groups)]))
+                fission_source[nid] += fiss/(4*np.pi)
+                # Second Fission Term
+                integral = np.zeros(self.num_groups)
+                for g in range(self.num_groups):
+                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
+                fiss = np.sum(np.array([chi*nu[g_prime]*sigf[g_prime]*integral[g_prime]
+                    for g_prime in range(self.num_groups)]))
+                fission_source[nid] += inv_sigt*fiss/(4*np.pi)
         return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
@@ -294,9 +301,9 @@ class SAAF():
         boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
         return boundary_integral
 
-    def get_ang_flux(self, group_id, source, ang, phi_prev, eig_bool):
+    def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev, eig_bool):
         lhs = self.make_lhs(ang, group_id)
-        rhs = self.make_rhs(group_id, source, ang, phi_prev, eigenvalue=eig_bool)
+        rhs = self.make_rhs(group_id, source, ang, angle_id, phi_prev, eigenvalue=eig_bool)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
@@ -306,7 +313,7 @@ class SAAF():
         # Iterate over all angle possibilities
         for i, ang in enumerate(self.angs):
             ang = np.array(ang)
-            ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, phi_prev, eig_bool)
+            ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev, eig_bool)
             scalar_flux += np.pi * ang_fluxes[i]
         return scalar_flux, ang_fluxes
 
@@ -380,10 +387,12 @@ class SAAF():
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
         fiss_collapsed = self.compute_collapsed_fission(phi)
+        fission_source = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             print("Eigenvalue Iteration: ", it_count)
-            fission_source = np.array([self.make_fission_source(g, phi)/k
-                                for g in range(self.num_groups)])
+            for g in range(self.num_groups):
+                for i, ang in enumerate(self.angs):
+                    fission_source[g, i] = self.make_fission_source(g, ang, phi)/k
             new_phi, psi = self.solve_outer(fission_source, True)
             new_fiss_collapsed = self.compute_collapsed_fission(new_phi)
             new_k = k*new_fiss_collapsed/fiss_collapsed
