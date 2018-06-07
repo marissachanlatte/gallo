@@ -248,9 +248,9 @@ class SAAF():
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        s = sum(scatmat[group_id, g_prime] * phi[g_prime]
-                for g_prime in range(self.num_groups) if group_id != g_prime)
-        s += scatmat[group_id, group_id] * phi[group_id]
+        s = sum(scatmat[g_prime, group_id] * phi[g_prime]
+                for g_prime in range(self.num_groups)) #if group_id != g_prime)
+        #s += scatmat[group_id, group_id] * phi[group_id]
         return s
 
     def assign_normal(self, nid, bid):
@@ -348,7 +348,7 @@ class SAAF():
             print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
 
-    def solve_outer(self, source, eig_bool, max_iter=50, tol=1e-2):
+    def solve_outer(self, source, eig_bool, max_iter=1, tol=1e-2):
         phis = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):

@@ -33,7 +33,7 @@ class Materials():
                     self.sig_t[i, j] = float(attributes[3])
                     self.sig_a[i, j] = float(attributes[4])
                     scat = np.array(attributes[5].split())
-                    self.sig_s[i, :, j] = scat.astype(float)
+                    self.sig_s[i, j, :] = scat.astype(float)
                     self.sig_f[i, j] = float(attributes[6])
                     self.nu[i, j] = float(attributes[7])
                     self.chi[i, j] = float(attributes[8])
