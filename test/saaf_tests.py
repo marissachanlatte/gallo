@@ -63,7 +63,7 @@ class TestSAAF:
         cls.scatop = SAAF(cls.stdgrid, cls.scatmat)
         cls.scat3op = SAAF(cls.std3grid, cls.scatmat)
 
-        cls.fissionmatfile = "test/test_inputs/fission.mat"
+        cls.fissionmatfile = "test/test_inputs/fissiontest.mat"
         cls.fissionmat = Materials(cls.fissionmatfile)
         cls.fissionop = SAAF(cls.stdgrid, cls.fissionmat)
 
@@ -108,19 +108,19 @@ class TestSAAF:
         q = np.ones((1, 4))
         phi_prev = np.zeros((1, 4))
         angles0 = np.array([.5773503, .5773503])
-        b0 = self.stdop.make_rhs(0, q, angles0, phi_prev=phi_prev)
+        b0 = self.stdop.make_rhs(0, q, angles0, 0, phi_prev=phi_prev)
         hand0 = np.array([-0.03268117,  0.02652582,  0.05920699,  0.02652582])
         ok_(np.allclose(b0, hand0, rtol=1e-7))
         angles1 = np.array([-.5773503, .5773503])
-        b1 = self.stdop.make_rhs(0, q, angles1, phi_prev=phi_prev)
+        b1 = self.stdop.make_rhs(0, q, angles1, 1, phi_prev=phi_prev)
         hand1 = np.array([ 0.01326291, -0.01941825,  0.01326291,  0.0724699])
         ok_(np.allclose(b1, hand1, rtol=1e-7))
         angles2 = np.array([.5773503, -.5773503])
-        b2 = self.stdop.make_rhs(0, q, angles2, phi_prev=phi_prev)
+        b2 = self.stdop.make_rhs(0, q, angles2, 2, phi_prev=phi_prev)
         hand2 = np.array([ 0.01326291,  0.0724699 ,  0.01326291, -0.01941825])
         ok_(np.allclose(b2, hand2, rtol=1e-7))
         angles3 = np.array([-.5773503, -.5773503])
-        b3 = self.stdop.make_rhs(0, q, angles3, phi_prev=phi_prev)
+        b3 = self.stdop.make_rhs(0, q, angles3, 3, phi_prev=phi_prev)
         hand3 = np.array([ 0.05920699,  0.02652582, -0.03268117,  0.02652582])
         ok_(np.allclose(b3, hand3, rtol=1e-7))
 
@@ -147,27 +147,18 @@ class TestSAAF:
                              0.        ,  0.        ,  0.        ,  0.7083334 ]])
         ok_(np.allclose(A0, hand0, rtol=1e-7))
 
-    # def hand_calculation_fission_test(self):
-    #     q = np.ones((1, 4))
-    #     phi_prev = np.ones((1, 4))
-    #     angles = np.array([.5773503, .5773503])
-    #     b = self.fissionop.make_fission_source(0, angles, phi_prev)
-    #     hand_calc = np.array([-0.00970913,  0.02652582,  0.03623495,  0.02652582])
-    #     ok_(np.allclose(b, hand_calc, rtol=1e-7))
-    #     angles = np.array([-.5773503, .5773503])
-    #     b = self.fissionop.make_fission_source(0, angles, phi_prev)
-    #     hand_calc = np.array([ 0.01326291,  0.00355379,  0.01326291,  0.04949786])
-    #     ok_(np.allclose(b, hand_calc, rtol=1e-7))
-    #     angles = np.array([.5773503, -.5773503])
-    #     b = self.fissionop.make_fission_source(0, angles, phi_prev)
-    #     hand_calc = np.array([ 0.01326291,  0.04949786,  0.01326291,  0.00355379])
-    #     ok_(np.allclose(b, hand_calc, rtol=1e-7))
-    #     angles = np.array([-.5773503, -.5773503])
-    #     b = self.fissionop.make_fission_source(0, angles, phi_prev)
-    #     hand_calc = np.array([ 0.03623495,  0.02652582, -0.00970913,  0.02652582])
-    #     ok_(np.allclose(b, hand_calc, rtol=1e-7))
+    def collapsed_fission_test(self):
+        phi = np.ones((1, 4))
+        sf = self.stdop.compute_collapsed_fission(phi)
+        eq_(1, sf)
 
-
+    def fission_source_test(self):
+        group_id = 0
+        phi_prev = np.ones((1, 4))
+        angles = np.array([.5773503, .5773503])
+        fission_source = self.fissionop.make_fission_source(group_id, angles, phi_prev)
+        check = np.array([-0.00970913,  0.02652582,  0.03623495,  0.02652582])
+        ok_(np.allclose(fission_source, check, rtol=1e-12))
 
     @nottest
     # Slow test, only enable when necessary
