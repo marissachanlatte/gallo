@@ -248,10 +248,10 @@ class SAAF():
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        s = sum(scatmat[g_prime, group_id] * phi[g_prime]
-                for g_prime in range(self.num_groups)) #if group_id != g_prime)
-        #s += scatmat[group_id, group_id] * phi[group_id]
-        return s
+        ssource = 0
+        for g_prime in range(self.num_groups):
+            ssource += scatmat[g_prime, group_id]*phi[g_prime]
+        return ssource
 
     def assign_normal(self, nid, bid):
         pos_n = self.fegrid.node(nid).get_position()
@@ -348,7 +348,7 @@ class SAAF():
             print("Final Phi Norm: ", norm)
         return phi, ang_fluxes
 
-    def solve_outer(self, source, eig_bool, max_iter=1, tol=1e-2):
+    def solve_outer(self, source, eig_bool, max_iter=50, tol=1e-2):
         phis = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
@@ -382,7 +382,7 @@ class SAAF():
                 collapsed_fission += nu*sig_f*phi_integral
         return collapsed_fission
 
-    def power_iteration(self, max_iter=50, tol=1e-2):
+    def power_iteration(self, max_iter=50, tol=1e-4):
         # Initialize Guesses
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
@@ -394,17 +394,21 @@ class SAAF():
                 for i, ang in enumerate(self.angs):
                     fission_source[g, i] = self.make_fission_source(g, ang, phi)/k
             new_phi, psi = self.solve_outer(fission_source, True)
+            print("phi: ", new_phi)
             new_fiss_collapsed = self.compute_collapsed_fission(new_phi)
             new_k = k*new_fiss_collapsed/fiss_collapsed
             err_k = np.abs((new_k - k))/np.abs(new_k)
-            err_phi = np.max(np.array([np.linalg.norm(new_phi[g] - phi[g], ord=2)
+            phi_group_norms = np.array([np.linalg.norm(new_phi[g] - phi[g], ord=2)
                                        /np.linalg.norm(new_phi[g], ord=2)
-                                       for g in range(self.num_groups)]))
+                                       for g in range(self.num_groups)])
+            err_phi = np.linalg.norm(phi_group_norms, ord=2)
             print("Eigenvalue Norm: ", err_k)
             if err_k < tol and err_phi < tol:
                 break
             phi = new_phi
+
             k = new_k
+            print("k: ", k)
             fiss_collapsed = new_fiss_collapsed
         print("k-effective: ", k)
         return phi, psi, k
