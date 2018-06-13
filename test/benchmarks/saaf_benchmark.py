@@ -32,9 +32,9 @@ def filename_to_problem(func):
 
 @filename_to_problem
 def test_problem(problem):
-    source = 10*np.ones((problem.num_groups, problem.n_elements))
-    #phis, angs, eigenvalues = problem.op.solve(source, eigenvalue=True)
-    phis, angs = problem.op.solve(source, eigenvalue=False)
+    source = np.ones((problem.num_groups, problem.n_elements))
+    phis, angs, eigenvalue = problem.op.solve(source, eigenvalue=True)
+    #phis, angs = problem.op.solve(source, eigenvalue=False)
 
     # Plot Everything
     for g in range(problem.num_groups):
@@ -107,10 +107,28 @@ def plot1d(sol, filename, y):
 def plot_mats(problem):
     plot_mesh(problem.grid, problem.mats, 'meshplot')
 
+@filename_to_problem
+def plot_from_file(problem):
+    phis = np.zeros((problem.num_groups, problem.n_nodes))
+    angs = np.zeros((problem.num_groups, 4, problem.n_nodes))
+    for g in range(problem.num_groups):
+        phis[g] = np.loadtxt("scalar_flux" + str(g))
+        for i in range(4):
+            angs[g, i] = np.loadtxt("angular_flux_ang" + str(i) + "_group" + str(g))
+
+    for g in range(problem.num_groups):
+        scalar_flux = phis[g]
+        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
+        ang_fluxes = angs[g]
+        for i in range(4):
+            plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g))
+
+
 #plot1d(problem.filename)
 #test_1d(problem.filename)
 #make_lhs(problem.filename)
-test_problem("symmetric_fine", "scattering1g", "test1")
+test_problem("origin_centered10", "fission", "fiss_test")
+#plot_from_file("std", "fission", "stdfission")
 #get_mat_stats("3A", "3A", "3A")
 #test_multigroup("std", "scattering1g", "test")
 #profiling("symmetric_fine", "scattering1g", "test")

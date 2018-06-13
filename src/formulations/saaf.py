@@ -170,7 +170,7 @@ class SAAF():
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
                 if eigenvalue:
-                    rhs_at_node += source[group_id, angle_id, nid]
+                    rhs_at_node[nid] += source[group_id, angle_id, nid]
                 else:
                     # First Fixed Source Term
                     q_fixed = source[group_id, e] / (4 * np.pi)
@@ -215,33 +215,31 @@ class SAAF():
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
+                # Get node ids
+                nid = n_global.get_node_id()
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
+                # Find Phi at Gauss Nodes
+                phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
+                # First Fission Term
                 # Array of values of basis function evaluated at interior gauss nodes
                 fn_vals = np.zeros(3)
                 for i in range(3):
                     fn_vals[i] = self.fegrid.evaluate_basis_function(
                         bn, g_nodes[i])
-                # Get node ids
-                nid = n_global.get_node_id()
-                ngrad = self.fegrid.gradient(e, n)
-                area = self.fegrid.element_area(e)
-                # Find Phi at Gauss Nodes
-                phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 product = fn_vals * phi_vals
-                # First Fission Term
-                # Integrate over Element
                 integral_product = np.zeros(self.num_groups)
                 for g in range(self.num_groups):
                     integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                fiss = np.sum(np.array([chi*nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
+                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
                     for g_prime in range(self.num_groups)]))
                 fission_source[nid] += fiss/(4*np.pi)
                 # Second Fission Term
+                ngrad = self.fegrid.gradient(e, n)
                 integral = np.zeros(self.num_groups)
                 for g in range(self.num_groups):
                     integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                fiss = np.sum(np.array([chi*nu[g_prime]*sigf[g_prime]*integral[g_prime]
+                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral[g_prime]
                     for g_prime in range(self.num_groups)]))
                 fission_source[nid] += inv_sigt*fiss/(4*np.pi)
         return fission_source
@@ -382,7 +380,7 @@ class SAAF():
                 collapsed_fission += nu*sig_f*phi_integral
         return collapsed_fission
 
-    def power_iteration(self, max_iter=50, tol=1e-4):
+    def power_iteration(self, max_iter=50, tol=1e-2):
         # Initialize Guesses
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
@@ -394,7 +392,6 @@ class SAAF():
                 for i, ang in enumerate(self.angs):
                     fission_source[g, i] = self.make_fission_source(g, ang, phi)/k
             new_phi, psi = self.solve_outer(fission_source, True)
-            print("phi: ", new_phi)
             new_fiss_collapsed = self.compute_collapsed_fission(new_phi)
             new_k = k*new_fiss_collapsed/fiss_collapsed
             err_k = np.abs((new_k - k))/np.abs(new_k)
@@ -406,9 +403,7 @@ class SAAF():
             if err_k < tol and err_phi < tol:
                 break
             phi = new_phi
-
             k = new_k
-            print("k: ", k)
             fiss_collapsed = new_fiss_collapsed
         print("k-effective: ", k)
         return phi, psi, k
