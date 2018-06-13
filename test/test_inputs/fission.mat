@@ -1,4 +1,4 @@
 1 | 1
-0 | 0 | "test fission" | 20 | 10 | 0 | 10 | 1 | 1
+0 | 0 | "test fission" | 2 | 1 | 0 | 1 | 1 | 1
 MAT ID | GROUP ID | 'MAT NAME' | TOTAL | ABSORPTION | SCATTERING | FISSION | NU | CHI
 # k-eff should be around 1
