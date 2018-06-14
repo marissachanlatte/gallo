@@ -1,4 +1,4 @@
 1 | 2
-0 | 0 | 'test' | 13 | 10 | 2  1 | 0 | 0 | 0
-0 | 1 | 'test' | 12 | 10 | 0  2 | 0 | 0 | 0
+0 | 0 | 'test' | 13 | 1 | 11  1 | 0 | 0 | 0
+0 | 1 | 'test' | 12 | 1 | 0  11 | 0 | 0 | 0
 MAT ID | GROUP ID | 'MAT NAME' | TOTAL | ABSORPTION | SCATTERING | FISSION | NU | CHI
