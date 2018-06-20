@@ -179,10 +179,9 @@ class SAAF():
         return rhs_at_node
 
     def make_fission_source(self, group_id, angles, phi_prev):
-        E = self.fegrid.get_num_elts()
         fission_source = np.zeros(self.num_nodes)
         triang = self.fegrid.setup_triangulation()
-        for e in range(E):
+        for e in range(self.num_elts):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             chi = self.mat_data.get_chi(midx, group_id)
@@ -202,14 +201,10 @@ class SAAF():
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # First Fission Term
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.zeros(3)
-                for i in range(3):
-                    fn_vals[i] = self.fegrid.evaluate_basis_function(
-                        bn, g_nodes[i])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
                 product = fn_vals * phi_vals
-                integral_product = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
+                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
+                                             for g in range(self.num_groups)])
                 fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
                     for g_prime in range(self.num_groups)]))
                 fission_source[nid] += fiss/(4*np.pi)

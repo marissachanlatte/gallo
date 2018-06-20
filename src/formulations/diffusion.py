@@ -112,12 +112,45 @@ class Diffusion():
                     integral_product[g] = self.fegrid.gauss_quad(e, product[g])
                 ssource = self.compute_scattering_source(
                     midx, integral_product, group_id)
-                rhs_at_node[nid] += ssource 
+                rhs_at_node[nid] += ssource
                 if eigenvalue:
                     rhs_at_node[nid] += nu*sig_f*integral_product[group_id]
                 else:
                     rhs_at_node[nid] += area*source[group_id, e]*1/3
         return rhs_at_node
+
+    def make_fission_source(self, group_id, phi_prev):
+        fission_source = np.zeros(self.num_nodes)
+        triang = self.fegrid.setup_triangulation()
+        for e in range(self.num_elts):
+            midx = self.fegrid.get_mat_id(e)
+            chi = self.mat_data.get_chi(midx, group_id)
+            sigf = np.array([self.mat_data.get_sigf(midx, g_prime) for g_prime in range(self.num_groups)])
+            nu = np.array([self.mat_data.get_nu(midx, g_prime) for g_prime in range(self.num_groups)])
+            # Determine basis functions for element
+            coef = self.fegrid.basis(e)
+            # Determine Gauss Nodes for element
+            g_nodes = self.fegrid.gauss_nodes(e)
+            for n in range(3):
+                n_global = self.fegrid.get_node(e, n)
+                nid = n_global.get_node_id()
+                # Check if boundary node
+                if not n_global.is_interior():
+                    continue
+                # Coefficients of basis functions b[0] + b[1]x + b[2]y
+                bn = coef[:, n]
+                # Array of values of basis function evaluated at interior gauss nodes
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
+                # Find Phi at Gauss Nodes
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
+                # Multiply Phi & Basis Function
+                product = fn_vals * phi_vals
+                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
+                                             for g in range(self.num_groups)])
+                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
+                    for g_prime in range(self.num_groups)]))
+                fission_source[nid] += fiss
+        return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
@@ -126,6 +159,22 @@ class Diffusion():
             if g_prime != group_id:
                 ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
+
+    def compute_collapsed_fission(self, phi):
+        triang = self.fegrid.setup_triangulation()
+        collapsed_fission = 0
+        for g in range(self.num_groups):
+            for e in range(self.num_elts):
+                midx = self.fegrid.get_mat_id(e)
+                nu = self.mat_data.get_nu(midx, g)
+                sig_f = self.mat_data.get_sigf(midx, g)
+                area = self.fegrid.element_area(e)
+                g_nodes = self.fegrid.gauss_nodes(e)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
+                phi_integral = self.fegrid.gauss_quad(e, phi_vals[g])
+                collapsed_fission += nu*sig_f*phi_integral
+        return collapsed_fission
+
 
     def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
         if problem_type=="fixed_source":

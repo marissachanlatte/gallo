@@ -102,19 +102,28 @@ class Solver():
         else:
             return phis, ang_fluxes
 
-    def power_iteration(self, max_iter=50, tol=1e-2):
+    def power_iteration(self, max_iter=50, tol=1e-4):
         # Initialize Guesses
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
-        fiss_collapsed = self.compute_collapsed_fission(phi)
-        fission_source = np.zeros((self.num_groups, 4, self.num_nodes))
+        fiss_collapsed = self.op.compute_collapsed_fission(phi)
+        if isinstance(self.op, Diffusion):
+            fission_source = np.zeros((self.num_groups, self.num_nodes))
+        else:
+            fission_source = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             print("Eigenvalue Iteration: ", it_count)
             for g in range(self.num_groups):
-                for i, ang in enumerate(self.angs):
-                    fission_source[g, i] = self.make_fission_source(g, ang, phi)/k
-            new_phi, psi = self.solve_outer(fission_source, True)
-            new_fiss_collapsed = self.compute_collapsed_fission(new_phi)
+                if isinstance(self.op, Diffusion):
+                    fission_source[g] = self.op.make_fission_source(g, phi)/k
+                else:
+                    for i, ang in enumerate(self.angs):
+                        fission_source[g, i] = self.op.make_fission_source(g, ang, phi)/k
+            if isinstance(self.op, Diffusion):
+                new_phi = self.solve_outer(fission_source, True)
+            else:
+                new_phi, psi = self.solve_outer(fission_source, True)
+            new_fiss_collapsed = self.op.compute_collapsed_fission(new_phi)
             new_k = k*new_fiss_collapsed/fiss_collapsed
             err_k = np.abs((new_k - k))/np.abs(new_k)
             phi_group_norms = np.array([np.linalg.norm(new_phi[g] - phi[g], ord=2)

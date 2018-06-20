@@ -127,12 +127,12 @@ def mms():
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
-    #phis, angs, eigenvalue = problem.op.solve(source, eigenvalue=True)
-    phis = problem.solver.solve(source, eigenvalue=False)
+    phis, eigenvalue = problem.solver.solve(source, eigenvalue=True)
+    #phis = problem.solver.solve(source, eigenvalue=False)
 
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
         plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
 
-test_problem("origin_centered10_fine", "scattering2g", "test")
+test_problem("origin_centered10_fine", "fission", "test")
