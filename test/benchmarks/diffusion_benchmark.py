@@ -10,22 +10,24 @@ from fe import *
 from materials import Materials
 from problem import Problem
 from plot import plot
+from solvers import *
 
-def to_problem(filename):
-    nodefile = "../test_inputs/" + filename + ".node"
-    elefile = "../test_inputs/" + filename + ".ele"
-    matfile = "../test_inputs/" + filename + ".mat"
+def to_problem(mesh, mat, filename):
+    nodefile = "../test_inputs/" + mesh + ".node"
+    elefile = "../test_inputs/" + mesh + ".ele"
+    matfile = "../test_inputs/" + mat + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
     op = Diffusion(grid, mats)
-    A = op.get_matrix("all")
+    #A = op.get_matrix("all")
+    solver = Solver(op)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
-    return Problem(op=op, mats=mats, grid=grid, filename=filename)
+    return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
 def filename_to_problem(func):
-    def _filename_to_problem(filename):
-        return func(problem=to_problem(filename))
+    def _filename_to_problem(mesh, mat, filename):
+        return func(problem=to_problem(mesh, mat, filename))
     return _filename_to_problem
 
 def source_function(x, problem, filename):
@@ -122,15 +124,15 @@ def mms():
         print(np.sqrt(area), " ", norm[inp])
     mms_plot(areas, norm, "mms")
 
-# for test in ["uniform_source", "box_source"]:
-#     nodes, grid, mats= fixed_source_test(test)
-#     for g in range(mats.get_num_groups()):
-#         phi_plot(grid, nodes[g], test, g)
-#     print("Completed " + test + " Test")
-#mms()
-#print("Completed Fixed Source MMS Test")
-#eigenvalue_test("eigenvalue")
-#print("Completed Eigenvalue Test")
-kmms()
-print("Completed Eigenvalue MMS Test")
+@filename_to_problem
+def test_problem(problem):
+    source = np.ones((problem.num_groups, problem.n_elements))
+    #phis, angs, eigenvalue = problem.op.solve(source, eigenvalue=True)
+    phis = problem.solver.solve(source, eigenvalue=False)
 
+    # Plot Everything
+    for g in range(problem.num_groups):
+        scalar_flux = phis[g]
+        plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
+
+test_problem("origin_centered10_fine", "scattering2g", "test")

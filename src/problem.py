@@ -3,12 +3,14 @@ from typing import NamedTuple
 from formulations.diffusion import Diffusion
 from fe import FEGrid
 from materials import Materials
+from solvers import Solver
 
 
 class Problem(NamedTuple):
     op: Diffusion
     grid: FEGrid
     mats: Materials
+    solver: Solver
     filename: str
 
     @property

@@ -8,107 +8,124 @@ class Diffusion():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.matrices = self.make_lhs()
-        
-    def make_lhs(self):
-        k = self.fegrid.get_num_interior_nodes()
+        self.num_nodes = self.fegrid.get_num_nodes()
+        self.num_elts = self.fegrid.get_num_elts()
+
+    def make_lhs(self, group_id):
         E = self.fegrid.get_num_elts()
-        matrices = []
-        for g in range(self.num_groups):
-            sparse_matrix = sps.lil_matrix((k, k))
-            for e in range(E):
-                # Determine material index of element
-                midx = self.fegrid.get_mat_id(e)
-                # Get Diffusion coefficient for material
-                D = self.mat_data.get_diff(midx, g)
-                # Get absorption cross section for material
-                sig_a = self.mat_data.get_siga(midx, g)
-                # Determine basis functions for element
-                coef = self.fegrid.basis(e)
-                # Determine Gauss Nodes for element
-                g_nodes = self.fegrid.gauss_nodes(e)
-                for n in range(3):
-                    # Coefficients of basis functions b[0] + b[1]x + b[2]y
-                    bn = coef[:, n]
-                    # Array of values of basis function evaluated at gauss nodes
-                    fn_vals = np.zeros(3)
-                    for i in range(3):
-                        fn_vals[i] = (
-                            bn[0] + bn[1] * g_nodes[i, 0] + bn[2] * g_nodes[i, 1])
-                    # Get global node
-                    n_global = self.fegrid.get_node(e, n)
-                    for ns in range(3):
-                        # Coefficients of basis function
-                        bns = coef[:, ns]
-                        # Array of values of basis function evaluated at gauss nodes
-                        fns_vals = np.zeros(3)
-                        for i in range(3):
-                            fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
-                                           bns[2] * g_nodes[i, 1])
-                        # Get global node
-                        ns_global = self.fegrid.get_node(e, ns)
-                        # Get node IDs
-                        nid = n_global.get_interior_node_id()
-                        nsid = ns_global.get_interior_node_id()
-                        # Check if boundary nodes
-                        if not ns_global.is_interior() or not n_global.is_interior():
-                            continue
-                        else:
-                            # Calculate gradients
-                            ngrad = self.fegrid.gradient(e, n)
-                            nsgrad = self.fegrid.gradient(e, ns)
-
-                            # Multiply basis functions together
-                            f_vals = np.zeros(3)
-                            for i in range(3):
-                                f_vals[i] = fn_vals[i] * fns_vals[i]
-
-                            # Integrate for A (basis function derivatives)
-                            area = self.fegrid.element_area(e)
-                            inprod = np.dot(ngrad, nsgrad)
-                            A = D * area * inprod
-
-                            # Integrate for B (basis functions multiplied)
-                            integral = self.fegrid.gauss_quad(e, f_vals)
-                            C = sig_a * integral
-
-                            sparse_matrix[nid, nsid] += A + C
-            matrices.append(sparse_matrix)
-        return matrices
-
-    def make_rhs(self, f_centroids):
-        # Get num interior nodes
-        n = self.fegrid.get_num_interior_nodes()
-        rhs_at_node = np.zeros(n)
-        # Get num elements
-        E = self.fegrid.get_num_elts()
+        sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         for e in range(E):
+            # Determine material index of element
+            midx = self.fegrid.get_mat_id(e)
+            # Get Diffusion coefficient for material
+            D = self.mat_data.get_diff(midx, group_id)
+            # Get absorption cross section for material
+            #sig_a = self.mat_data.get_siga(midx, group_id)
+            # Get removal cross section
+            sig_r = self.mat_data.get_sigr(midx, group_id)
+            # Determine basis functions for element
+            coef = self.fegrid.basis(e)
+            # Determine Gauss Nodes for element
+            g_nodes = self.fegrid.gauss_nodes(e)
+            for n in range(3):
+                # Coefficients of basis functions b[0] + b[1]x + b[2]y
+                bn = coef[:, n]
+                # Array of values of basis function evaluated at gauss nodes
+                fn_vals = np.zeros(3)
+                for i in range(3):
+                    fn_vals[i] = (
+                        bn[0] + bn[1] * g_nodes[i, 0] + bn[2] * g_nodes[i, 1])
+                # Get global node
+                n_global = self.fegrid.get_node(e, n)
+                for ns in range(3):
+                    # Coefficients of basis function
+                    bns = coef[:, ns]
+                    # Array of values of basis function evaluated at gauss nodes
+                    fns_vals = np.zeros(3)
+                    for i in range(3):
+                        fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
+                                       bns[2] * g_nodes[i, 1])
+                    # Get global node
+                    ns_global = self.fegrid.get_node(e, ns)
+                    # Get node IDs
+                    nid = n_global.get_node_id()
+                    nsid = ns_global.get_node_id()
+                    # Check if boundary nodes
+                    if not ns_global.is_interior() or not n_global.is_interior():
+                        continue
+                    else:
+                        # Calculate gradients
+                        ngrad = self.fegrid.gradient(e, n)
+                        nsgrad = self.fegrid.gradient(e, ns)
+
+                        # Integrate for A (basis function derivatives)
+                        area = self.fegrid.element_area(e)
+                        inprod = np.dot(ngrad, nsgrad)
+                        A = D * area * inprod
+
+                        # Multiply basis functions together
+                        f_vals = np.zeros(3)
+                        for i in range(3):
+                            f_vals[i] = fn_vals[i] * fns_vals[i]
+
+                        # Integrate for B (basis functions multiplied)
+                        integral = self.fegrid.gauss_quad(e, f_vals)
+                        C = sig_r * integral
+
+                        sparse_matrix[nid, nsid] += A + C
+        return sparse_matrix
+
+    def make_rhs(self, group_id, source, phi_prev, eigenvalue=False):
+        rhs_at_node = np.zeros(self.num_nodes)
+        # Interpolate Phi
+        triang = self.fegrid.setup_triangulation()
+        for e in range(self.num_elts):
+            midx = self.fegrid.get_mat_id(e)
+            # Determine basis functions for element
+            coef = self.fegrid.basis(e)
+            # Determine Gauss Nodes for element
+            g_nodes = self.fegrid.gauss_nodes(e)
+            if eigenvalue:
+                nu = self.mat_data.get_nu(midx, group_id)
+                sig_f = self.mat_data.get_sigf(midx, group_id)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
                 # Check if boundary node
                 if not n_global.is_interior():
                     continue
+                # Coefficients of basis functions b[0] + b[1]x + b[2]y
+                bn = coef[:, n]
+                # Array of values of basis function evaluated at interior gauss nodes
+                fn_vals = np.zeros(3)
+                for i in range(3):
+                    fn_vals[i] = self.fegrid.evaluate_basis_function(
+                        bn, g_nodes[i])
                 # Get node ids
-                nid = n_global.get_interior_node_id()
+                nid = n_global.get_node_id()
                 area = self.fegrid.element_area(e)
-                rhs_at_node[nid] += area*f_centroids[e]*1/3
+                # Find Phi at Gauss Nodes
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
+                # Multiply Phi & Basis Function
+                product = fn_vals * phi_vals
+                integral_product = np.zeros(self.num_groups)
+                for g in range(self.num_groups):
+                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
+                ssource = self.compute_scattering_source(
+                    midx, integral_product, group_id)
+                rhs_at_node[nid] += ssource 
+                if eigenvalue:
+                    rhs_at_node[nid] += nu*sig_f*integral_product[group_id]
+                else:
+                    rhs_at_node[nid] += area*source[group_id, e]*1/3
         return rhs_at_node
 
-    def make_eigen_source(self, group_id, phi_prev):
-        E = self.fegrid.get_num_elts()
-        f_centroids = np.zeros(E)
-        for e in range(E):
-            midx = self.fegrid.get_mat_id(e)
-            nu = self.mat_data.get_nu(midx, group_id)
-            sig_f = self.mat_data.get_sigf(midx, group_id)
-            f_centroids[e] = nu*sig_f*phi_prev[e]
-        return f_centroids
-
-    def get_matrix(self, group_id):
-        if group_id == "all":
-            return self.matrices
-        else:
-            return self.matrices[group_id]
+    def compute_scattering_source(self, midx, phi, group_id):
+        scatmat = self.mat_data.get_sigs(midx)
+        ssource = 0
+        for g_prime in range(self.num_groups):
+            if g_prime != group_id:
+                ssource += scatmat[g_prime, group_id]*phi[g_prime]
+        return ssource
 
     def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
         if problem_type=="fixed_source":
@@ -159,18 +176,3 @@ class Diffusion():
 
         else:
             print("Problem type must be fixed_source or eigenvalue")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,8 +5,6 @@ import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import matplotlib.tri as tri
 
-
-
 class SAAF():
     def __init__(self, grid, mat_data):
         self.fegrid = grid
@@ -26,6 +24,7 @@ class SAAF():
         self.angs = np.zeros((4, 2))
         for i, ang in enumerate(angles):
             self.angs[i] = ang
+
 
     def make_lhs(self, angles, group_id):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
@@ -99,11 +98,11 @@ class SAAF():
                                 # Calculate boundary integrals for other vertices
                                 for vtx in other_verts:
                                     bid = vtx
-                                    normal = self.assign_normal(nid, bid)
+                                    normal = self.fegrid.assign_normal(nid, bid)
                                     if angles @ normal > 0:
                                         xis = self.fegrid.gauss_nodes1d(
                                             [nid, bid], e)
-                                        boundary_integral = self.calculate_boundary_integral(
+                                        boundary_integral = self.fegrid.calculate_boundary_integral(
                                             nid, bid, xis, bn, bns, e)
                                         sparse_matrix[
                                             nid,
@@ -111,13 +110,13 @@ class SAAF():
                                 continue
                             else:
                                 bid = verts[1]
-                        normal = self.assign_normal(nid, bid)
+                        normal = self.fegrid.assign_normal(nid, bid)
                         if isinstance(normal, int):
                             continue
                         if angles @ normal > 0:
                             # Get Gauss Nodes for the element
                             xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
-                            boundary_integral = self.calculate_boundary_integral(
+                            boundary_integral = self.fegrid.calculate_boundary_integral(
                                 nid, bid, xis, bn, bns, e)
                             sparse_matrix[
                                 nid,
@@ -130,7 +129,7 @@ class SAAF():
         angles = np.array(angles)
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi
-        triang = self.setup_triangulation()
+        triang = self.fegrid.setup_triangulation()
         for e in range(self.elts):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
@@ -152,7 +151,7 @@ class SAAF():
                 ngrad = self.fegrid.gradient(e, n)
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
-                phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # First Scattering Term
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
@@ -179,30 +178,10 @@ class SAAF():
                     rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
 
-    def setup_triangulation(self):
-        x = np.zeros(self.num_nodes)
-        y = np.zeros(self.num_nodes)
-        positions = (self.fegrid.node(i).get_position() for i in range(self.num_nodes))
-        for i, pos in enumerate(positions):
-            x[i], y[i] = pos
-        # Setup triangles
-        triangles = np.array(
-            [self.fegrid.element(i).get_vertices() for i in range(self.elts)])
-        triang = tri.Triangulation(x, y, triangles=triangles)
-        return triang
-
-    def phi_at_gauss_nodes(self, triang, phi_prev, g_nodes):
-        phi_vals = np.zeros((self.num_groups, 3))
-        for g in range(self.num_groups):
-            interp = tri.LinearTriInterpolator(triang, phi_prev[g])
-            for i in range(3):
-                phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
-        return phi_vals
-
     def make_fission_source(self, group_id, angles, phi_prev):
         E = self.fegrid.get_num_elts()
         fission_source = np.zeros(self.num_nodes)
-        triang = self.setup_triangulation()
+        triang = self.fegrid.setup_triangulation()
         for e in range(E):
             midx = self.fegrid.get_mat_id(e)
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
@@ -220,7 +199,7 @@ class SAAF():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Find Phi at Gauss Nodes
-                phi_vals = self.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # First Fission Term
                 # Array of values of basis function evaluated at interior gauss nodes
                 fn_vals = np.zeros(3)
@@ -251,123 +230,8 @@ class SAAF():
             ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
 
-    def assign_normal(self, nid, bid):
-        pos_n = self.fegrid.node(nid).get_position()
-        pos_ns = self.fegrid.node(bid).get_position()
-        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
-            normal = np.array([1, 0])
-        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
-            normal = np.array([-1, 0])
-        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
-            normal = np.array([0, 1])
-        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
-            normal = np.array([0, -1])
-        else:
-            return -1
-        return normal
-
-    def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
-        pos_n = self.fegrid.node(nid).get_position()
-        pos_ns = self.fegrid.node(bid).get_position()
-        gauss_nodes = np.zeros((2, 2))
-        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
-            gauss_nodes[0] = [self.xmax, xis[0]]
-            gauss_nodes[1] = [self.xmax, xis[1]]
-        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
-            gauss_nodes[0] = [self.xmin, xis[0]]
-            gauss_nodes[1] = [self.xmin, xis[1]]
-        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
-            gauss_nodes[0] = [xis[0], self.ymax]
-            gauss_nodes[1] = [xis[1], self.ymax]
-        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
-            gauss_nodes[0] = [xis[0], self.ymin]
-            gauss_nodes[1] = [xis[1], self.ymin]
-        else:
-            boundary_integral = 0
-            return boundary_integral
-        # Value of first basis function at boundary gauss nodes
-        gn_vals = np.zeros(2)
-        gn_vals[0] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[0])
-        gn_vals[1] = self.fegrid.evaluate_basis_function(bn, gauss_nodes[1])
-        # Values of second basis function at boundary gauss nodes
-        gns_vals = np.zeros(2)
-        gns_vals[0] = self.fegrid.evaluate_basis_function(bns, gauss_nodes[0])
-        gns_vals[1] = self.fegrid.evaluate_basis_function(bns, gauss_nodes[1])
-        # Multiply basis functions together
-        g_vals = gn_vals * gns_vals
-        # Integrate over length of element on boundary
-        boundary_integral = self.fegrid.gauss_quad1d(g_vals, [nid, bid], e)
-        return boundary_integral
-
-    def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev, eig_bool):
-        lhs = self.make_lhs(ang, group_id)
-        rhs = self.make_rhs(group_id, source, ang, angle_id, phi_prev, eigenvalue=eig_bool)
-        ang_flux = linalg.cg(lhs, rhs)[0]
-        return ang_flux
-
-    def get_scalar_flux(self, group_id, source, phi_prev, eig_bool):
-        scalar_flux = 0
-        ang_fluxes = np.zeros((4, self.num_nodes))
-        # Iterate over all angle possibilities
-        for i, ang in enumerate(self.angs):
-            ang = np.array(ang)
-            ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev, eig_bool)
-            scalar_flux += np.pi * ang_fluxes[i]
-        return scalar_flux, ang_fluxes
-
-    def solve_in_group(self, source, group_id, phi_prev, eig_bool, max_iter=50,
-                       tol=1e-2):
-        num_mats = self.mat_data.get_num_mats()
-        for mat in range(num_mats):
-            scatmat = self.mat_data.get_sigs(mat)
-            if np.count_nonzero(scatmat) == 0:
-                scattering = False
-            else:
-                scattering = True
-        if self.num_groups > 1:
-            print("Starting Group ", group_id)
-        for i in range(max_iter):
-            if scattering:
-                print("Within-Group Iteration: ", i)
-            phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
-            if not scattering:
-                break
-            norm = np.linalg.norm(phi - phi_prev[group_id], 2)
-            print("Norm: ", norm)
-            if norm < tol:
-                break
-            phi_prev[group_id] = np.copy(phi)
-        if i == max_iter:
-            print("Warning: maximum number of iterations reached in solver")
-        if self.num_groups > 1:
-            print("Finished Group ", group_id)
-        if scattering:
-            print("Number of Within-Group Iterations: ", i + 1)
-            print("Final Phi Norm: ", norm)
-        return phi, ang_fluxes
-
-    def solve_outer(self, source, eig_bool, max_iter=50, tol=1e-2):
-        phis = np.ones((self.num_groups, self.num_nodes))
-        ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
-        for it_count in range(max_iter):
-            if self.num_groups != 1:
-                print("Gauss-Seidel Iteration: ", it_count)
-            phis_prev = np.copy(phis)
-            for g in range(self.num_groups):
-                p, a = self.solve_in_group(source, g, phis, eig_bool)
-                phis[g] = p
-                ang_fluxes[g] = a
-            if self.num_groups == 1:
-                break
-            else:
-                res = np.max(np.abs(phis_prev - phis))
-                print("GS Norm: ", res)
-            if res < tol:
-                break
-        return phis, ang_fluxes
-
     def compute_collapsed_fission(self, phi):
-        triang = self.setup_triangulation()
+        triang = self.fegrid.setup_triangulation()
         collapsed_fission = 0
         for g in range(self.num_groups):
             for e in range(self.elts):
@@ -375,44 +239,7 @@ class SAAF():
                 nu = self.mat_data.get_nu(midx, g)
                 sig_f = self.mat_data.get_sigf(midx, g)
                 g_nodes = self.fegrid.gauss_nodes(e)
-                phi_vals = self.phi_at_gauss_nodes(triang, phi, g_nodes)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
                 phi_integral = self.fegrid.gauss_quad(e, phi_vals[g])
                 collapsed_fission += nu*sig_f*phi_integral
         return collapsed_fission
-
-    def power_iteration(self, max_iter=50, tol=1e-2):
-        # Initialize Guesses
-        k = 1
-        phi = np.ones((self.num_groups, self.num_nodes))
-        fiss_collapsed = self.compute_collapsed_fission(phi)
-        fission_source = np.zeros((self.num_groups, 4, self.num_nodes))
-        for it_count in range(max_iter):
-            print("Eigenvalue Iteration: ", it_count)
-            for g in range(self.num_groups):
-                for i, ang in enumerate(self.angs):
-                    fission_source[g, i] = self.make_fission_source(g, ang, phi)/k
-            new_phi, psi = self.solve_outer(fission_source, True)
-            new_fiss_collapsed = self.compute_collapsed_fission(new_phi)
-            new_k = k*new_fiss_collapsed/fiss_collapsed
-            err_k = np.abs((new_k - k))/np.abs(new_k)
-            phi_group_norms = np.array([np.linalg.norm(new_phi[g] - phi[g], ord=2)
-                                       /np.linalg.norm(new_phi[g], ord=2)
-                                       for g in range(self.num_groups)])
-            err_phi = np.linalg.norm(phi_group_norms, ord=2)
-            print("Eigenvalue Norm: ", err_k)
-            if err_k < tol and err_phi < tol:
-                break
-            phi = new_phi
-            k = new_k
-            fiss_collapsed = new_fiss_collapsed
-        print("k-effective: ", k)
-        return phi, psi, k
-
-    def solve(self, source, eigenvalue=False):
-        if eigenvalue:
-            phis, ang_fluxes, eigenvalue = self.power_iteration()
-            return phis, ang_fluxes, eigenvalue
-        else:
-            eig_bool = False
-            phis, ang_fluxes = self.solve_outer(source, eig_bool)
-            return phis, ang_fluxes

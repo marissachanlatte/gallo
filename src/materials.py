@@ -82,3 +82,9 @@ class Materials():
 
     def get_inv_sigt(self, mat_id, group_id):
         return self.inv_sigt[mat_id, group_id]
+
+    def get_sigr(self, mat_id, group_id):
+        scatmat = self.get_sigs(mat_id)
+        sigt = self.get_sigt(mat_id, group_id)
+        sigr = sigt - scatmat[group_id, group_id]
+        return sigr

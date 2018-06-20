@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import matplotlib.tri as tri
 
 class Element():
     def __init__(self, el_id, vertices, mat_id):
@@ -95,7 +96,7 @@ class FEGrid():
             line = ef.readline()
             data = line.split(" ")
             self.num_ele = int(data[0])
-            self.elts = []
+            self.elts_list = []
             for i in range(self.num_ele):
                 line = ef.readline()
                 #remove extra whitespace
@@ -103,7 +104,8 @@ class FEGrid():
                 data = line.split(" ")
                 el_id, *vertices, mat_id = data
                 vertices = [int(vert) for vert in vertices]
-                self.elts.append(Element(int(el_id), vertices, int(mat_id)))
+                self.elts_list.append(Element(int(el_id), vertices, int(mat_id)))
+            self.num_elts = np.size(self.elts_list)
 
     def get_boundary(self, which_boundary):
         if which_boundary == "xmin":
@@ -127,10 +129,10 @@ class FEGrid():
             return False
 
     def get_node(self, elt_number, local_node_number):
-        return self.nodes[self.elts[elt_number][local_node_number]]
+        return self.nodes[self.elts_list[elt_number][local_node_number]]
 
     def get_num_elts(self):
-        return np.size(self.elts)
+        return self.num_elts
 
     def get_num_nodes(self):
         return np.size(self.nodes)
@@ -139,7 +141,7 @@ class FEGrid():
         return self.num_interior_nodes
 
     def element(self, elt_number):
-        return self.elts[elt_number]
+        return self.elts_list[elt_number]
 
     def node(self, node_number):
         return self.nodes[node_number]
@@ -158,7 +160,7 @@ class FEGrid():
 
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
-        element = self.elts[elt_number].get_vertices()
+        element = self.elts_list[elt_number].get_vertices()
         xbase = self.get_node(elt_number, local_node_number).get_position()
         dx = np.zeros((2, 2))
         for ivert in range(2):
@@ -284,7 +286,7 @@ class FEGrid():
         return g_nodes
 
     def element_area(self, elt_number):
-        e = self.elts[elt_number]
+        e = self.elts_list[elt_number]
         n = self.nodes[e[0]]
         xbase = n.get_position()
         dx = np.zeros((2, 2))
@@ -313,7 +315,7 @@ class FEGrid():
         return integral
 
     def centroid(self, elt_number):
-        e = self.elts[elt_number]
+        e = self.elts_list[elt_number]
         retval = np.zeros(2)
         for i in range(2):
             retval[i] = 0.0
@@ -325,3 +327,72 @@ class FEGrid():
         for idir in range(2):
             retval[idir] /= 3
         return retval
+
+    def assign_normal(self, nid, bid):
+        pos_n = self.node(nid).get_position()
+        pos_ns = self.node(bid).get_position()
+        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
+            normal = np.array([1, 0])
+        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+            normal = np.array([-1, 0])
+        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
+            normal = np.array([0, 1])
+        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+            normal = np.array([0, -1])
+        else:
+            return -1
+        return normal
+
+
+    def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
+        pos_n = self.node(nid).get_position()
+        pos_ns = self.node(bid).get_position()
+        gauss_nodes = np.zeros((2, 2))
+        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
+            gauss_nodes[0] = [self.xmax, xis[0]]
+            gauss_nodes[1] = [self.xmax, xis[1]]
+        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+            gauss_nodes[0] = [self.xmin, xis[0]]
+            gauss_nodes[1] = [self.xmin, xis[1]]
+        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
+            gauss_nodes[0] = [xis[0], self.ymax]
+            gauss_nodes[1] = [xis[1], self.ymax]
+        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+            gauss_nodes[0] = [xis[0], self.ymin]
+            gauss_nodes[1] = [xis[1], self.ymin]
+        else:
+            boundary_integral = 0
+            return boundary_integral
+        # Value of first basis function at boundary gauss nodes
+        gn_vals = np.zeros(2)
+        gn_vals[0] = self.evaluate_basis_function(bn, gauss_nodes[0])
+        gn_vals[1] = self.evaluate_basis_function(bn, gauss_nodes[1])
+        # Values of second basis function at boundary gauss nodes
+        gns_vals = np.zeros(2)
+        gns_vals[0] = self.evaluate_basis_function(bns, gauss_nodes[0])
+        gns_vals[1] = self.evaluate_basis_function(bns, gauss_nodes[1])
+        # Multiply basis functions together
+        g_vals = gn_vals * gns_vals
+        # Integrate over length of element on boundary
+        boundary_integral = self.gauss_quad1d(g_vals, [nid, bid], e)
+        return boundary_integral
+
+    def setup_triangulation(self):
+        x = np.zeros(self.num_nodes)
+        y = np.zeros(self.num_nodes)
+        positions = (self.node(i).get_position() for i in range(self.num_nodes))
+        for i, pos in enumerate(positions):
+            x[i], y[i] = pos
+        # Setup triangles
+        triangles = np.array([self.element(i).get_vertices() for i in range(self.num_elts)])
+        triang = tri.Triangulation(x, y, triangles=triangles)
+        return triang
+
+    def phi_at_gauss_nodes(self, triang, phi_prev, g_nodes):
+        num_groups = np.shape(phi_prev)[0]
+        phi_vals = np.zeros((num_groups, 3))
+        for g in range(num_groups):
+            interp = tri.LinearTriInterpolator(triang, phi_prev[g])
+            for i in range(3):
+                phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
+        return phi_vals

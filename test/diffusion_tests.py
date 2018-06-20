@@ -21,6 +21,6 @@ class TestDiffusion():
         cls.operator = Diffusion(cls.fegrid, cls.materials)
 
     def test_matrix(self):
-        A = self.operator.get_matrix(0)
+        A = self.operator.make_lhs(0)
         assert (A!=A.transpose()).nnz==0
         assert (A.diagonal() >= 0).all()
