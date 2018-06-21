@@ -6,6 +6,7 @@ import sys
 sys.path.append('../../src')
 
 from formulations.nda import NDA
+from formulations.saaf import SAAF
 from fe import *
 from materials import Materials
 from problem import Problem
@@ -18,10 +19,14 @@ def to_problem(mesh, mat, filename):
     matfile = "../test_inputs/" + mat + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
-    op = NDA(grid, mats)
-    solver = Solver(op)
+    ho = SAAF(grid, mats)
+    ho_solver = Solver(ho)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
+    source = np.ones((num_groups, n_elements))
+    op = NDA(grid, mats, ho_solver, source)
+    solver = Solver(op)
+
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
 def filename_to_problem(func):
@@ -40,4 +45,4 @@ def test_problem(problem):
         scalar_flux = phis[g]
         plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
 
-test_problem("origin_centered10_fine", "scattering2g", "test")
+test_problem("symmetric_fine", "scattering2g", "test")

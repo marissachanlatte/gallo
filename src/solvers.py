@@ -6,6 +6,7 @@ import scipy.sparse.linalg as linalg
 import matplotlib.tri as tri
 
 from formulations.diffusion import Diffusion
+from formulations.nda import NDA
 
 class Solver():
     def __init__(self, operator):
@@ -13,7 +14,7 @@ class Solver():
         self.mat_data = self.op.mat_data
         self.num_groups = self.op.num_groups
         self.num_nodes = self.op.num_nodes
-        if not isinstance(self.op, Diffusion):
+        if not isinstance(self.op, Diffusion) and not isinstance(self.op, NDA):
             self.angs = self.op.angs
 
     def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev, eig_bool):
@@ -24,7 +25,7 @@ class Solver():
 
     def get_scalar_flux(self, group_id, source, phi_prev, eig_bool):
         scalar_flux = 0
-        if isinstance(self.op, Diffusion):
+        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             lhs = self.op.make_lhs(group_id)
             rhs = self.op.make_rhs(group_id, source, phi_prev, eigenvalue=eig_bool)
             scalar_flux = linalg.cg(lhs, rhs)[0]
@@ -52,7 +53,7 @@ class Solver():
         for i in range(max_iter):
             if scattering:
                 print("Within-Group Iteration: ", i)
-            if isinstance(self.op, Diffusion):
+            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
                 phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
             else:
                 phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
@@ -70,7 +71,7 @@ class Solver():
         if scattering:
             print("Number of Within-Group Iterations: ", i + 1)
             print("Final Phi Norm: ", norm)
-        if isinstance(self.op, Diffusion):
+        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             return phi
         else:
             return phi, ang_fluxes
@@ -83,7 +84,7 @@ class Solver():
                 print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
             for g in range(self.num_groups):
-                if isinstance(self.op, Diffusion):
+                if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
                     phi = self.solve_in_group(source, g, phis, eig_bool)
                     phis[g] = phi
                 else:
@@ -97,7 +98,7 @@ class Solver():
                 print("GS Norm: ", res)
             if res < tol:
                 break
-        if isinstance(self.op, Diffusion):
+        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             return phis
         else:
             return phis, ang_fluxes
@@ -107,19 +108,19 @@ class Solver():
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
         fiss_collapsed = self.op.compute_collapsed_fission(phi)
-        if isinstance(self.op, Diffusion):
+        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             fission_source = np.zeros((self.num_groups, self.num_nodes))
         else:
             fission_source = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             print("Eigenvalue Iteration: ", it_count)
             for g in range(self.num_groups):
-                if isinstance(self.op, Diffusion):
+                if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
                     fission_source[g] = self.op.make_fission_source(g, phi)/k
                 else:
                     for i, ang in enumerate(self.angs):
                         fission_source[g, i] = self.op.make_fission_source(g, ang, phi)/k
-            if isinstance(self.op, Diffusion):
+            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
                 new_phi = self.solve_outer(fission_source, True)
             else:
                 new_phi, psi = self.solve_outer(fission_source, True)
@@ -139,14 +140,14 @@ class Solver():
             k = new_k
             fiss_collapsed = new_fiss_collapsed
         print("k-effective: ", k)
-        if isinstance(self.op, Diffusion):
+        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             return phi, k
         else:
             return phi, psi, k
 
     def solve(self, source, eigenvalue=False):
         if eigenvalue:
-            if isinstance(self.op, Diffusion):
+            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
                 phis, eigenvalue = self.power_iteration()
                 return phis, eigenvalue
             else:
@@ -154,7 +155,7 @@ class Solver():
                 return phis, ang_fluxes, k
         else:
             eig_bool = False
-            if isinstance(self.op, Diffusion):
+            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
                 phis = self.solve_outer(source, eig_bool)
                 return phis
             else:
