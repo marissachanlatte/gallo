@@ -102,7 +102,7 @@ class Solver():
         else:
             return phis, ang_fluxes
 
-    def power_iteration(self, max_iter=50, tol=1e-4):
+    def power_iteration(self, max_iter=50, tol=1e-2):
         # Initialize Guesses
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
@@ -133,6 +133,8 @@ class Solver():
             print("Eigenvalue Norm: ", err_k)
             if err_k < tol and err_phi < tol:
                 break
+            print("phi, new_phi", np.max(phi), np.max(new_phi))
+            print("k, new_k", k, new_k)
             phi = new_phi
             k = new_k
             fiss_collapsed = new_fiss_collapsed
@@ -148,8 +150,8 @@ class Solver():
                 phis, eigenvalue = self.power_iteration()
                 return phis, eigenvalue
             else:
-                phis, eigenvalue, k = self.power_iteration()
-                return phis, ang_fluxes, eigenvalue
+                phis, ang_fluxes, k = self.power_iteration()
+                return phis, ang_fluxes, k
         else:
             eig_bool = False
             if isinstance(self.op, Diffusion):

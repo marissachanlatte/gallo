@@ -149,7 +149,12 @@ class Diffusion():
                                              for g in range(self.num_groups)])
                 fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
                     for g_prime in range(self.num_groups)]))
-                fission_source[nid] += fiss
+                #fission_source[nid] += fiss
+                interp = tri.LinearTriInterpolator(triang, phi_prev[group_id])
+                centroid = self.fegrid.centroid(e)
+                phi_centroid = interp(centroid[0], centroid[1])
+                area = self.fegrid.element_area(e)
+                fission_source[nid] += nu[group_id]*sigf[group_id]*phi_centroid*area/3
         return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
