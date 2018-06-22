@@ -180,53 +180,53 @@ class Diffusion():
                 collapsed_fission += nu*sig_f*phi_integral
         return collapsed_fission
 
-
-    def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
-        if problem_type=="fixed_source":
-            internal_nodes = linalg.cg(lhs, rhs)[0]
-            return internal_nodes
-        elif problem_type=="eigenvalue":
-            E = self.fegrid.get_num_elts()
-            N = self.fegrid.get_num_interior_nodes()
-            phi = np.zeros(N)
-            phi_prev = np.ones(N)
-            k_prev = np.sum(phi_prev)
-            # renormalize
-            phi_prev /= k_prev
-
-            for i in range(max_iter):
-                # setup rhs
-                phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
-                f_centroids = self.make_eigen_source(group_id, phi_centroid)
-                # Integrate
-                rhs = self.make_rhs(f_centroids)
-                # solve
-                phi = linalg.cg(lhs, rhs)[0]
-                # compute k by integrating phi
-                phi_centroids = self.fegrid.interpolate_to_centroid(phi)
-                integral = self.make_rhs(phi_centroids)
-                k = np.sum(integral)
-                # renormalize
-                phi /= k
-                norm = np.linalg.norm(phi-phi_prev, 2)
-                knorm = np.abs(k - k_prev)
-                if knorm < tol and norm < tol:
-                    break
-                phi_prev = phi
-                k_prev = k
-                print("Eigenvalue Iteration: ", i)
-                print("Norm: ", norm)
-
-            if i==max_iter:
-                print("Warning: maximum number of iterations reached in eigenvalue solver")
-
-            max = np.max(phi)
-            phi /= max
-
-            print("Number of Iterations: ", i)
-            print("Final Phi Norm: ", norm)
-            print("Final k Norm: ", knorm)
-            return phi, k
-
-        else:
-            print("Problem type must be fixed_source or eigenvalue")
+    ### OLD SOLVER FROM CS294 PROJECT. NOT CURRENTLY HOOKED UP TO ANYTHING ####
+    # def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
+    #     if problem_type=="fixed_source":
+    #         internal_nodes = linalg.cg(lhs, rhs)[0]
+    #         return internal_nodes
+    #     elif problem_type=="eigenvalue":
+    #         E = self.fegrid.get_num_elts()
+    #         N = self.fegrid.get_num_interior_nodes()
+    #         phi = np.zeros(N)
+    #         phi_prev = np.ones(N)
+    #         k_prev = np.sum(phi_prev)
+    #         # renormalize
+    #         phi_prev /= k_prev
+    #
+    #         for i in range(max_iter):
+    #             # setup rhs
+    #             phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
+    #             f_centroids = self.make_eigen_source(group_id, phi_centroid)
+    #             # Integrate
+    #             rhs = self.make_rhs(f_centroids)
+    #             # solve
+    #             phi = linalg.cg(lhs, rhs)[0]
+    #             # compute k by integrating phi
+    #             phi_centroids = self.fegrid.interpolate_to_centroid(phi)
+    #             integral = self.make_rhs(phi_centroids)
+    #             k = np.sum(integral)
+    #             # renormalize
+    #             phi /= k
+    #             norm = np.linalg.norm(phi-phi_prev, 2)
+    #             knorm = np.abs(k - k_prev)
+    #             if knorm < tol and norm < tol:
+    #                 break
+    #             phi_prev = phi
+    #             k_prev = k
+    #             print("Eigenvalue Iteration: ", i)
+    #             print("Norm: ", norm)
+    #
+    #         if i==max_iter:
+    #             print("Warning: maximum number of iterations reached in eigenvalue solver")
+    #
+    #         max = np.max(phi)
+    #         phi /= max
+    #
+    #         print("Number of Iterations: ", i)
+    #         print("Final Phi Norm: ", norm)
+    #         print("Final k Norm: ", knorm)
+    #         return phi, k
+    #
+    #     else:
+    #         print("Problem type must be fixed_source or eigenvalue")
