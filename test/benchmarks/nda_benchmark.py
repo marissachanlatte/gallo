@@ -45,4 +45,4 @@ def test_problem(problem):
         scalar_flux = phis[g]
         plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
 
-test_problem("symmetric_fine", "scattering2g", "test")
+test_problem("origin_centered10_fine", "scattering2g", "test")
