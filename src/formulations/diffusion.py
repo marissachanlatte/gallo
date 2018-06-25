@@ -19,8 +19,6 @@ class Diffusion():
             midx = self.fegrid.get_mat_id(e)
             # Get Diffusion coefficient for material
             D = self.mat_data.get_diff(midx, group_id)
-            # Get absorption cross section for material
-            #sig_a = self.mat_data.get_siga(midx, group_id)
             # Get removal cross section
             sig_r = self.mat_data.get_sigr(midx, group_id)
             # Determine basis functions for element
@@ -50,29 +48,53 @@ class Diffusion():
                     # Get node IDs
                     nid = n_global.get_node_id()
                     nsid = ns_global.get_node_id()
-                    # Check if boundary nodes
-                    if not ns_global.is_interior() or not n_global.is_interior():
-                        continue
-                    else:
-                        # Calculate gradients
-                        ngrad = self.fegrid.gradient(e, n)
-                        nsgrad = self.fegrid.gradient(e, ns)
+                    # Calculate gradients
+                    ngrad = self.fegrid.gradient(e, n)
+                    nsgrad = self.fegrid.gradient(e, ns)
 
-                        # Integrate for A (basis function derivatives)
-                        area = self.fegrid.element_area(e)
-                        inprod = np.dot(ngrad, nsgrad)
-                        A = D * area * inprod
+                    # Integrate for A (basis function derivatives)
+                    area = self.fegrid.element_area(e)
+                    inprod = np.dot(ngrad, nsgrad)
+                    A = D * area * inprod
 
-                        # Multiply basis functions together
-                        f_vals = np.zeros(3)
-                        for i in range(3):
-                            f_vals[i] = fn_vals[i] * fns_vals[i]
+                    # Multiply basis functions together
+                    f_vals = np.zeros(3)
+                    for i in range(3):
+                        f_vals[i] = fn_vals[i] * fns_vals[i]
 
-                        # Integrate for B (basis functions multiplied)
-                        integral = self.fegrid.gauss_quad(e, f_vals)
-                        C = sig_r * integral
+                    # Integrate for B (basis functions multiplied)
+                    integral = self.fegrid.gauss_quad(e, f_vals)
+                    C = sig_r * integral
 
-                        sparse_matrix[nid, nsid] += A + C
+                    sparse_matrix[nid, nsid] += A + C
+                    if not n_global.is_interior() and not ns_global.is_interior():
+                        # Assign boundary id, marks end of region along
+                        # boundary where basis function is nonzero
+                        bid = nsid
+                        # Figure out what boundary you're on
+                        if (nid == nsid) and (self.fegrid.is_corner(nid)):
+                            # If on a corner, figure out what normal we should use
+                            verts = self.fegrid.boundary_nonzero(nid, e)
+                            if verts == -1:  # Means the whole element is a corner
+                                # We have to calculate boundary integral twice,
+                                # once for each other vertex
+                                # Find the other vertices
+                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                vert_local_idx = np.where(all_verts == nid)[0][0]
+                                other_verts = np.delete(all_verts, vert_local_idx)
+                                # Calculate boundary integrals for other vertices
+                                for vtx in other_verts:
+                                    bid = vtx
+                                    xis = self.fegrid.gauss_nodes1d([nid, bid], e)
+                                    boundary_integral = self.fegrid.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
+                                    sparse_matrix[nid,nsid] += boundary_integral
+                                continue
+                            else:
+                                bid = verts[1]
+                        # Get Gauss Nodes for the element
+                        xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
+                        boundary_integral = self.fegrid.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
+                        sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
     def make_rhs(self, group_id, source, phi_prev, eigenvalue=False):
