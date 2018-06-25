@@ -11,7 +11,7 @@ class Diffusion():
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_elts = self.fegrid.get_num_elts()
 
-    def make_lhs(self, group_id, ho_sols=None):
+    def make_lhs(self, group_id, ho_sols=None, boundary=None):
         E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         for e in range(E):
@@ -67,6 +67,7 @@ class Diffusion():
                     C = sig_r * integral
 
                     sparse_matrix[nid, nsid] += A + C
+                    if boundary=="reflecting": continue
                     if not n_global.is_interior() and not ns_global.is_interior():
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
