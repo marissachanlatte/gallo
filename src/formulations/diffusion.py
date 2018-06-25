@@ -11,7 +11,7 @@ class Diffusion():
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_elts = self.fegrid.get_num_elts()
 
-    def make_lhs(self, group_id):
+    def make_lhs(self, group_id, ho_sols=None):
         E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         for e in range(E):

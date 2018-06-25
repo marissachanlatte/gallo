@@ -23,11 +23,13 @@ class NDA():
         for i, ang in enumerate(angles):
             self.angs[i] = ang
 
-    def make_lhs(self, group_id):
+    def make_lhs(self, group_id, ho_sols):
         E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         # Solve higher order equation
-        phi, psi = self.solver.solve(self.source, eigenvalue=False)
+        #phi, psi = self.solver.solve(self.source, eigenvalue=False)
+        phi = ho_sols[0]
+        psi = ho_sols[1]
         for e in range(E):
             # Determine material index of element
             midx = self.fegrid.get_mat_id(e)

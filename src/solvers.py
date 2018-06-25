@@ -7,10 +7,13 @@ import matplotlib.tri as tri
 
 from formulations.diffusion import Diffusion
 from formulations.nda import NDA
+from formulations.saaf import SAAF
 
 class Solver():
     def __init__(self, operator):
         self.op = operator
+        if isinstance(self.op, NDA):
+            self.ho_op = SAAF(self.op.fegrid, self.op.mat_data)
         self.mat_data = self.op.mat_data
         self.num_groups = self.op.num_groups
         self.num_nodes = self.op.num_nodes
@@ -23,10 +26,10 @@ class Solver():
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def get_scalar_flux(self, group_id, source, phi_prev, eig_bool):
+    def get_scalar_flux(self, group_id, source, phi_prev, eig_bool, ho_sols=None):
         scalar_flux = 0
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            lhs = self.op.make_lhs(group_id)
+            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols)
             rhs = self.op.make_rhs(group_id, source, phi_prev, eigenvalue=eig_bool)
             scalar_flux = linalg.cg(lhs, rhs)[0]
             return scalar_flux
@@ -39,7 +42,7 @@ class Solver():
                 scalar_flux += np.pi * ang_fluxes[i]
             return scalar_flux, ang_fluxes
 
-    def solve_in_group(self, source, group_id, phi_prev, eig_bool, max_iter=50,
+    def solve_in_group(self, source, group_id, phi_prev, eig_bool, ho_sols=None, max_iter=50,
                        tol=1e-2):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
@@ -54,7 +57,7 @@ class Solver():
             if scattering:
                 print("Within-Group Iteration: ", i)
             if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
+                phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool, ho_sols=ho_sols)
             else:
                 phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
             if not scattering:
@@ -83,9 +86,15 @@ class Solver():
             if self.num_groups != 1:
                 print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
+            if isinstance(self.op, NDA):
+                # Calculate Higher Order
+                ho_solver = Solver(self.ho_op)
+                ho_phis, ho_psis = ho_solver.solve_outer(source, eig_bool)
+                ho_sols = [ho_phis, ho_psis]
+            else: ho_sols = None
             for g in range(self.num_groups):
                 if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                    phi = self.solve_in_group(source, g, phis, eig_bool)
+                    phi = self.solve_in_group(source, g, phis, eig_bool, ho_sols=ho_sols)
                     phis[g] = phi
                 else:
                     phi, psi = self.solve_in_group(source, g, phis, eig_bool)
