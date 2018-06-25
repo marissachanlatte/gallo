@@ -27,7 +27,6 @@ class NDA():
         E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         # Solve higher order equation
-        #phi, psi = self.solver.solve(self.source, eigenvalue=False)
         phi = ho_sols[0]
         psi = ho_sols[1]
         for e in range(E):
@@ -60,10 +59,6 @@ class NDA():
                     # Get node IDs
                     nid = n_global.get_node_id()
                     nsid = ns_global.get_node_id()
-                    # # Check if boundary nodes
-                    # if not ns_global.is_interior() or not n_global.is_interior():
-                    #     continue
-                    # else:
                     # Array of values of basis function evaluated at gauss nodes
                     fns_vals = np.zeros(3)
                     for i in range(3):
@@ -192,54 +187,3 @@ class NDA():
             kappa += self.ang_weight*np.abs(ang@normal)*psi[i]
         kappa /= phi
         return kappa
-
-
-    def solve(self, lhs, rhs, problem_type, group_id, max_iter=1000, tol=1e-5):
-        if problem_type=="fixed_source":
-            internal_nodes = linalg.cg(lhs, rhs)[0]
-            return internal_nodes
-        elif problem_type=="eigenvalue":
-            E = self.fegrid.get_num_elts()
-            N = self.fegrid.get_num_interior_nodes()
-            phi = np.zeros(N)
-            phi_prev = np.ones(N)
-            k_prev = np.sum(phi_prev)
-            # renormalize
-            phi_prev /= k_prev
-
-            for i in range(max_iter):
-                # setup rhs
-                phi_centroid = self.fegrid.interpolate_to_centroid(phi_prev)
-                f_centroids = self.make_eigen_source(group_id, phi_centroid)
-                # Integrate
-                rhs = self.make_rhs(f_centroids)
-                # solve
-                phi = linalg.cg(lhs, rhs)[0]
-                # compute k by integrating phi
-                phi_centroids = self.fegrid.interpolate_to_centroid(phi)
-                integral = self.make_rhs(phi_centroids)
-                k = np.sum(integral)
-                # renormalize
-                phi /= k
-                norm = np.linalg.norm(phi-phi_prev, 2)
-                knorm = np.abs(k - k_prev)
-                if knorm < tol and norm < tol:
-                    break
-                phi_prev = phi
-                k_prev = k
-                print("Eigenvalue Iteration: ", i)
-                print("Norm: ", norm)
-
-            if i==max_iter:
-                print("Warning: maximum number of iterations reached in eigenvalue solver")
-
-            max = np.max(phi)
-            phi /= max
-
-            print("Number of Iterations: ", i)
-            print("Final Phi Norm: ", norm)
-            print("Final k Norm: ", knorm)
-            return phi, k
-
-        else:
-            print("Problem type must be fixed_source or eigenvalue")
