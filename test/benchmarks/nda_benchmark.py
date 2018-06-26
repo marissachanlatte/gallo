@@ -38,11 +38,11 @@ def filename_to_problem(func):
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
     #phis, angs, eigenvalue = problem.op.solve(source, eigenvalue=True)
-    phis = problem.solver.solve(source, eigenvalue=False)
+    phis = problem.solver.solve(source, ua_bool=True)
 
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
         plot(problem.grid, scalar_flux, problem.filename + "_scalar_flux" + "_group" + str(g))
 
-test_problem("origin_centered10_fine", "scattering2g", "test")
+test_problem("symmetric", "c5g7uo2", "ua_test")
