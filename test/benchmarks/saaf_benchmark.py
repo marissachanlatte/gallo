@@ -12,6 +12,7 @@ from fe import *
 from materials import Materials
 from problem import Problem
 from plot import *
+from solvers import *
 
 def to_problem(mesh, mats, filename):
     nodefile = "../test_inputs/" + mesh + ".node"
@@ -21,9 +22,10 @@ def to_problem(mesh, mats, filename):
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
     op = SAAF(grid, mats)
+    solver = Solver(op)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
-    return Problem(op=op, mats=mats, grid=grid, filename=filename)
+    return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
 def filename_to_problem(func):
     def _filename_to_problem(mesh, mats, filename):
@@ -33,8 +35,8 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
-    phis, angs, eigenvalue = problem.op.solve(source, eigenvalue=True)
-    #phis, angs = problem.op.solve(source, eigenvalue=False)
+    #phis, angs, eigenvalue = problem.solver.solve(source, eigenvalue=True)
+    phis, angs = problem.solver.solve(source, eigenvalue=False)
 
     # Plot Everything
     for g in range(problem.num_groups):
@@ -46,7 +48,7 @@ def test_problem(problem):
 
 @filename_to_problem
 def test_1d(problem):
-    source = 10*np.ones(problem.n_elements)
+    source = np.ones(problem.n_elements)
     for g in range(problem.num_groups):
         scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
         plot1d(scalar_flux, problem.filename + "_scalar_flux_1d", 0)
@@ -56,6 +58,7 @@ def make_lhs(problem):
     source = np.ones(problem.n_elements)
     A = problem.op.make_lhs([.5773503, -.5773503], 0)
     print(A)
+
 @filename_to_problem
 def get_mat_stats(problem):
     num_mats = problem.mats.get_num_mats()
@@ -127,7 +130,7 @@ def plot_from_file(problem):
 #plot1d(problem.filename)
 #test_1d(problem.filename)
 #make_lhs(problem.filename)
-test_problem("origin_centered10", "fission", "fiss_test")
+test_problem("symmetric_fine", "scattering1g", "saaf")
 #plot_from_file("std", "fission", "stdfission")
 #get_mat_stats("3A", "3A", "3A")
 #test_multigroup("std", "scattering1g", "test")
