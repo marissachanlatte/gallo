@@ -45,7 +45,7 @@ class Solver():
             return scalar_flux, ang_fluxes
 
     def solve_in_group(self, source, group_id, phi_prev, eig_bool, ho_sols=None, max_iter=50,
-                       tol=1e-2, verbose=False):
+                       tol=1e-2, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -81,7 +81,7 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, eig_bool, verbose=True, max_iter=50, tol=1e-5):
+    def solve_outer(self, source, eig_bool, verbose=True, max_iter=50, tol=1e-2):
         phis = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
