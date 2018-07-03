@@ -29,6 +29,8 @@ class NDA():
         # Solve higher order equation
         phi = ho_sols[0]
         psi = ho_sols[1]
+        # Interpolate Phi
+        triang = self.fegrid.setup_triangulation()
         for e in range(E):
             # Determine material index of element
             midx = self.fegrid.get_mat_id(e)
@@ -41,6 +43,10 @@ class NDA():
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
+            # Find Phi at Gauss Nodes
+            phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
+            # Find Psi at Gauss Nodes
+            psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(4)])
             for n in range(3):
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
@@ -81,7 +87,7 @@ class NDA():
                     C = sig_r * basis_integral
 
                     # Calculate drift_vector
-                    drift_vector = self.compute_drift_vector(inv_sigt, D, ngrad, phi[group_id], psi[group_id], nid)
+                    drift_vector = self.compute_drift_vector(inv_sigt, D, ngrad, phi_vals[group_id], psi_vals[:, group_id], nid)
 
                     # Integrate drift_vector@gradient*basis_function
                     integral = self.fegrid.gauss_quad(e, (drift_vector@ngrad)*fn_vals)
@@ -109,9 +115,12 @@ class NDA():
                                     bid = vtx
                                     normal = self.fegrid.assign_normal(nid, bid)
                                     xis = self.fegrid.gauss_nodes1d([nid, bid], e)
-                                    boundary_integral = self.fegrid.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
-                                    kappa = self.compute_kappa(normal, psi[nid], phi[nid])
-                                    sparse_matrix[nid,nsid] += kappa * boundary_integral
+                                    phi_bd = self.fegrid.phi_at_gauss_nodes(triang, phi, xis)
+                                    psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(4)])
+                                    basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                                    kappa = self.compute_kappa(normal, phi_bd[group_id], psi_bd[:, group_id])
+                                    boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
+                                    sparse_matrix[nid,nsid] += boundary_integral
                                 continue
                             else:
                                 bid = verts[1]
@@ -119,10 +128,13 @@ class NDA():
                         if isinstance(normal, int):
                             continue
                         # Get Gauss Nodes for the element
-                        xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
-                        boundary_integral = self.fegrid.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
-                        kappa = self.compute_kappa(normal, psi[group_id, :, nid], phi[group_id, nid])
-                        sparse_matrix[nid, nsid] += kappa * boundary_integral
+                        xis = self.fegrid.gauss_nodes1d([nid, bid], e)
+                        phi_bd = self.fegrid.phi_at_gauss_nodes(triang, phi, xis)
+                        psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(4)])
+                        basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                        kappa = self.compute_kappa(normal, phi_bd[group_id], psi_bd[:, group_id])
+                        boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
+                        sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
     def make_rhs(self, group_id, source, phi_prev, eigenvalue=False):
@@ -177,18 +189,21 @@ class NDA():
                 ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
 
-    def compute_kappa(self, normal, psi, phi):
-        kappa = 0
-        for i, ang in enumerate(self.angs):
-            kappa += self.ang_weight*np.abs(ang@normal)*psi[i]
-        kappa /= phi
+    def compute_kappa(self, normal, phi, psi):
+        kappa = np.zeros(2)
+        # Use interpolated version of kappa
+        for node in range(2):
+            for i, ang in enumerate(self.angs):
+                kappa[node] += self.ang_weight*np.abs(ang@normal)*psi[i, node]
+            kappa[node] /= phi[node]
         return kappa
 
     def compute_drift_vector(self, inv_sigt, D, ngrad, phi, psi, nid):
         # Calculate drift_vector
-        drift_vector = 0
-        for i, ang in enumerate(self.angs):
-            drift_vector += self.ang_weight*(inv_sigt*ang*(ang@ngrad))*psi[i, nid]
-            drift_vector -= self.ang_weight*(D*ngrad)*psi[i, nid]
-        drift_vector /= phi[nid]
+        drift_vector = np.zeros((3, 2))
+        for node in range(3):
+            for i, ang in enumerate(self.angs):
+                drift_vector[node] += self.ang_weight*(inv_sigt*ang*(ang@ngrad))*psi[i, node]
+                drift_vector[node] -= self.ang_weight*(D*ngrad)*psi[i, node]
+            drift_vector[node] /= phi[node]
         return drift_vector
