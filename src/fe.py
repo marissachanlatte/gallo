@@ -251,7 +251,22 @@ class FEGrid():
         xi = 1 / np.sqrt(3)
         nodes = np.array(
             [-(b - a) / 2 * xi + (b + a) / 2, (b - a) / 2 * xi + (b + a) / 2])
-        return nodes
+        pos_n = self.node(boundary_vertices[0]).get_position()
+        pos_ns = self.node(boundary_vertices[1]).get_position()
+        gauss_nodes = np.zeros((2, 2))
+        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
+            gauss_nodes[0] = [self.xmax, nodes[0]]
+            gauss_nodes[1] = [self.xmax, nodes[1]]
+        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+            gauss_nodes[0] = [self.xmin, nodes[0]]
+            gauss_nodes[1] = [self.xmin, nodes[1]]
+        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
+            gauss_nodes[0] = [nodes[0], self.ymax]
+            gauss_nodes[1] = [nodes[1], self.ymax]
+        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+            gauss_nodes[0] = [nodes[0], self.ymin]
+            gauss_nodes[1] = [nodes[1], self.ymin]
+        return gauss_nodes
 
     def gauss_nodes(self, elt_number):
         # WARNING only works for 2D triangular elements
@@ -344,23 +359,13 @@ class FEGrid():
         return normal
 
 
-    def calculate_boundary_integral(self, nid, bid, xis, bn, bns, e):
+    def calculate_boundary_integral(self, nid, bid, gauss_nodes, bn, bns, e):
         pos_n = self.node(nid).get_position()
         pos_ns = self.node(bid).get_position()
-        gauss_nodes = np.zeros((2, 2))
-        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
-            gauss_nodes[0] = [self.xmax, xis[0]]
-            gauss_nodes[1] = [self.xmax, xis[1]]
-        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
-            gauss_nodes[0] = [self.xmin, xis[0]]
-            gauss_nodes[1] = [self.xmin, xis[1]]
-        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
-            gauss_nodes[0] = [xis[0], self.ymax]
-            gauss_nodes[1] = [xis[1], self.ymax]
-        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
-            gauss_nodes[0] = [xis[0], self.ymin]
-            gauss_nodes[1] = [xis[1], self.ymin]
-        else:
+        if not ((pos_n[0] == self.xmax and pos_ns[0] == self.xmax)
+                or (pos_n[0] == self.xmin and pos_ns[0] == self.xmin)
+                or (pos_n[1] == self.ymax and pos_ns[1] == self.ymax)
+                or (pos_n[1] == self.ymin and pos_ns[1] == self.ymin)):
             boundary_integral = 0
             return boundary_integral
         # Value of first basis function at boundary gauss nodes
@@ -390,9 +395,10 @@ class FEGrid():
 
     def phi_at_gauss_nodes(self, triang, phi_prev, g_nodes):
         num_groups = np.shape(phi_prev)[0]
-        phi_vals = np.zeros((num_groups, 3))
+        num_nodes = np.shape(g_nodes)[0]
+        phi_vals = np.zeros((num_groups, num_nodes))
         for g in range(num_groups):
             interp = tri.LinearTriInterpolator(triang, phi_prev[g])
-            for i in range(3):
+            for i in range(num_nodes):
                 phi_vals[g, i] = interp(g_nodes[i, 0], g_nodes[i, 1])
         return phi_vals
