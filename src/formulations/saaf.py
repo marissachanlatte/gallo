@@ -115,12 +115,10 @@ class SAAF():
                             continue
                         if angles @ normal > 0:
                             # Get Gauss Nodes for the element
-                            xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
+                            xis = self.fegrid.gauss_nodes1d([nid, bid], e)
                             boundary_integral = self.fegrid.calculate_boundary_integral(
                                 nid, bid, xis, bn, bns, e)
-                            sparse_matrix[
-                                nid,
-                                nsid] += angles @ normal * boundary_integral
+                            sparse_matrix[nid, nsid] += angles @ normal * boundary_integral
                         else:
                             pass
         return sparse_matrix
@@ -225,16 +223,16 @@ class SAAF():
             ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
 
-    def compute_collapsed_fission(self, phi):
-        triang = self.fegrid.setup_triangulation()
-        collapsed_fission = 0
-        for g in range(self.num_groups):
-            for e in range(self.num_elts):
-                midx = self.fegrid.get_mat_id(e)
-                nu = self.mat_data.get_nu(midx, g)
-                sig_f = self.mat_data.get_sigf(midx, g)
-                g_nodes = self.fegrid.gauss_nodes(e)
-                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
-                phi_integral = self.fegrid.gauss_quad(e, phi_vals[g])
-                collapsed_fission += nu*sig_f*phi_integral
-        return collapsed_fission
+    # def compute_collapsed_fission(self, phi):
+    #     triang = self.fegrid.setup_triangulation()
+    #     collapsed_fission = 0
+    #     for g in range(self.num_groups):
+    #         for e in range(self.num_elts):
+    #             midx = self.fegrid.get_mat_id(e)
+    #             nu = self.mat_data.get_nu(midx, g)
+    #             sig_f = self.mat_data.get_sigf(midx, g)
+    #             g_nodes = self.fegrid.gauss_nodes(e)
+    #             phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
+    #             phi_integral = self.fegrid.gauss_quad(e, phi_vals[g])
+    #             collapsed_fission += nu*sig_f*phi_integral
+    #     return collapsed_fission
