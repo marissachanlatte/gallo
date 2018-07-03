@@ -27,8 +27,9 @@ class NDA():
         E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         # Solve higher order equation
-        phi = ho_sols[0]
-        psi = ho_sols[1]
+        if ho_sols !=0:
+            phi = ho_sols[0]
+            psi = ho_sols[1]
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(E):
@@ -43,10 +44,11 @@ class NDA():
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
-            # Find Phi at Gauss Nodes
-            phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
-            # Find Psi at Gauss Nodes
-            psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(4)])
+            if ho_sols !=0:
+                # Find Phi at Gauss Nodes
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, np.array([phi]), g_nodes)
+                # Find Psi at Gauss Nodes
+                psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, np.array([psi[i]]), g_nodes) for i in range(4)])
             for n in range(3):
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
@@ -87,7 +89,10 @@ class NDA():
                     C = sig_r * basis_integral
 
                     # Calculate drift_vector
-                    drift_vector = self.compute_drift_vector(inv_sigt, D, ngrad, phi_vals[group_id], psi_vals[:, group_id], nid)
+                    if ho_sols == 0:
+                        drift_vector = np.zeros(2)
+                    else:
+                        drift_vector = self.compute_drift_vector(inv_sigt, D, ngrad, phi_vals[0], psi_vals[:, 0], nid)
 
                     # Integrate drift_vector@gradient*basis_function
                     integral = self.fegrid.gauss_quad(e, (drift_vector@ngrad)*fn_vals)
@@ -113,13 +118,16 @@ class NDA():
                                 # Calculate boundary integrals for other vertices
                                 for vtx in other_verts:
                                     bid = vtx
-                                    normal = self.fegrid.assign_normal(nid, bid)
-                                    xis = self.fegrid.gauss_nodes1d([nid, bid], e)
-                                    phi_bd = self.fegrid.phi_at_gauss_nodes(triang, phi, xis)
-                                    psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(4)])
-                                    basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
-                                    kappa = self.compute_kappa(normal, phi_bd[group_id], psi_bd[:, group_id])
-                                    boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
+                                    if ho_sols != 0:
+                                        normal = self.fegrid.assign_normal(nid, bid)
+                                        xis = self.fegrid.gauss_nodes1d([nid, bid], e)
+                                        phi_bd = self.fegrid.phi_at_gauss_nodes(triang, np.array([phi]), xis)
+                                        psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, np.array([psi[i]]), xis) for i in range(4)])
+                                        basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                                        kappa = self.compute_kappa(normal, phi_bd[0], psi_bd[:, 0])
+                                        boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
+                                    else:
+                                        boundary_integral = 0
                                     sparse_matrix[nid,nsid] += boundary_integral
                                 continue
                             else:
@@ -129,11 +137,14 @@ class NDA():
                             continue
                         # Get Gauss Nodes for the element
                         xis = self.fegrid.gauss_nodes1d([nid, bid], e)
-                        phi_bd = self.fegrid.phi_at_gauss_nodes(triang, phi, xis)
-                        psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(4)])
-                        basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
-                        kappa = self.compute_kappa(normal, phi_bd[group_id], psi_bd[:, group_id])
-                        boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
+                        if ho_sols != 0:
+                            phi_bd = self.fegrid.phi_at_gauss_nodes(triang, np.array([phi]), xis)
+                            psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, np.array([psi[i]]), xis) for i in range(4)])
+                            basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                            kappa = self.compute_kappa(normal, phi_bd[0], psi_bd[:, 0])
+                            boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
+                        else:
+                            boundary_integral = 0
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 

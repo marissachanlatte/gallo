@@ -44,8 +44,8 @@ class Solver():
                 scalar_flux += np.pi * ang_fluxes[i]
             return scalar_flux, ang_fluxes
 
-    def solve_in_group(self, source, group_id, phi_prev, eig_bool, ho_sols=None, max_iter=50,
-                       tol=1e-2, verbose=True):
+    def solve_in_group(self, source, group_id, phi_prev, eig_bool, max_iter=50,
+                       tol=1e-3, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -55,11 +55,20 @@ class Solver():
                 scattering = True
         if self.num_groups > 1 and verbose:
             print("Starting Group ", group_id)
+        if isinstance(self.op, NDA):
+            # Run preliminary solve on low-order system
+            ho_sols = 0
+            phi_prev[group_id] = self.get_scalar_flux(group_id, source, phi_prev, eig_bool, ho_sols=ho_sols)
         for i in range(max_iter):
             if scattering and verbose:
                 print("Within-Group Iteration: ", i)
-            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
+            if isinstance(self.op, NDA):
+                ho_solver = Solver(self.ho_op)
+                ho_phis, ho_psis = ho_solver.get_scalar_flux(group_id, source, phi_prev, eig_bool)
+                ho_sols = [ho_phis, ho_psis]
                 phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool, ho_sols=ho_sols)
+            elif isinstance(self.op, Diffusion):
+                phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
             else:
                 phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
             if not scattering:
@@ -81,23 +90,16 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, eig_bool, verbose=True, max_iter=50, tol=1e-2):
+    def solve_outer(self, source, eig_bool, verbose=True, max_iter=50, tol=1e-4):
         phis = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             if self.num_groups != 1 and verbose:
                 print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
-            if isinstance(self.op, NDA):
-                # Calculate Higher Order
-                print("Calculating Higher Order Solution")
-                ho_solver = Solver(self.ho_op)
-                ho_phis, ho_psis = ho_solver.solve_outer(source, eig_bool, verbose=False)
-                ho_sols = [ho_phis, ho_psis]
-            else: ho_sols = None
             for g in range(self.num_groups):
                 if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                    phi = self.solve_in_group(source, g, phis, eig_bool, ho_sols=ho_sols, verbose=verbose)
+                    phi = self.solve_in_group(source, g, phis, eig_bool, verbose=verbose)
                     phis[g] = phi
                 else:
                     phi, psi = self.solve_in_group(source, g, phis, eig_bool)
@@ -121,48 +123,6 @@ class Solver():
             return phis
         else:
             return phis, ang_fluxes
-
-    def power_iteration(self, max_iter=50, tol=1e-2):
-        # Initialize Guesses
-        k = 1
-        phi = np.ones((self.num_groups, self.num_nodes))
-        fiss_collapsed = self.op.compute_collapsed_fission(phi)
-        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            fission_source = np.zeros((self.num_groups, self.num_nodes))
-        else:
-            fission_source = np.zeros((self.num_groups, 4, self.num_nodes))
-        for it_count in range(max_iter):
-            print("Eigenvalue Iteration: ", it_count)
-            for g in range(self.num_groups):
-                if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                    fission_source[g] = self.op.make_fission_source(g, phi)/k
-                else:
-                    for i, ang in enumerate(self.angs):
-                        fission_source[g, i] = self.op.make_fission_source(g, ang, phi)/k
-            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                new_phi = self.solve_outer(fission_source, True)
-            else:
-                new_phi, psi = self.solve_outer(fission_source, True)
-            new_fiss_collapsed = self.op.compute_collapsed_fission(new_phi)
-            new_k = k*new_fiss_collapsed/fiss_collapsed
-            err_k = np.abs((new_k - k))/np.abs(new_k)
-            phi_group_norms = np.array([np.linalg.norm(new_phi[g] - phi[g], ord=2)
-                                       /np.linalg.norm(new_phi[g], ord=2)
-                                       for g in range(self.num_groups)])
-            err_phi = np.linalg.norm(phi_group_norms, ord=2)
-            print("Eigenvalue Norm: ", err_k)
-            if err_k < tol and err_phi < tol:
-                break
-            print("phi, new_phi", np.max(phi), np.max(new_phi))
-            print("k, new_k", k, new_k)
-            phi = new_phi
-            k = new_k
-            fiss_collapsed = new_fiss_collapsed
-        print("k-effective: ", k)
-        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            return phi, k
-        else:
-            return phi, psi, k
 
     def solve(self, source, eigenvalue=False, ua_bool=False):
         if ua_bool:
