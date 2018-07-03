@@ -102,8 +102,10 @@ class SAAF():
                                     if angles @ normal > 0:
                                         xis = self.fegrid.gauss_nodes1d(
                                             [nid, bid], e)
-                                        boundary_integral = self.fegrid.calculate_boundary_integral(
-                                            nid, bid, xis, bn, bns, e)
+                                        # boundary_integral = self.fegrid.calculate_boundary_integral(
+                                        #     nid, bid, xis, bn, bns, e)
+                                        basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                                        boundary_integral = self.fegrid.gauss_quad1d(basis_product, [nid, bid], e)
                                         sparse_matrix[
                                             nid,
                                             nsid] += angles @ normal * boundary_integral
@@ -116,8 +118,10 @@ class SAAF():
                         if angles @ normal > 0:
                             # Get Gauss Nodes for the element
                             xis = self.fegrid.gauss_nodes1d([nid, bid], e)
-                            boundary_integral = self.fegrid.calculate_boundary_integral(
-                                nid, bid, xis, bn, bns, e)
+                            # boundary_integral = self.fegrid.calculate_boundary_integral(
+                            #     nid, bid, xis, bn, bns, e)
+                            basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                            boundary_integral = self.fegrid.gauss_quad1d(basis_product, [nid, bid], e)
                             sparse_matrix[nid, nsid] += angles @ normal * boundary_integral
                         else:
                             pass

@@ -358,8 +358,7 @@ class FEGrid():
             return -1
         return normal
 
-
-    def calculate_boundary_integral(self, nid, bid, gauss_nodes, bn, bns, e):
+    def boundary_basis_product(self, nid, bid, gauss_nodes, bn, bns, e):
         pos_n = self.node(nid).get_position()
         pos_ns = self.node(bid).get_position()
         if not ((pos_n[0] == self.xmax and pos_ns[0] == self.xmax)
@@ -378,9 +377,7 @@ class FEGrid():
         gns_vals[1] = self.evaluate_basis_function(bns, gauss_nodes[1])
         # Multiply basis functions together
         g_vals = gn_vals * gns_vals
-        # Integrate over length of element on boundary
-        boundary_integral = self.gauss_quad1d(g_vals, [nid, bid], e)
-        return boundary_integral
+        return g_vals
 
     def setup_triangulation(self):
         x = np.zeros(self.num_nodes)
