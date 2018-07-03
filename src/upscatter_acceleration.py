@@ -125,23 +125,23 @@ class UA():
                 # Get node ids
                 nid = n_global.get_node_id()
 
-                # Add Phi Prevs
+                # Subtract Phi Prevs
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, self.phis_prev, g_nodes)
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
                 integral = np.array([self.fegrid.gauss_quad(e, product[g]) for g in range(self.num_groups)])
                 ssource = np.sum(np.array([self.partial_scat(midx, integral, g) for g in range(self.num_groups)]))
-                rhs_at_node[nid] += ssource
+                rhs_at_node[nid] -= ssource
 
-                # Subtract Phi Prevs
+                # Add Phi Prevs
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, self.phis, g_nodes)
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
                 integral = np.array([self.fegrid.gauss_quad(e, product[g]) for g in range(self.num_groups)])
                 ssource = np.sum(np.array([self.partial_scat(midx, integral, g) for g in range(self.num_groups)]))
-                rhs_at_node[nid] -= ssource
+                rhs_at_node[nid] += ssource
 
         return rhs_at_node
 
