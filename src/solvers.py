@@ -1,4 +1,5 @@
 import itertools as itr
+import time
 
 import numpy as np
 import scipy.sparse as sps
@@ -22,17 +23,17 @@ class Solver():
         if not isinstance(self.op, Diffusion) and not isinstance(self.op, NDA):
             self.angs = self.op.angs
 
-    def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev, eig_bool):
+    def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev):
         lhs = self.op.make_lhs(ang, group_id)
-        rhs = self.op.make_rhs(group_id, source, ang, angle_id, phi_prev, eigenvalue=eig_bool)
+        rhs = self.op.make_rhs(group_id, source, ang, angle_id, phi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
         return ang_flux
 
-    def get_scalar_flux(self, group_id, source, phi_prev, eig_bool, ho_sols=None):
+    def get_scalar_flux(self, group_id, source, phi_prev, ho_sols=None):
         scalar_flux = 0
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             lhs = self.op.make_lhs(group_id, ho_sols=ho_sols)
-            rhs = self.op.make_rhs(group_id, source, phi_prev, eigenvalue=eig_bool)
+            rhs = self.op.make_rhs(group_id, source, phi_prev)
             scalar_flux = linalg.cg(lhs, rhs)[0]
             return scalar_flux
         else:
@@ -40,11 +41,11 @@ class Solver():
             # Iterate over all angle possibilities
             for i, ang in enumerate(self.angs):
                 ang = np.array(ang)
-                ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev, eig_bool)
+                ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev)
                 scalar_flux += np.pi * ang_fluxes[i]
             return scalar_flux, ang_fluxes
 
-    def solve_in_group(self, source, group_id, phi_prev, eig_bool, max_iter=50,
+    def solve_in_group(self, source, group_id, phi_prev, max_iter=50,
                        tol=1e-3, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
@@ -58,19 +59,19 @@ class Solver():
         if isinstance(self.op, NDA):
             # Run preliminary solve on low-order system
             ho_sols = 0
-            phi_prev[group_id] = self.get_scalar_flux(group_id, source, phi_prev, eig_bool, ho_sols=ho_sols)
+            phi_prev[group_id] = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=ho_sols)
         for i in range(max_iter):
             if scattering and verbose:
                 print("Within-Group Iteration: ", i)
             if isinstance(self.op, NDA):
                 ho_solver = Solver(self.ho_op)
-                ho_phis, ho_psis = ho_solver.get_scalar_flux(group_id, source, phi_prev, eig_bool)
+                ho_phis, ho_psis = ho_solver.get_scalar_flux(group_id, source, phi_prev)
                 ho_sols = [ho_phis, ho_psis]
-                phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool, ho_sols=ho_sols)
+                phi = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=ho_sols)
             elif isinstance(self.op, Diffusion):
-                phi = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
+                phi = self.get_scalar_flux(group_id, source, phi_prev)
             else:
-                phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev, eig_bool)
+                phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
             if not scattering:
                 break
             norm = np.linalg.norm(phi - phi_prev[group_id], 2)
@@ -90,7 +91,7 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, eig_bool, verbose=True, max_iter=50, tol=1e-4):
+    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-4):
         phis = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
@@ -99,10 +100,10 @@ class Solver():
             phis_prev = np.copy(phis)
             for g in range(self.num_groups):
                 if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                    phi = self.solve_in_group(source, g, phis, eig_bool, verbose=verbose)
+                    phi = self.solve_in_group(source, g, phis, verbose=verbose)
                     phis[g] = phi
                 else:
-                    phi, psi = self.solve_in_group(source, g, phis, eig_bool)
+                    phi, psi = self.solve_in_group(source, g, phis)
                     phis[g] = phi
                     ang_fluxes[g] = psi
             if self.num_groups == 1:
@@ -124,21 +125,13 @@ class Solver():
         else:
             return phis, ang_fluxes
 
-    def solve(self, source, eigenvalue=False, ua_bool=False):
+    def solve(self, source, ua_bool=False):
+        start = time.time()
         if ua_bool:
             self.ua_bool = True
-        if eigenvalue:
-            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                phis, eigenvalue = self.power_iteration()
-                return phis, eigenvalue
-            else:
-                phis, ang_fluxes, k = self.power_iteration()
-                return phis, ang_fluxes, k
+        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
+            phis = self.solve_outer(source)
+            return phis
         else:
-            eig_bool = False
-            if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-                phis = self.solve_outer(source, eig_bool)
-                return phis
-            else:
-                phis, ang_fluxes = self.solve_outer(source, eig_bool)
-                return phis, ang_fluxes
+            phis, ang_fluxes = self.solve_outer(source)
+            return phis, ang_fluxes
