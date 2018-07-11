@@ -92,6 +92,10 @@ class Diffusion():
                                 continue
                             else:
                                 bid = verts[1]
+                        # Check to make sure you're on a boundary
+                        normal = self.fegrid.assign_normal(nid, bid)
+                        if isinstance(normal, int):
+                            continue
                         # Get Gauss Nodes for the element
                         xis = self.fegrid.gauss_nodes1d([nid, bid], e)
                         basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
