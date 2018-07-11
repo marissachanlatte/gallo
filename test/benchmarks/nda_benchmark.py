@@ -37,8 +37,8 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
-    phis = problem.solver.solve(source, ua_bool=True)
-
+    phis = problem.solver.solve(source, ua_bool=False)
+    np.savetxt('nda_out.txt', phis)
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
@@ -78,5 +78,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric_fine", "simple3g", "nda_upscat")
+test_problem("symmetric_fine", "scattering1g", "nda_1gscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
