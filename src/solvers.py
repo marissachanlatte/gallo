@@ -86,8 +86,10 @@ class Solver():
         if scattering and verbose:
             print("Number of Within-Group Iterations: ", i + 1)
             print("Final Phi Norm: ", norm)
-        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
+        if isinstance(self.op, Diffusion):
             return phi
+        elif isinstance(self.op, NDA):
+            return phi, ho_sols
         else:
             return phi, ang_fluxes
 
@@ -98,10 +100,16 @@ class Solver():
             if self.num_groups != 1 and verbose:
                 print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
+            if isinstance(self.op, NDA):
+                all_ho_sols = []
             for g in range(self.num_groups):
-                if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
+                if isinstance(self.op, Diffusion):
                     phi = self.solve_in_group(source, g, phis, verbose=verbose)
                     phis[g] = phi
+                elif isinstance(self.op, NDA):
+                    phi, ho_sols = self.solve_in_group(source, g, phis, verbose=verbose)
+                    phis[g] = phi
+                    all_ho_sols.append(ho_sols)
                 else:
                     phi, psi = self.solve_in_group(source, g, phis)
                     phis[g] = phi
@@ -112,7 +120,7 @@ class Solver():
                 if self.ua_bool:
                     # Calculate Correction Term
                     print("Calculating Upscatter Acceleration Term")
-                    upscatter_accelerator = UA(self.op, phis, phis_prev, ho_sols)
+                    upscatter_accelerator = UA(self.op, phis, phis_prev, all_ho_sols)
                     epsilon = upscatter_accelerator.calculate_correction()
                     phis += epsilon
                 res = np.max(np.abs(phis_prev - phis))
@@ -131,7 +139,11 @@ class Solver():
             self.ua_bool = True
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             phis = self.solve_outer(source)
+            end = time.time()
+            print("Runtime:", np.round(end - start, 5), "seconds")
             return phis
         else:
             phis, ang_fluxes = self.solve_outer(source)
+            end = time.time()
+            print("Runtime:", np.round(end - start, 5), "seconds")
             return phis, ang_fluxes
