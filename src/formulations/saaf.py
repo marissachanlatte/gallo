@@ -76,8 +76,7 @@ class SAAF():
                     C = sig_t * integral
                     sparse_matrix[nid, nsid] += A + C
                     # Check if boundary nodes
-                    if not n_global.is_interior(
-                    ) and not ns_global.is_interior():
+                    if not n_global.is_interior() and not ns_global.is_interior():
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -89,12 +88,9 @@ class SAAF():
                                 # We have to calculate boundary integral twice,
                                 # once for each other vertex
                                 # Find the other vertices
-                                all_verts = np.array(
-                                    self.fegrid.element(e).get_vertices())
-                                vert_local_idx = np.where(
-                                    all_verts == nid)[0][0]
-                                other_verts = np.delete(
-                                    all_verts, vert_local_idx)
+                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                vert_local_idx = np.where(all_verts == nid)[0][0]
+                                other_verts = np.delete(all_verts, vert_local_idx)
                                 # Calculate boundary integrals for other vertices
                                 for vtx in other_verts:
                                     bid = vtx
@@ -104,9 +100,7 @@ class SAAF():
                                             [nid, bid], e)
                                         basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
                                         boundary_integral = self.fegrid.gauss_quad1d(basis_product, [nid, bid], e)
-                                        sparse_matrix[
-                                            nid,
-                                            nsid] += angles @ normal * boundary_integral
+                                        sparse_matrix[nid, nsid] += angles @ normal * boundary_integral
                                 continue
                             else:
                                 bid = verts[1]
@@ -222,17 +216,3 @@ class SAAF():
         for g_prime in range(self.num_groups):
             ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
-
-    # def compute_collapsed_fission(self, phi):
-    #     triang = self.fegrid.setup_triangulation()
-    #     collapsed_fission = 0
-    #     for g in range(self.num_groups):
-    #         for e in range(self.num_elts):
-    #             midx = self.fegrid.get_mat_id(e)
-    #             nu = self.mat_data.get_nu(midx, g)
-    #             sig_f = self.mat_data.get_sigf(midx, g)
-    #             g_nodes = self.fegrid.gauss_nodes(e)
-    #             phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
-    #             phi_integral = self.fegrid.gauss_quad(e, phi_vals[g])
-    #             collapsed_fission += nu*sig_f*phi_integral
-    #     return collapsed_fission
