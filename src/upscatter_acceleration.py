@@ -22,18 +22,24 @@ class UA():
 
     def correction_lhs(self):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
-        ho_phi = self.ho_sols[0]
-        ho_psi = self.ho_sols[1]
+        ho_phi = np.array([self.ho_sols[g][0] for g in range(self.num_groups)])
+        ho_psi = np.array([self.ho_sols[g][1] for g in range(self.num_groups)])
+        # Interpolate Phi
+        triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
             midx = self.fegrid.get_mat_id(e)
             diffs = np.array([self.mat_data.get_diff(midx, g) for g in range(self.num_groups)])
             D = np.sum(diffs)
-            sig_a = np.sum(np.array([self.mat_data.get_siga(midx, g) for g in range(self.num_groups)]))
+            sig_r = np.sum(np.array([self.mat_data.get_sigr(midx, g) for g in range(self.num_groups)]))
             inv_sigt = np.array([self.mat_data.get_inv_sigt(midx, g) for g in range(self.num_groups)])
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
+            # Find Phi at Gauss Nodes
+            phi_vals = self.fegrid.phi_at_gauss_nodes(triang, ho_phi, g_nodes)
+            # Find Psi at Gauss Nodes
+            psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, ho_psi[:, i], g_nodes) for i in range(4)])
             for n in range(3):
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
@@ -59,18 +65,16 @@ class UA():
                     A = D * area * inprod
 
                     # Multiply basis functions together
-                    f_vals = np.zeros(3)
-                    for i in range(3):
-                        f_vals[i] = fn_vals[i] * fns_vals[i]
+                    f_vals = np.array([fn_vals[i]*fns_vals[i] for i in range(3)])
 
                     # Integrate for B (basis functions multiplied)
                     integral = self.fegrid.gauss_quad(e, f_vals)
-                    C = sig_a * integral
+                    C = sig_r * integral
 
                     # Calculate drift_vector
-                    drift_vector = np.zeros(2)
+                    drift_vector = np.zeros((3, 2))
                     for g in range(self.num_groups):
-                        drift_vector += self.op.compute_drift_vector(inv_sigt[g], diffs[g], ngrad, ho_phi[g], ho_psi[g], nid)
+                        drift_vector += self.op.compute_drift_vector(inv_sigt[g], diffs[g], ngrad, phi_vals[g], psi_vals[:, g], nid)
 
                     # Integrate drift_vector@gradient*basis_function
                     integral = self.fegrid.gauss_quad(e, (drift_vector@ngrad)*fn_vals)
@@ -96,14 +100,20 @@ class UA():
                                 for vtx in other_verts:
                                     bid = vtx
                                     xis = self.fegrid.gauss_nodes1d([nid, bid], e)
-                                    boundary_integral = self.fegrid.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
+                                    basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                                    boundary_integral = self.fegrid.gauss_quad1d(basis_product, [nid, bid], e)
                                     sparse_matrix[nid,nsid] += boundary_integral
                                 continue
                             else:
                                 bid = verts[1]
+                        # Check to make sure you're on a boundary
+                        normal = self.fegrid.assign_normal(nid, bid)
+                        if isinstance(normal, int):
+                            continue
                         # Get Gauss Nodes for the element
-                        xis = self.fegrid.gauss_nodes1d([nid, nsid], e)
-                        boundary_integral = self.fegrid.calculate_boundary_integral(nid, bid, xis, bn, bns, e)
+                        xis = self.fegrid.gauss_nodes1d([nid, bid], e)
+                        basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
+                        boundary_integral = self.fegrid.gauss_quad1d(basis_product, [nid, bid], e)
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
