@@ -45,8 +45,8 @@ class Solver():
                 scalar_flux += np.pi * ang_fluxes[i]
             return scalar_flux, ang_fluxes
 
-    def solve_in_group(self, source, group_id, phi_prev, max_iter=50,
-                       tol=1e-3, verbose=True):
+    def solve_in_group(self, source, group_id, phi_prev, max_iter=1000,
+                       tol=1e-5, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
