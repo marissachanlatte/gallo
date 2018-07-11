@@ -1,0 +1,4 @@
+2 | 1
+0 | 0 | 'water'| 3.2759 | 1.03e-2 | 3.2656 | 0 | 0 | 0
+1 | 0 | 'iron' | 1.1228 | 1.90e-2 | 0.9328 | 0 | 0 | 0
+MAT ID | GROUP ID | 'MAT NAME' | TOTAL | ABSORPTION | SCATTERING | FISSION | NU | CHI
