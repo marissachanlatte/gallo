@@ -1,5 +1,5 @@
 1 | 3
-0 | 0 | 'U02' | 13 | 1 | 10  1   1  | 0 | 0 | 0
-0 | 1 | 'U02' | 13 | 1 | 1   10  1  | 0 | 0 | 0
-0 | 2 | 'U02' | 12 | 1 | 0   1   10 | 0 | 0 | 0
+0 | 0 | 'upscatter' | 13 | 1 | 10  1   1  | 0 | 0 | 0
+0 | 1 | 'upscatter' | 13 | 1 | 1   10  1  | 0 | 0 | 0
+0 | 2 | 'upscatter' | 12 | 1 | 0   1   10 | 0 | 0 | 0
 MAT ID | GROUP ID | 'MAT NAME' | TOTAL | ABSORPTION | SCATTERING | FISSION | NU | CHI
