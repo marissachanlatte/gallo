@@ -73,5 +73,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("std", "noscatter", "test")
+test_problem("symmetric_fine", "simple3g", "diff_upscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
