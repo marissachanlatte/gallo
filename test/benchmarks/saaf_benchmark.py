@@ -35,8 +35,7 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
-    #phis, angs, eigenvalue = problem.solver.solve(source, eigenvalue=True)
-    phis, angs = problem.solver.solve(source, eigenvalue=False)
+    phis, angs = problem.solver.solve(source)
 
     # Plot Everything
     for g in range(problem.num_groups):
@@ -45,13 +44,6 @@ def test_problem(problem):
         ang_fluxes = angs[g]
         for i in range(4):
             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g))
-
-@filename_to_problem
-def test_1d(problem):
-    source = np.ones(problem.n_elements)
-    for g in range(problem.num_groups):
-        scalar_flux, ang_fluxes = problem.op.solve(source, "eigenvalue", g, "vacuum", tol=1e-3)
-        plot1d(scalar_flux, problem.filename + "_scalar_flux_1d", 0)
 
 @filename_to_problem
 def make_lhs(problem):
@@ -87,22 +79,36 @@ def test_multigroup(problem):
     phi = np.zeros(problem.n_nodes)
     print(problem.op.gauss_seidel(H[0, 0], q, phi, tol=1e-5))
 
+@filename_to_problem
+def test_1d(problem):
+    source = np.ones((problem.num_groups, problem.n_elements))
+    scalar_flux, ang_flux = problem.solver.solve(source, eigenvalue=False)
+    for g in range(problem.num_groups):
+        plot1d(scalar_flux[g], problem.filename + str(g) + "_scalar_flux_1d", -0.875)
+
 def plot1d(sol, filename, y):
-    if y==0.125:
-        nodes = np.array([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1])
-        flux = np.array([sol[72], sol[33], sol[62], sol[32], sol[48], sol[28], sol[56], sol[36], sol[77]])
-        i = 2
-    if y==0.0625:
-        nodes = np.array([0.0625, 0.1875, 0.3125, 0.4375, 0.5625, 0.6875, 0.8125, 0.9375])
-        flux = np.array([sol[118], sol[117], sol[138], sol[89], sol[137], sol[112], sol[96], sol[124]])
-        i = 1
-    if y==0:
-        nodes = np.array([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1])
-        flux = np.array([sol[0], sol[71], sol[17], sol[49], sol[8], sol[69], sol[24], sol[78], sol[1]])
-        i=0
+    # if y==0.125:
+    #     nodes = np.array([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1])
+    #     flux = np.array([sol[72], sol[33], sol[62], sol[32], sol[48], sol[28], sol[56], sol[36], sol[77]])
+    #     i = 2
+    # if y==0.0625:
+    #     nodes = np.array([0.0625, 0.1875, 0.3125, 0.4375, 0.5625, 0.6875, 0.8125, 0.9375])
+    #     flux = np.array([sol[118], sol[117], sol[138], sol[89], sol[137], sol[112], sol[96], sol[124]])
+    #     i = 1
+    # if y==0:
+    #     nodes = np.array([0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1])
+    #     flux = np.array([sol[0], sol[71], sol[17], sol[49], sol[8], sol[69], sol[24], sol[78], sol[1]])
+    #     i=0
+        # for origin_centered10_fine mesh
+    if y == 0:
+        nodes = np.array([-1,    -0.875,   -0.75,   -0.625,   -0.5,    -0.375,   -0.25,   -0.125,    0,      0.125,    0.25,    0.375,    0.5,     0.625,    0.75,    0.875,    1])
+        flux = np.array([sol[5], sol[251], sol[45], sol[240], sol[13], sol[260], sol[58], sol[261], sol[4], sol[238], sol[80], sol[204], sol[15], sol[243], sol[47], sol[257], sol[7]])
+    if y == -0.875:
+        nodes = np.array([-1,      -0.875,   -0.75,    -0.625,   -0.5,     -0.375,   -0.25,    -.125,   0,        0.125,    0.25,     0.375,    0.5,      0.625,   0.75,     0.875,    1])
+        flux = np.array([sol[273], sol[118], sol[193], sol[117], sol[227], sol[138], sol[153], sol[89], sol[248], sol[135], sol[234], sol[112], sol[176], sol[96], sol[200], sol[124], sol[281]])
     plt.plot(nodes, flux, marker="o")
     plt.title("Scalar Flux Line Out at y=" + str(y))
-    plt.savefig(filename + str(i))
+    plt.savefig(filename)
     plt.clf()
     plt.close()
 
@@ -126,13 +132,5 @@ def plot_from_file(problem):
         for i in range(4):
             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g))
 
-
-#plot1d(problem.filename)
-#test_1d(problem.filename)
-#make_lhs(problem.filename)
-test_problem("symmetric_fine", "scattering1g", "saaf")
-#plot_from_file("std", "fission", "stdfission")
-#get_mat_stats("3A", "3A", "3A")
-#test_multigroup("std", "scattering1g", "test")
-#profiling("symmetric_fine", "scattering1g", "test")
-#plot_mats(problem.filename)
+test_problem("std", "noscatter", "test")
+#test_1d("origin_centered10_fine", "scattering2g", "1d_test")
