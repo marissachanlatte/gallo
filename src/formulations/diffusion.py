@@ -113,14 +113,11 @@ class Diffusion():
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
-            if eigenvalue:
-                nu = self.mat_data.get_nu(midx, group_id)
-                sig_f = self.mat_data.get_sigf(midx, group_id)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
-                # Check if boundary node
-                if not n_global.is_interior():
-                    continue
+                # # Check if boundary node
+                # if not n_global.is_interior():
+                #     continue
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes

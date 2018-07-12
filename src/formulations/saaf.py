@@ -157,51 +157,12 @@ class SAAF():
                 ssource = self.compute_scattering_source(
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
+                # First Fixed Source Term
                 q_fixed = source[group_id, e] / (4 * np.pi)
                 rhs_at_node[nid] += q_fixed * (area / 3)
                 # Second Fixed Source Term
                 rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
-
-    def make_fission_source(self, group_id, angles, phi_prev):
-        fission_source = np.zeros(self.num_nodes)
-        triang = self.fegrid.setup_triangulation()
-        for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
-            inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
-            chi = self.mat_data.get_chi(midx, group_id)
-            sigf = np.array([self.mat_data.get_sigf(midx, g_prime) for g_prime in range(self.num_groups)])
-            nu = np.array([self.mat_data.get_nu(midx, g_prime) for g_prime in range(self.num_groups)])
-            # Determine basis functions for element
-            coef = self.fegrid.basis(e)
-            # Determine Gauss Nodes for element
-            g_nodes = self.fegrid.gauss_nodes(e)
-            for n in range(3):
-                n_global = self.fegrid.get_node(e, n)
-                # Get node ids
-                nid = n_global.get_node_id()
-                # Coefficients of basis functions b[0] + b[1]x + b[2]y
-                bn = coef[:, n]
-                # Find Phi at Gauss Nodes
-                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
-                # First Fission Term
-                # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
-                product = fn_vals * phi_vals
-                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
-                                             for g in range(self.num_groups)])
-                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
-                    for g_prime in range(self.num_groups)]))
-                fission_source[nid] += fiss/(4*np.pi)
-                # Second Fission Term
-                ngrad = self.fegrid.gradient(e, n)
-                integral = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral[g_prime]
-                    for g_prime in range(self.num_groups)]))
-                fission_source[nid] += inv_sigt*fiss/(4*np.pi)
-        return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
