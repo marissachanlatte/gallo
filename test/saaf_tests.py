@@ -147,19 +147,6 @@ class TestSAAF:
                              0.        ,  0.        ,  0.        ,  0.7083334 ]])
         ok_(np.allclose(A0, hand0, rtol=1e-7))
 
-    def collapsed_fission_test(self):
-        phi = np.ones((1, 4))
-        sf = self.stdop.compute_collapsed_fission(phi)
-        eq_(1, sf)
-
-    def fission_source_test(self):
-        group_id = 0
-        phi_prev = np.ones((1, 4))
-        angles = np.array([.5773503, .5773503])
-        fission_source = self.fissionop.make_fission_source(group_id, angles, phi_prev)
-        check = np.array([-0.00970913,  0.02652582,  0.03623495,  0.02652582])
-        ok_(np.allclose(fission_source, check, rtol=1e-12))
-
     @nottest
     # Slow test, only enable when necessary
     def balance_test(self):

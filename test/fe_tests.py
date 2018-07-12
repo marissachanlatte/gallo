@@ -90,8 +90,8 @@ class TestFe:
         assert_array_equal(C, self.stdgrid.basis(0))
 
     def test_gauss_nodes1d(self):
-        nodes05 = np.array([(-(.5-0)/2*1/np.sqrt(3)+(.5+0)/2),((.5-0)/2*1/np.sqrt(3)+(.5+0)/2)])
-        nodes15 = np.array([(-(1-.5)/2*1/np.sqrt(3)+(1+.5)/2),((1-.5)/2*1/np.sqrt(3)+(.5+1)/2)])
+        nodes05 = np.array([[(-(.5-0)/2*1/np.sqrt(3)+(.5+0)/2), 0], [((.5-0)/2*1/np.sqrt(3)+(.5+0)/2), 0]])
+        nodes15 = np.array([[(-(1-.5)/2*1/np.sqrt(3)+(1+.5)/2), 0], [((1-.5)/2*1/np.sqrt(3)+(.5+1)/2), 0]])
         assert_array_equal(self.fegrid.gauss_nodes1d([0, 5], 9), nodes05)
         assert_array_equal(self.fegrid.gauss_nodes1d([1, 5], 6), nodes15)
 
