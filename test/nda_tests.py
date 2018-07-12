@@ -42,6 +42,10 @@ class TestNDA:
         inv_sigt = 1
         D = 1/3
         ngrad = np.array([1, 1])
-        psi = np.ones((4, 2))
+        psi = np.ones((4, 3))
         phi = 4*np.pi*psi[0]
-        drift_vector = compute_drift_vector(inv_sigt, D, ngrad, phi, psi, nid)
+        drift_vector = self.op.compute_drift_vector(inv_sigt, D, ngrad, phi, psi)
+        ang = np.array([.5773503, .5773503])
+        d_prime = (2*np.pi*ang*(ang@ngrad) - (4/3*np.pi*ngrad))/phi[0]
+        ones = np.ones((3, 2))
+        assert_array_equal(drift_vector, d_prime*ones)
