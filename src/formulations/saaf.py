@@ -48,8 +48,7 @@ class SAAF():
                 # Array of values of basis function evaluated at gauss nodes
                 fn_vals = np.array([
                     self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-                    for i in range(3)
-                ])
+                    for i in range(3)])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -60,11 +59,9 @@ class SAAF():
                     # Array of values of basis function evaluated at gauss nodes
                     fns_vals = np.array([
                         self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-                        for i in range(3)
-                    ])
+                        for i in range(3)])
                     # Calculate gradients
-                    grad = np.array(
-                        [self.fegrid.gradient(e, i) for i in [n, ns]])
+                    grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
                     # Multiply basis functions together at the gauss nodes
                     f_vals = fn_vals * fns_vals
                     # Integrate for A (basis function derivatives)
@@ -160,14 +157,10 @@ class SAAF():
                 ssource = self.compute_scattering_source(
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
-                if eigenvalue:
-                    rhs_at_node[nid] += source[group_id, angle_id, nid]
-                else:
-                    # First Fixed Source Term
-                    q_fixed = source[group_id, e] / (4 * np.pi)
-                    rhs_at_node[nid] += q_fixed * (area / 3)
-                    # Second Fixed Source Term
-                    rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
+                q_fixed = source[group_id, e] / (4 * np.pi)
+                rhs_at_node[nid] += q_fixed * (area / 3)
+                # Second Fixed Source Term
+                rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
 
     def make_fission_source(self, group_id, angles, phi_prev):
