@@ -20,6 +20,8 @@ class Solver():
         self.mat_data = self.op.mat_data
         self.num_groups = self.op.num_groups
         self.num_nodes = self.op.num_nodes
+        self.num_elts = self.op.num_elts
+        self.num_mats = self.mat_data.get_num_mats()
         if not isinstance(self.op, Diffusion) and not isinstance(self.op, NDA):
             self.angs = self.op.angs
 
@@ -120,9 +122,21 @@ class Solver():
                 if self.ua_bool:
                     # Calculate Correction Term
                     print("Calculating Upscatter Acceleration Term")
-                    upscatter_accelerator = UA(self.op, phis, phis_prev, all_ho_sols)
-                    epsilon = upscatter_accelerator.calculate_correction()
-                    phis += epsilon
+                    upscatter_accelerator = UA(self.op)
+                    # Calculate eigenfunctions
+                    eig_for_mat = np.zeros((self.num_mats, self.num_groups))
+                    for midx in range(self.num_mats):
+                        eig_for_mat[midx] = upscatter_accelerator.compute_eigenfunction(midx)
+                    eigs = np.zeros((self.num_groups, self.num_nodes))
+                    for g in range(self.num_groups):
+                        for elt in range(self.num_elts):
+                            midx = self.op.fegrid.get_mat_id(elt)
+                            for n in range(3):
+                                n_global = self.op.fegrid.get_node(elt, n)
+                                nid = n_global.get_node_id()
+                                eigs[g, nid] += eig_for_mat[midx, g]*1/3
+                    epsilon = upscatter_accelerator.calculate_correction(phis, phis_prev, all_ho_sols)
+                    phis += epsilon*eigs
                 res = np.max(np.abs(phis_prev - phis))
                 if verbose:
                     print("GS Norm: ", res)

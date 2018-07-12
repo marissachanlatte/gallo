@@ -3,34 +3,32 @@ import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 
 class UA():
-    def __init__(self, operator, phis, phis_prev, ho_sols):
+    def __init__(self, operator):
         self.op = operator
-        self.phis = phis
-        self.phis_prev = phis_prev
-        self.ho_sols = ho_sols
         self.fegrid = self.op.fegrid
         self.mat_data = self.op.mat_data
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_groups = self.mat_data.get_num_groups()
         self.num_elts = self.fegrid.get_num_elts()
 
-    def calculate_correction(self):
-        lhs = self.correction_lhs()
-        rhs = self.correction_rhs()
+    def calculate_correction(self, phis, phis_prev, ho_sols):
+        lhs = self.correction_lhs(ho_sols)
+        rhs = self.correction_rhs(phis, phis_prev)
         correction = linalg.cg(lhs, rhs)[0]
         return correction
 
-    def correction_lhs(self):
+    def correction_lhs(self, ho_sols):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
-        ho_phi = np.array([self.ho_sols[g][0] for g in range(self.num_groups)])
-        ho_psi = np.array([self.ho_sols[g][1] for g in range(self.num_groups)])
+        ho_phi = np.array([ho_sols[g][0] for g in range(self.num_groups)])
+        ho_psi = np.array([ho_sols[g][1] for g in range(self.num_groups)])
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
             midx = self.fegrid.get_mat_id(e)
-            diffs = np.array([self.mat_data.get_diff(midx, g) for g in range(self.num_groups)])
+            eigs = self.compute_eigenfunction(midx)
+            diffs = np.array([self.mat_data.get_diff(midx, g)*eigs[g] for g in range(self.num_groups)])
             D = np.sum(diffs)
-            sig_r = np.sum(np.array([self.mat_data.get_sigr(midx, g) for g in range(self.num_groups)]))
+            sig_a = self.compute_absorption(midx, eigs)
             inv_sigt = np.array([self.mat_data.get_inv_sigt(midx, g) for g in range(self.num_groups)])
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
@@ -69,12 +67,14 @@ class UA():
 
                     # Integrate for B (basis functions multiplied)
                     integral = self.fegrid.gauss_quad(e, f_vals)
-                    C = sig_r * integral
+                    C = sig_a * integral
 
                     # Calculate drift_vector
                     drift_vector = np.zeros((3, 2))
                     for g in range(self.num_groups):
-                        drift_vector += self.op.compute_drift_vector(inv_sigt[g], diffs[g], ngrad, phi_vals[g], psi_vals[:, g], nid)
+                        drift_vector += self.op.compute_drift_vector(inv_sigt[g],
+                                                diffs[g], ngrad, phi_vals[g],
+                                                psi_vals[:, g])*eigs[g]
 
                     # Integrate drift_vector@gradient*basis_function
                     integral = self.fegrid.gauss_quad(e, (drift_vector@ngrad)*fn_vals)
@@ -117,7 +117,7 @@ class UA():
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
-    def correction_rhs(self):
+    def correction_rhs(self, phis, phis_prev):
         rhs_at_node = np.zeros(self.num_nodes)
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
@@ -126,8 +126,6 @@ class UA():
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
-                if not n_global.is_interior():
-                    continue
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
@@ -137,7 +135,7 @@ class UA():
 
                 # Subtract Phi Prevs
                 # Find Phi at Gauss Nodes
-                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, self.phis_prev, g_nodes)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phis_prev, g_nodes)
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
                 integral = np.array([self.fegrid.gauss_quad(e, product[g]) for g in range(self.num_groups)])
@@ -146,7 +144,7 @@ class UA():
 
                 # Add Phi Prevs
                 # Find Phi at Gauss Nodes
-                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, self.phis, g_nodes)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phis, g_nodes)
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
                 integral = np.array([self.fegrid.gauss_quad(e, product[g]) for g in range(self.num_groups)])
@@ -162,3 +160,31 @@ class UA():
             if g_prime != group_id:
                 ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
+
+    def compute_eigenfunction(self, midx):
+        scatmat = self.mat_data.get_sigs(midx)
+        all_sigts = np.array([self.mat_data.get_sigt(midx, g) for g in range(self.num_groups)])
+        T = np.diag(all_sigts)
+        SL = np.tril(scatmat, -1)
+        SU = np.triu(scatmat, 1)
+        SD = np.diag(np.diag(scatmat))
+        A = np.matmul(np.linalg.inv(T - SL - SD), SU)
+        eig_values, eig_vectors = np.linalg.eig(A)
+        idx = np.argmax(eig_values)
+        eigenfunction = eig_vectors[:, idx]
+        # normalize
+        eigenfunction = eigenfunction/(np.sum(eigenfunction))
+        return eigenfunction
+
+    def compute_absorption(self, midx, eigs):
+        # Compute sig_a
+        scatmat = self.mat_data.get_sigs(midx)
+        sig_a = np.zeros(self.num_groups)
+        for g in range(self.num_groups):
+            sig_r = self.mat_data.get_sigr(midx, g)
+            sig_s = 0
+            for g_prime in range(self.num_groups):
+                if g_prime != g:
+                    sig_s += scatmat[g_prime, g]*eigs[g_prime]
+            sig_a[g] = sig_r*eigs[g] - sig_s
+        return np.sum(sig_a)
