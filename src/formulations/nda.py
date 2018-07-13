@@ -175,9 +175,9 @@ class NDA():
         return ssource
 
     def compute_kappa(self, normal, phi, psi):
-        kappa = np.zeros(2)
+        kappa = np.zeros(3)
         # Use interpolated version of kappa
-        for node in range(2):
+        for node in range(3):
             for i, ang in enumerate(self.angs):
                 kappa[node] += self.ang_weight*np.abs(ang@normal)*psi[i, node]
             kappa[node] /= phi[node]

@@ -246,28 +246,25 @@ class FEGrid():
             return a, b
 
     def gauss_nodes1d(self, boundary_vertices, e):
-        # Gauss nodes for 2 point quadrature on boundary
+        # Gauss nodes for 3 point quadrature on boundary
         # multiplying by the same basis function
         # Find position of boundary vertices
+        gorder = 3
         a, b = self.boundary_edges(boundary_vertices, e)
-        xi = 1 / np.sqrt(3)
-        nodes = np.array(
-            [-(b - a) / 2 * xi + (b + a) / 2, (b - a) / 2 * xi + (b + a) / 2])
+        xstd = np.array([-np.sqrt(3/5), 0, np.sqrt(3/5)])
+        nodes = np.array([(b-a)/2*xstd[i] + (a+b)/2 for i in range(gorder)])
         pos_n = self.node(boundary_vertices[0]).get_position()
         pos_ns = self.node(boundary_vertices[1]).get_position()
-        gauss_nodes = np.zeros((2, 2))
-        if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
-            gauss_nodes[0] = [self.xmax, nodes[0]]
-            gauss_nodes[1] = [self.xmax, nodes[1]]
-        elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
-            gauss_nodes[0] = [self.xmin, nodes[0]]
-            gauss_nodes[1] = [self.xmin, nodes[1]]
-        elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
-            gauss_nodes[0] = [nodes[0], self.ymax]
-            gauss_nodes[1] = [nodes[1], self.ymax]
-        elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
-            gauss_nodes[0] = [nodes[0], self.ymin]
-            gauss_nodes[1] = [nodes[1], self.ymin]
+        gauss_nodes = np.zeros((gorder, 2))
+        for i in range(gorder):
+            if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
+                gauss_nodes[i] = np.array([self.xmax, nodes[i]])
+            elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
+                gauss_nodes[i] = np.array([self.xmin, nodes[i]])
+            elif (pos_n[1] == self.ymax and pos_ns[1] == self.ymax):
+                gauss_nodes[i] = np.array([nodes[i], self.ymax])
+            elif (pos_n[1] == self.ymin and pos_ns[1] == self.ymin):
+                gauss_nodes[i] = np.array([nodes[i], self.ymin])
         return gauss_nodes
 
     def gauss_nodes(self, elt_number):
@@ -318,9 +315,9 @@ class FEGrid():
     def gauss_quad1d(self, f_values, boundary_vertices, e):
         # Two point Gaussian Quadrature in one dimension
         # Find length of element on boundary
-        # length/2(f(-1/sqrt(3)) + f(1/sqrt(3)))
+        # length/2((5/9)*f(-sqrt(3/5)) + (8/9)*f(0) + (5/9)*f(sqrt(3/5)))
         a, b = self.boundary_edges(boundary_vertices, e)
-        integral = (b - a) / 2 * (f_values[0] + f_values[1])
+        integral = (b - a)/2*((5/9)*f_values[0]+(8/9)*f_values[1]+(5/9)*f_values[2])
         return integral
 
     def centroid(self, elt_number):
@@ -362,14 +359,8 @@ class FEGrid():
             boundary_integral = 0
             return boundary_integral
         # Value of first basis function at boundary gauss nodes
-        gn_vals = np.zeros(2)
-        gn_vals[0] = self.evaluate_basis_function(bn, gauss_nodes[0])
-        gn_vals[1] = self.evaluate_basis_function(bn, gauss_nodes[1])
-        # Values of second basis function at boundary gauss nodes
-        gns_vals = np.zeros(2)
-        gns_vals[0] = self.evaluate_basis_function(bns, gauss_nodes[0])
-        gns_vals[1] = self.evaluate_basis_function(bns, gauss_nodes[1])
-        # Multiply basis functions together
+        gn_vals = np.array([self.evaluate_basis_function(bn, gauss_nodes[i]) for i in range(3)])
+        gns_vals = np.array([self.evaluate_basis_function(bns, gauss_nodes[i]) for i in range(3)])
         g_vals = gn_vals * gns_vals
         return g_vals
 
