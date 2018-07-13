@@ -70,6 +70,7 @@ class NDA():
                         for i in range(3)])
                     # Calculate gradients
                     grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
+
                     # Integrate for A (basis function derivatives)
                     area = self.fegrid.element_area(e)
                     inprod = np.dot(grad[0], grad[1])
@@ -154,27 +155,27 @@ class NDA():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.array([self.fegrid.evaluate_basis_function(
-                        bn, g_nodes[i]) for i in range(3)])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
                 # Get node ids
                 nid = n_global.get_node_id()
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
-                # Multiply Phi & Basis Function
-                product = fn_vals * phi_vals
-                integral_product = np.array([self.fegrid.gauss_quad(e, product[g]) for g in range(self.num_groups)])
-                ssource = self.compute_scattering_source(midx, integral_product, group_id)
-                rhs_at_node[nid] += ssource
+                ssource = self.compute_scattering_source(midx, phi_vals, group_id)
+                # Multiply Scattering & Basis Function
+                product = fn_vals * ssource
+                integral_product = self.fegrid.gauss_quad(e, product) 
+                rhs_at_node[nid] += integral_product
                 rhs_at_node[nid] += area*source[group_id, e]*1/3
         return rhs_at_node
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        ssource = 0
-        for g_prime in range(self.num_groups):
-            if g_prime != group_id:
-                ssource += scatmat[g_prime, group_id]*phi[g_prime]
+        ssource = np.zeros(3)
+        for gnode in range(3):
+            for g_prime in range(self.num_groups):
+                if g_prime != group_id:
+                    ssource[gnode] += scatmat[g_prime, group_id]*phi[g_prime, gnode]
         return ssource
 
     def compute_kappa(self, normal, phi, psi):

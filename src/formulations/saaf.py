@@ -143,20 +143,19 @@ class SAAF():
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # First Scattering Term
                 # Multiply Phi & Basis Function
-                product = fn_vals * phi_vals
-                integral_product = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                ssource = self.compute_scattering_source(
-                    midx, integral_product, group_id)
-                rhs_at_node[nid] += ssource / (4 * np.pi)
+                ssource = self.compute_scattering_source(midx, phi_vals, group_id)
+                product = fn_vals * ssource
+                ssource_integrated = self.fegrid.gauss_quad(e, product)
+                rhs_at_node[nid] += ssource_integrated / (4 * np.pi)
                 # Second Scattering Term
-                integral = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                ssource = self.compute_scattering_source(
-                    midx, integral, group_id)
-                rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
+                product = ssource*(angles@ngrad)
+                ssource_integrated = self.fegrid.gauss_quad(e, product)
+                # integral = np.zeros(self.num_groups)
+                # for g in range(self.num_groups):
+                #     integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
+                # ssource = self.compute_scattering_source(
+                #     midx, integral, group_id)
+                rhs_at_node[nid] += inv_sigt*ssource_integrated/(4*np.pi)
                 # First Fixed Source Term
                 q_fixed = source[group_id, e] / (4 * np.pi)
                 rhs_at_node[nid] += q_fixed * (area / 3)
@@ -166,7 +165,8 @@ class SAAF():
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        ssource = 0
-        for g_prime in range(self.num_groups):
-            ssource += scatmat[g_prime, group_id]*phi[g_prime]
+        ssource = np.zeros(3)
+        for gnode in range(3):
+            for g_prime in range(self.num_groups):
+                ssource[gnode] += scatmat[g_prime, group_id]*phi[g_prime, gnode]
         return ssource
