@@ -16,6 +16,7 @@ class SAAF():
         self.ymin = self.fegrid.get_boundary("ymin")
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_elts = self.fegrid.get_num_elts()
+        self.num_gnodes = self.fegrid.num_gauss_nodes
 
         # S2 hard-coded
         ang_one = .5773503
@@ -48,7 +49,7 @@ class SAAF():
                 # Array of values of basis function evaluated at gauss nodes
                 fn_vals = np.array([
                     self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-                    for i in range(3)])
+                    for i in range(self.num_gnodes)])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -59,7 +60,7 @@ class SAAF():
                     # Array of values of basis function evaluated at gauss nodes
                     fns_vals = np.array([
                         self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-                        for i in range(3)])
+                        for i in range(self.num_gnodes)])
                     # Calculate gradients
                     grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
                     # Multiply basis functions together at the gauss nodes
@@ -131,10 +132,8 @@ class SAAF():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.zeros(3)
-                for i in range(3):
-                    fn_vals[i] = self.fegrid.evaluate_basis_function(
-                        bn, g_nodes[i])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(
+                        bn, g_nodes[i]) for i in range(self.num_gnodes)])
                 # Get node ids
                 nid = n_global.get_node_id()
                 ngrad = self.fegrid.gradient(e, n)
@@ -150,11 +149,6 @@ class SAAF():
                 # Second Scattering Term
                 product = ssource*(angles@ngrad)
                 ssource_integrated = self.fegrid.gauss_quad(e, product)
-                # integral = np.zeros(self.num_groups)
-                # for g in range(self.num_groups):
-                #     integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                # ssource = self.compute_scattering_source(
-                #     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource_integrated/(4*np.pi)
                 # First Fixed Source Term
                 q_fixed = source[group_id, e] / (4 * np.pi)
@@ -165,8 +159,8 @@ class SAAF():
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        ssource = np.zeros(3)
-        for gnode in range(3):
+        ssource = np.zeros(self.num_gnodes)
+        for gnode in range(self.num_gnodes):
             for g_prime in range(self.num_groups):
                 ssource[gnode] += scatmat[g_prime, group_id]*phi[g_prime, gnode]
         return ssource

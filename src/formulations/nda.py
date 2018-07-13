@@ -11,6 +11,7 @@ class NDA():
         self.num_groups = self.mat_data.get_num_groups()
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_elts = self.fegrid.get_num_elts()
+        self.num_gnodes = self.fegrid.num_gauss_nodes
 
         # S2 hard-coded
         ang_one = .5773503
@@ -57,7 +58,7 @@ class NDA():
                 # Array of values of basis function evaluated at gauss nodes
                 fn_vals = np.array([
                     self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-                    for i in range(3)])
+                    for i in range(self.num_gnodes)])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -67,34 +68,29 @@ class NDA():
                     # Array of values of basis function evaluated at gauss nodes
                     fns_vals = np.array([
                         self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-                        for i in range(3)])
+                        for i in range(self.num_gnodes)])
                     # Calculate gradients
                     grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
 
                     # Integrate for A (basis function derivatives)
                     area = self.fegrid.element_area(e)
                     inprod = np.dot(grad[0], grad[1])
-                    A = D * area * inprod
-
-                    # Multiply basis functions together
-                    f_vals = fn_vals * fns_vals
+                    sparse_matrix[nid, nsid] += D * area * inprod
 
                     # Integrate for B (basis functions multiplied)
-                    basis_integral = self.fegrid.gauss_quad(e, f_vals)
-                    C = sig_r * basis_integral
+                    basis_integral = self.fegrid.gauss_quad(e, fn_vals * fns_vals)
+                    sparse_matrix[nid, nsid] += sig_r * basis_integral
 
                     # Calculate drift_vector
                     if ho_sols == 0:
-                        drift_vector = np.zeros((3, 2))
+                        drift_vector = np.zeros((self.num_gnodes, 2))
                     else:
                         drift_vector = self.compute_drift_vector(inv_sigt, D, grad[0], phi_vals[0], psi_vals[:, 0])
 
                     # Integrate drift_vector@gradient*basis_function
-                    drift_product = np.array([drift_vector[i]*fn_vals[i] for i in range(3)])
+                    drift_product = np.array([drift_vector[i]*fn_vals[i] for i in range(self.num_gnodes)])
                     integral = self.fegrid.gauss_quad(e, drift_product@grad[1])
-                    E = integral
-
-                    sparse_matrix[nid, nsid] += A + C + E
+                    sparse_matrix[nid, nsid] += integral
                     # Check if boundary nodes
                     if not n_global.is_interior() and not ns_global.is_interior():
                         # Assign boundary id, marks end of region along
@@ -155,7 +151,7 @@ class NDA():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(self.num_gnodes)])
                 # Get node ids
                 nid = n_global.get_node_id()
                 area = self.fegrid.element_area(e)
@@ -164,15 +160,15 @@ class NDA():
                 ssource = self.compute_scattering_source(midx, phi_vals, group_id)
                 # Multiply Scattering & Basis Function
                 product = fn_vals * ssource
-                integral_product = self.fegrid.gauss_quad(e, product) 
+                integral_product = self.fegrid.gauss_quad(e, product)
                 rhs_at_node[nid] += integral_product
                 rhs_at_node[nid] += area*source[group_id, e]*1/3
         return rhs_at_node
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        ssource = np.zeros(3)
-        for gnode in range(3):
+        ssource = np.zeros(self.num_gnodes)
+        for gnode in range(self.num_gnodes):
             for g_prime in range(self.num_groups):
                 if g_prime != group_id:
                     ssource[gnode] += scatmat[g_prime, group_id]*phi[g_prime, gnode]
@@ -189,10 +185,10 @@ class NDA():
 
     def compute_drift_vector(self, inv_sigt, D, grad, phi, psi):
         # Calculate drift_vector
-        drift_vector = np.zeros((3, 2))
-        for node in range(3):
+        drift_vector = np.zeros((self.num_gnodes, 2))
+        for node in range(self.num_gnodes):
             for i, ang in enumerate(self.angs):
-                drift_vector[node] += self.ang_weight*(inv_sigt*ang*(ang@grad))*psi[i, node]
-                drift_vector[node] -= self.ang_weight*(D*grad)*psi[i, node]
+                drift_vector[node] += self.ang_weight*inv_sigt*ang*(ang@grad)*psi[i, node]
+                drift_vector[node] -= self.ang_weight*D*grad*psi[i, node]
             drift_vector[node] /= phi[node]
         return drift_vector

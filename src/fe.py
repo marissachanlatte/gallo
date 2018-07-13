@@ -270,37 +270,6 @@ class FEGrid():
             gauss_nodes[1] = [nodes[1], self.ymin]
         return gauss_nodes
 
-    # def gauss_nodes(self, elt_number):
-    #     # WARNING only works for 2D triangular elements
-    #     # Using second order Gaussian Quadrature nodes (0, .5), (.5, 0), (.5, .5)
-    #     # Transform the nodes on the standard triangle to the given element
-    #
-    #     # Get nodes of element
-    #     alpha = self.get_node(elt_number, 1)
-    #     beta = self.get_node(elt_number, 2)
-    #     gamma = self.get_node(elt_number, 0)
-    #
-    #     # get position of nodes
-    #     apos = alpha.get_position()
-    #     bpos = beta.get_position()
-    #     cpos = gamma.get_position()
-    #
-    #     g_nodes = np.zeros((3, 2))
-    #     # Transformation Function
-    #     # x(u, v) = alpha + u(beta - alpha) + v(gamma - alpha)
-    #     # Transform of the node (0, .5)
-    #     g_nodes[0, 0] = (apos[0] + .5 * (cpos[0] - apos[0]))
-    #     g_nodes[0, 1] = (apos[1] + .5 * (cpos[1] - apos[1]))
-    #     # Transform of the node (.5, 0)
-    #     g_nodes[1, 0] = (apos[0] + .5 * (bpos[0] - apos[0]))
-    #     g_nodes[1, 1] = (apos[1] + .5 * (bpos[1] - apos[1]))
-    #     # Transform of the node (.5, .5)
-    #     g_nodes[2, 0] = (
-    #         apos[0] + .5 * (bpos[0] - apos[0]) + .5 * (cpos[0] - apos[0]))
-    #     g_nodes[2, 1] = (
-    #         apos[1] + .5 * (bpos[1] - apos[1]) + .5 * (cpos[1] - apos[1]))
-    #
-    #     return g_nodes
     def gauss_nodes(self, elt_number):
         # WARNING only works for 2D triangular elements
         # Using third order Gaussian Quadrature nodes (1/3, 1/3), (1/5, 1/5), (1/5, 3/5), (3/5, 1/5)
@@ -339,12 +308,6 @@ class FEGrid():
         area = np.abs(dx[0, 0] * dx[1, 1] - dx[1, 0] * dx[0, 1]) / 2
         return area
 
-    # def gauss_quad(self, elt_number, f_values):
-    #     # Using second order Gaussian Quadrature formula
-    #     # 1/3*Area*[f(0, .5) + f(.5, 0) + f(.5, .5)]
-    #     area = self.element_area(elt_number)
-    #     integral = 1 / 3 * area * (np.sum(f_values))
-    #     return integral
     def gauss_quad(self, elt_number, f_values):
         # Using thirdorder Gaussian Quadrature formula
         # 2*Area*(-27/96*f(1/3, 1/3)+25/96*(f(1/5, 1/5) + f(1/5, 3/5) + f(3/5, 1/5)))
