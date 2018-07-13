@@ -19,8 +19,14 @@ class TestNDA:
         cls.mats = Materials(cls.matfile)
         cls.op = NDA(cls.fegrid, cls.mats)
 
+        cls.nodefile = "test/test_inputs/iron-water.node"
+        cls.elefile = "test/test_inputs/iron-water.ele"
+        cls.matfile = "test/test_inputs/iron-water.mat"
+        cls.iwgrid = FEGrid(cls.nodefile, cls.elefile)
+        cls.iwmats = Materials(cls.matfile)
+        cls.iwop = NDA(cls.iwgrid, cls.iwmats)
+
     def symmetry_test(self):
-        num_groups = self.mats.get_num_groups()
         num_nodes = self.fegrid.get_num_nodes()
         source = np.ones(self.fegrid.get_num_elts())
         ho_phis = np.ones(num_nodes)
@@ -28,7 +34,15 @@ class TestNDA:
         ho_sols = [ho_phis, ho_psis]
         A = self.op.make_lhs(0, ho_sols)
         diff = A.A - A.transpose().A
-        ok_(np.allclose(A.A, A.transpose().A, rtol=1e-6))
+        ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
+        num_nodes = self.iwgrid.get_num_nodes()
+        source = np.ones(self.iwgrid.get_num_elts())
+        ho_phis = np.ones(num_nodes)
+        ho_psis = np.ones((4, num_nodes))
+        ho_sols = [ho_phis, ho_psis]
+        A = self.iwop.make_lhs(0, ho_sols)
+        diff = A.A - A.transpose().A
+        ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
 
     def kappa_test(self):
         normal = np.array([0, 1])
@@ -42,10 +56,10 @@ class TestNDA:
         inv_sigt = 1
         D = 1/3
         ngrad = np.array([1, 1])
-        psi = np.ones((4, 3))
+        psi = np.ones((4, 4))
         phi = 4*np.pi*psi[0]
         drift_vector = self.op.compute_drift_vector(inv_sigt, D, ngrad, phi, psi)
         ang = np.array([.5773503, .5773503])
         d_prime = (2*np.pi*ang*(ang@ngrad) - (4/3*np.pi*ngrad))/phi[0]
-        ones = np.ones((3, 2))
+        ones = np.ones((4, 2))
         assert_array_equal(drift_vector, d_prime*ones)
