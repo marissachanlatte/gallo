@@ -97,12 +97,13 @@ class TestFe:
 
     def test_gauss_nodes(self):
         C = self.stdgrid.gauss_nodes(0)
-        eq_(C[0, 0], 0, "node x1")
-        eq_(C[0, 1], .5, "node y1")
-        eq_(C[1, 0], .5, "node x2")
-        eq_(C[1, 1], 0, "node y2")
-        eq_(C[2, 0], .5, "node x3")
-        eq_(C[2, 1], .5, "node y3")
+        # eq_(C[0, 0], 0, "node x1")
+        # eq_(C[0, 1], .5, "node y1")
+        # eq_(C[1, 0], .5, "node x2")
+        # eq_(C[1, 1], 0, "node y2")
+        # eq_(C[2, 0], .5, "node x3")
+        # eq_(C[2, 1], .5, "node y3")
+        assert_array_almost_equal(C,  np.array([[1/3, 1/3], [1/5, 1/5], [1/5, 3/5], [3/5, 1/5]]))
 
     def test_area(self):
         eq_(self.stdgrid.element_area(0), .5, "element_area")
@@ -114,8 +115,8 @@ class TestFe:
         eq_(self.fegrid.gauss_quad1d(fvals, [0, 5], 9), .5)
 
     def test_quad(self):
-        fvals = np.array([1, 1, 1])
-        fvals2 = np.array([2, 2, 2])
+        fvals = np.array([1, 1, 1, 1])
+        fvals2 = np.array([2, 2, 2, 2])
         eq_(self.stdgrid.gauss_quad(0, fvals), .5, "quadrature")
         eq_(self.stdgrid.gauss_quad(1, fvals), .5)
         eq_(self.stdgrid.gauss_quad(0, fvals2), 1)
