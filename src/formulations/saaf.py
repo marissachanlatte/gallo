@@ -18,15 +18,6 @@ class SAAF():
         self.num_elts = self.fegrid.get_num_elts()
         self.num_gnodes = self.fegrid.num_gauss_nodes
 
-        # S2 hard-coded
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        self.angs = np.zeros((4, 2))
-        for i, ang in enumerate(angles):
-            self.angs[i] = ang
-
-
     def make_lhs(self, angles, group_id):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         for e in range(self.num_elts):

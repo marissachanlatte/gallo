@@ -12,15 +12,9 @@ class NDA():
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_elts = self.fegrid.get_num_elts()
         self.num_gnodes = self.fegrid.num_gauss_nodes
-
-        # S2 hard-coded
-        ang_one = .5773503
-        ang_two = -.5773503
-        self.ang_weight = np.pi
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        self.angs = np.zeros((4, 2))
-        for i, ang in enumerate(angles):
-            self.angs[i] = ang
+        self.num_angs = self.fegrid.num_angs
+        self.angs = self.fegrid.angs
+        self.weights = self.fegrid.weights
 
     def make_lhs(self, group_id, ho_sols):
         E = self.fegrid.get_num_elts()
@@ -47,7 +41,7 @@ class NDA():
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
                 # Find Psi at Gauss Nodes
-                psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(4)])
+                psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(self.num_angs)])
             for n in range(3):
                 # Get global node
                 n_global = self.fegrid.get_node(e, n)
@@ -114,7 +108,7 @@ class NDA():
                                         normal = self.fegrid.assign_normal(nid, bid)
                                         xis = self.fegrid.gauss_nodes1d([nid, bid], e)
                                         phi_bd = self.fegrid.phi_at_gauss_nodes(triang, phi, xis)
-                                        psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(4)])
+                                        psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(self.num_angs)])
                                         basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
                                         kappa = self.compute_kappa(normal, phi_bd[0], psi_bd[:, 0])
                                         boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
@@ -129,7 +123,7 @@ class NDA():
                             # Get Gauss Nodes for the element
                             xis = self.fegrid.gauss_nodes1d([nid, bid], e)
                             phi_bd = self.fegrid.phi_at_gauss_nodes(triang, phi, xis)
-                            psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(4)])
+                            psi_bd = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], xis) for i in range(self.num_angs)])
                             basis_product = self.fegrid.boundary_basis_product(nid, bid, xis, bn, bns, e)
                             kappa = self.compute_kappa(normal, phi_bd[0], psi_bd[:, 0])
                             boundary_integral = self.fegrid.gauss_quad1d(kappa*basis_product, [nid, bid], e)
@@ -179,7 +173,7 @@ class NDA():
         # Use interpolated version of kappa
         for node in range(3):
             for i, ang in enumerate(self.angs):
-                kappa[node] += self.ang_weight*np.abs(ang@normal)*psi[i, node]
+                kappa[node] += self.weights[i]*np.abs(ang@normal)*psi[i, node]
             kappa[node] /= phi[node]
         return kappa
 
@@ -188,7 +182,7 @@ class NDA():
         drift_vector = np.zeros((self.num_gnodes, 2))
         for node in range(self.num_gnodes):
             for i, ang in enumerate(self.angs):
-                drift_vector[node] += self.ang_weight*inv_sigt*ang*(ang@grad)*psi[i, node]
-                drift_vector[node] -= self.ang_weight*D*grad*psi[i, node]
+                drift_vector[node] += self.weights[i]*inv_sigt*ang*(ang@grad)*psi[i, node]
+                drift_vector[node] -= self.weights[i]*D*grad*psi[i, node]
             drift_vector[node] /= phi[node]
         return drift_vector

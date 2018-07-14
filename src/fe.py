@@ -52,7 +52,7 @@ class FEGrid():
             + " does not exist"
 
         # Discretization Orders
-        self.num_gauss_nodes = 4
+        self.num_gauss_nodes = 6
         with open(node_file) as nf:
             line = nf.readline()
             data = line.split(" ")
@@ -108,6 +108,29 @@ class FEGrid():
                 vertices = [int(vert) for vert in vertices]
                 self.elts_list.append(Element(int(el_id), vertices, int(mat_id)))
             self.num_elts = np.size(self.elts_list)
+
+        # Set Up Angular quadrature
+        sn_ord = 8
+        it, quad1d, solid_angle = 0, np.polynomial.legendre.leggauss(sn_ord), 4*np.pi
+        self.num_angs = 40
+        # loop over relevant polar angles
+        self.angs = np.zeros((self.num_angs, 2))
+        self.weights = np.zeros(self.num_angs)
+        for polar in range(int(sn_ord/2), sn_ord):
+            # calculate number of points per level
+            p_per_level = 4 * (sn_ord - polar)
+            delta = 2.0 * np.pi / p_per_level
+            # get the polar angles
+            mu = quad1d[0][polar]
+            # calculate point weight
+            weight = quad1d[1][polar] * solid_angle / p_per_level
+            # loop over azimuthal angles
+            for i in range(p_per_level):
+                phi = (i + 0.5) * delta
+                omega = np.array([(1-mu**2.)**0.5 * np.cos(phi), (1-mu**2.)**0.5 * np.sin(phi)])
+                self.angs[it] = omega
+                self.weights[it] = weight
+                it += 1
 
     def get_boundary(self, which_boundary):
         if which_boundary == "xmin":
@@ -274,9 +297,16 @@ class FEGrid():
         # Transform the nodes on the standard triangle to the given element
 
         # Set Number of Gauss Nodes
-        num_gnodes = 4
+        #num_gnodes = 4
+        num_gnodes = self.num_gauss_nodes
         # Set Standard Nodes
-        std_nodes = np.array([[1/3, 1/3], [1/5, 1/5], [1/5, 3/5], [3/5, 1/5]])
+        #std_nodes = np.array([[1/3, 1/3], [1/5, 1/5], [1/5, 3/5], [3/5, 1/5]])
+        std_nodes = np.array([[0.44594849091597, 0.44594849091597],
+                              [0.44594849091597, 0.10810301816807],
+                              [0.10810301816807, 0.44594849091597],
+                              [0.09157621350977, 0.09157621350977],
+                              [0.09157621350977, 0.81684757298046],
+                              [0.81684757298046, 0.09157621350977]])
         # Get nodes of element
         el_nodes = np.array([self.get_node(elt_number, i) for i in [1, 2, 0]])
         pos = np.array([el_nodes[i].get_position() for i in range(3)])
@@ -309,7 +339,9 @@ class FEGrid():
         # Using thirdorder Gaussian Quadrature formula
         # 2*Area*(-27/96*f(1/3, 1/3)+25/96*(f(1/5, 1/5) + f(1/5, 3/5) + f(3/5, 1/5)))
         area = self.element_area(elt_number)
-        integral = area*(-27/48*f_values[0]+25/48*np.sum(f_values[1:]))
+        #integral = area*(-27/48*f_values[0]+25/48*np.sum(f_values[1:]))
+        integral = area*(0.22338158967801*np.sum(f_values[0:3])
+                         + 0.10995174365532*np.sum(f_values[3:]))
         return integral
 
     def gauss_quad1d(self, f_values, boundary_vertices, e):

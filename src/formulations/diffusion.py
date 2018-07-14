@@ -10,7 +10,7 @@ class Diffusion():
         self.num_groups = self.mat_data.get_num_groups()
         self.num_nodes = self.fegrid.get_num_nodes()
         self.num_elts = self.fegrid.get_num_elts()
-        self.num_gnodes = self.fegrid.num_gauss_nodes
+        self.num_gnodes = self.fegrid.num_gauss_nodes()
 
     def make_lhs(self, group_id, ho_sols=None):
         E = self.fegrid.get_num_elts()
