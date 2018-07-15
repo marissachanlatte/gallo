@@ -52,7 +52,7 @@ class FEGrid():
             + " does not exist"
 
         # Discretization Orders
-        self.num_gauss_nodes = 6
+        self.num_gauss_nodes = 4
         with open(node_file) as nf:
             line = nf.readline()
             data = line.split(" ")
@@ -110,9 +110,9 @@ class FEGrid():
             self.num_elts = np.size(self.elts_list)
 
         # Set Up Angular quadrature
-        sn_ord = 8
+        sn_ord = 4
         it, quad1d, solid_angle = 0, np.polynomial.legendre.leggauss(sn_ord), 4*np.pi
-        self.num_angs = 40
+        self.num_angs = 12
         # loop over relevant polar angles
         self.angs = np.zeros((self.num_angs, 2))
         self.weights = np.zeros(self.num_angs)
@@ -297,16 +297,15 @@ class FEGrid():
         # Transform the nodes on the standard triangle to the given element
 
         # Set Number of Gauss Nodes
-        #num_gnodes = 4
         num_gnodes = self.num_gauss_nodes
         # Set Standard Nodes
-        #std_nodes = np.array([[1/3, 1/3], [1/5, 1/5], [1/5, 3/5], [3/5, 1/5]])
-        std_nodes = np.array([[0.44594849091597, 0.44594849091597],
-                              [0.44594849091597, 0.10810301816807],
-                              [0.10810301816807, 0.44594849091597],
-                              [0.09157621350977, 0.09157621350977],
-                              [0.09157621350977, 0.81684757298046],
-                              [0.81684757298046, 0.09157621350977]])
+        std_nodes = np.array([[1/3, 1/3], [1/5, 1/5], [1/5, 3/5], [3/5, 1/5]])
+        # std_nodes = np.array([[0.44594849091597, 0.44594849091597],
+        #                       [0.44594849091597, 0.10810301816807],
+        #                       [0.10810301816807, 0.44594849091597],
+        #                       [0.09157621350977, 0.09157621350977],
+        #                       [0.09157621350977, 0.81684757298046],
+        #                       [0.81684757298046, 0.09157621350977]])
         # Get nodes of element
         el_nodes = np.array([self.get_node(elt_number, i) for i in [1, 2, 0]])
         pos = np.array([el_nodes[i].get_position() for i in range(3)])
