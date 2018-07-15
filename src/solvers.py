@@ -43,7 +43,6 @@ class Solver():
             ang_fluxes = np.zeros((self.num_angs, self.num_nodes))
             # Iterate over all angle possibilities
             for i, ang in enumerate(self.angs):
-                #ang = np.array(ang)
                 ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev)
                 scalar_flux += self.weights[i] * ang_fluxes[i]
             return scalar_flux, ang_fluxes
@@ -77,7 +76,7 @@ class Solver():
                 phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
             if not scattering:
                 break
-            norm = np.linalg.norm(phi - phi_prev[group_id], 2)
+            norm = np.linalg.norm(phi - phi_prev[group_id], float('inf'))
             if verbose: print("Norm: ", norm)
             if norm < tol:
                 break

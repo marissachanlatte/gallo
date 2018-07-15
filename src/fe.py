@@ -4,6 +4,29 @@ from typing import NamedTuple, Tuple
 import numpy as np
 import matplotlib.tri as tri
 
+oo = float('inf')
+
+def setup_ang_quad(sn_ord):
+    quad1d, solid_angle = np.polynomial.legendre.leggauss(sn_ord), 4*np.pi
+    # loop over relevant polar angles
+    angs = []
+    weights = []
+    for polar in range(int(sn_ord/2), sn_ord):
+        # calculate number of points per level
+        p_per_level = 4 * (sn_ord - polar)
+        delta = 2.0 * np.pi / p_per_level
+        # get the polar angles
+        mu = quad1d[0][polar]
+        # calculate point weight
+        weight = quad1d[1][polar] * solid_angle / p_per_level
+        # loop over azimuthal angles
+        for i in range(p_per_level):
+            phi = (i + 0.5) * delta
+            omega = np.array([(1-mu**2.)**0.5 * np.cos(phi), (1-mu**2.)**0.5 * np.sin(phi)])
+            angs.append(omega)
+            weights.append(weight)
+    return np.array(angs), np.array(weights)
+
 class Element(NamedTuple):
     el_id: int
     vertices: Tuple[int]
@@ -14,7 +37,18 @@ class Node(NamedTuple):
     id: int
     is_interior: bool
 
+def parse_num_lines(line):
+    return int(line.split(' ')[0])
+
+def _split_and_remove_whitespace(line):
+    return ' '.join(line.split()).split(' ')
+
 class FEGrid():
+    # Discretization Orders
+    num_gauss_nodes = 4
+    sn_ord = 4
+    angs, weights = setup_ang_quad(sn_ord)
+    num_angs = len(weights)
     def __init__(self, node_file, ele_file):
         # verify files exists
         assert os.path.exists(node_file), "Node file: " + node_file\
@@ -22,117 +56,47 @@ class FEGrid():
         assert os.path.exists(ele_file), "Ele file: " + ele_file\
             + " does not exist"
 
-        # Discretization Orders
-        self.num_gauss_nodes = 4
         with open(node_file) as nf:
-            line = nf.readline()
-            data = line.split(" ")
-            self.num_nodes = int(data[0])
+            self.num_nodes = parse_num_lines(nf.readline())
             self.nodes = []
-            self.interior_nodes = []
-            self.num_interior_nodes = 0
-            for i in range(self.num_nodes):
-                line = nf.readline()
-                #remove extra whitespace
-                line = ' '.join(line.split())
-                data = line.split(" ")
-                node_id, x, y, boundary = data
-                x = float(x)
-                y = float(y)
+
+            self.xmin = self.ymin = oo
+            self.xmax = self.ymax = -oo
+            for line in nf.readlines():
+                if line.startswith('#'):
+                    continue
+                node_id, x, y, boundary =  _split_and_remove_whitespace(line)
+                x, y = float(x), float(y)
                 # Set boundary data
-                if i == 0:
-                    self.xmin = x
-                    self.ymin = y
-                    self.xmax = x
-                    self.ymax = y
-                else:
-                    if x < self.xmin:
-                        self.xmin = x
-                    if y < self.ymin:
-                        self.ymin = y
-                    if x > self.xmax:
-                        self.xmax = x
-                    if y > self.ymax:
-                        self.ymax = y
+                self.xmin = min(x, self.xmin)
+                self.ymin = min(y, self.ymin)
+
+                self.xmax = max(x, self.xmax)
+                self.ymax = max(y, self.ymax)
+
                 is_interior = not int(boundary)
-                #interior_node_id = -1
-                #if is_interior:
-                    #interior_node_id = self.num_interior_nodes
-                    #self.num_interior_nodes += 1
-                    #self.interior_nodes.append(
-                        #Node([x, y], int(node_id), is_interior))
                 self.nodes.append(Node((x, y), int(node_id), is_interior))
         assert self.num_nodes == len(self.nodes)
 
         with open(ele_file) as ef:
-            line = ef.readline()
-            data = line.split(" ")
-            self.num_elts = int(data[0])
+            self.num_elts = parse_num_lines(ef.readline())
             self.elts_list = []
-            for i in range(self.num_elts):
-                line = ef.readline()
-                #remove extra whitespace
-                line = ' '.join(line.split())
-                data = line.split(" ")
-                el_id, *vertices, mat_id = data
-                vertices = [int(vert) for vert in vertices]
+            for line in ef.readlines():
+                if line.startswith('#'):
+                    continue
+                el_id, *vertices, mat_id = _split_and_remove_whitespace(line)
+                vertices = tuple(int(vert) for vert in vertices)
                 self.elts_list.append(Element(int(el_id), vertices, int(mat_id)))
         assert self.num_elts == len(self.elts_list)
-        # Set Up Angular quadrature
-        sn_ord = 4
-        it, quad1d, solid_angle = 0, np.polynomial.legendre.leggauss(sn_ord), 4*np.pi
-        self.num_angs = 12
-        # loop over relevant polar angles
-        self.angs = np.zeros((self.num_angs, 2))
-        self.weights = np.zeros(self.num_angs)
-        for polar in range(int(sn_ord/2), sn_ord):
-            # calculate number of points per level
-            p_per_level = 4 * (sn_ord - polar)
-            delta = 2.0 * np.pi / p_per_level
-            # get the polar angles
-            mu = quad1d[0][polar]
-            # calculate point weight
-            weight = quad1d[1][polar] * solid_angle / p_per_level
-            # loop over azimuthal angles
-            for i in range(p_per_level):
-                phi = (i + 0.5) * delta
-                omega = np.array([(1-mu**2.)**0.5 * np.cos(phi), (1-mu**2.)**0.5 * np.sin(phi)])
-                self.angs[it] = omega
-                self.weights[it] = weight
-                it += 1
-
-    def get_boundary(self, which_boundary):
-        if which_boundary == "xmin":
-            return self.xmin
-        elif which_boundary == "ymin":
-            return self.ymin
-        elif which_boundary == "xmax":
-            return self.xmax
-        elif which_boundary == "ymax":
-            return self.ymax
-        else:
-            raise RuntimeError("Boundary must be xmin, ymin, xmax, or ymax")
 
     def is_corner(self, node_number):
         x, y = self.node(node_number).position
-        on_xboundary = (x == self.xmax or x == self.xmin)
-        on_yboundary = (y == self.ymax or y == self.ymin)
-        if on_xboundary and on_yboundary:
-            return True
-        else:
-            return False
+        on_xboundary = x in (self.xmax, self.xmin)
+        on_yboundary = y in (self.ymax, self.ymin)
+        return on_xboundary and on_yboundary
 
     def get_node(self, elt_number, local_node_number):
         return self.nodes[self.elts_list[elt_number].vertices[local_node_number]]
-
-    def get_num_elts(self):
-        return self.num_elts
-
-    def get_num_nodes(self):
-        return len(self.nodes)
-
-    def get_num_interior_nodes(self):
-        return self.num_interior_nodes
 
     def element(self, elt_number):
         return self.elts_list[elt_number]
@@ -143,14 +107,12 @@ class FEGrid():
     def get_mat_id(self, elt_number):
         return self.element(elt_number).mat_id
 
-    def evaluate_basis_function(self, coefficients, point):
-        # Evaluates linear basis functions of the form c1 + c2x + c3y at the point x, y
-        if len(coefficients) != 3:
-            raise RuntimeError(
-                "Must be linear basis function with 3 coefficients")
-        if len(point) != 2:
-            raise RuntimeError("Must be 2D point, (x,y)")
-        return coefficients[0] + coefficients[1] * point[0] + coefficients[2] * point[1]
+    def evaluate_basis_function(self, coeffs, point):
+        # Evaluates linear basis functions of the form c1 + c2x + c3y
+        # at the point x, y
+        assert len(coeffs) == 3, "Must be linear basis function with 3 coefficients"
+        assert len(point) == 2, "Must be 2D point, (x,y)"
+        return coeffs[0] + coeffs[1:] @ point
 
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
@@ -162,19 +124,18 @@ class FEGrid():
             dx[ivert] = self.nodes[other_node_number].position
             dx[ivert] -= xbase
         det = dx[0, 0] * dx[1, 1] - dx[1, 0] * dx[0, 1]
-        retval = np.zeros(2)
-        retval[0] = (-(dx[1, 1] - dx[0, 1]) / det)
-        retval[1] = ((dx[1, 0] - dx[0, 0]) / det)
-        return retval
+        x = dx[0, 1] - dx[1, 1]
+        y = dx[1, 0] - dx[0, 0]
+        return np.array([x, y]) / det
 
     def basis(self, elt_number):
         vandermonde = np.zeros((3, 3))
         for i in range(3):
+            x, y = self.get_node(elt_number, i).position
             vandermonde[i, 0] = 1
-            vandermonde[i, 1] = self.get_node(elt_number, i).position[0]
-            vandermonde[i, 2] = self.get_node(elt_number, i).position[1]
-        coefficients = np.linalg.inv(vandermonde)
-        return coefficients
+            vandermonde[i, 1] = x
+            vandermonde[i, 2] = y
+        return np.linalg.solve(vandermonde, np.eye(3))
 
     def boundary_nonzero(self, current_vert, e):
         # returns the points on the boundary where the basis function is non zero
@@ -197,7 +158,7 @@ class FEGrid():
                            (posc[1] == self.ymin or posc[1] == self.ymax)))
 
         if ab_boundary and ac_boundary:
-            return -1
+            return None
         elif ab_boundary:
             verts = [current_vert, other_verts[0]]
         elif ac_boundary:

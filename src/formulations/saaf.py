@@ -10,12 +10,12 @@ class SAAF():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.xmax = self.fegrid.get_boundary("xmax")
-        self.ymax = self.fegrid.get_boundary("ymax")
-        self.xmin = self.fegrid.get_boundary("xmin")
-        self.ymin = self.fegrid.get_boundary("ymin")
-        self.num_nodes = self.fegrid.get_num_nodes()
-        self.num_elts = self.fegrid.get_num_elts()
+        self.xmax = self.fegrid.xmax
+        self.ymax = self.fegrid.ymax
+        self.xmin = self.fegrid.xmin
+        self.ymin = self.fegrid.ymin
+        self.num_nodes = self.fegrid.num_nodes
+        self.num_elts = self.fegrid.num_elts
         self.num_gnodes = self.fegrid.num_gauss_nodes
 
     def make_lhs(self, angles, group_id):
@@ -73,7 +73,7 @@ class SAAF():
                         if (nid == nsid) and (self.fegrid.is_corner(nid)):
                             # If on a corner, figure out what normal we should use
                             verts = self.fegrid.boundary_nonzero(nid, e)
-                            if verts == -1:  # Means the whole element is a corner
+                            if verts is None:  # Means the whole element is a corner
                                 # We have to calculate boundary integral twice,
                                 # once for each other vertex
                                 # Find the other vertices

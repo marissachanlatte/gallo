@@ -8,14 +8,13 @@ class Diffusion():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.num_nodes = self.fegrid.get_num_nodes()
-        self.num_elts = self.fegrid.get_num_elts()
+        self.num_nodes = self.fegrid.num_nodes
+        self.num_elts = self.fegrid.num_elts
         self.num_gnodes = self.fegrid.num_gauss_nodes
 
     def make_lhs(self, group_id, ho_sols=None):
-        E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
-        for e in range(E):
+        for e in range(self.num_elts):
             # Determine material index of element
             midx = self.fegrid.get_mat_id(e)
             # Get Diffusion coefficient for material

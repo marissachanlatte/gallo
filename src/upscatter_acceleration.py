@@ -7,9 +7,9 @@ class UA():
         self.op = operator
         self.fegrid = self.op.fegrid
         self.mat_data = self.op.mat_data
-        self.num_nodes = self.fegrid.get_num_nodes()
+        self.num_nodes = self.fegrid.num_nodes
         self.num_groups = self.mat_data.get_num_groups()
-        self.num_elts = self.fegrid.get_num_elts()
+        self.num_elts = self.fegrid.num_elts
 
     def calculate_correction(self, phis, phis_prev, ho_sols):
         lhs = self.correction_lhs(ho_sols)

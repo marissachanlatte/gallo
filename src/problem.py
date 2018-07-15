@@ -15,7 +15,7 @@ class Problem(NamedTuple):
 
     @property
     def n_elements(self):
-        return self.grid.get_num_elts()
+        return self.grid.num_elts
 
     @property
     def num_groups(self):
