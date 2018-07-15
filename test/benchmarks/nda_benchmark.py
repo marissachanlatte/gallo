@@ -19,12 +19,9 @@ def to_problem(mesh, mat, filename):
     matfile = "../test_inputs/" + mat + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
-    ho = SAAF(grid, mats)
-    ho_solver = Solver(ho)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
-    source = np.ones((num_groups, n_elements))
-    op = NDA(grid, mats, ho_solver, source)
+    op = NDA(grid, mats)
     solver = Solver(op)
 
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
@@ -36,9 +33,22 @@ def filename_to_problem(func):
 
 @filename_to_problem
 def test_problem(problem):
-    source = np.ones((problem.num_groups, problem.n_elements))
+    # source = np.zeros((problem.num_groups, problem.n_elements))
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     #if .25 < centroid[0] < .75 and .25 < centroid[1] < .75:
+    #     if centroid[0] < .5:
+    #         source[0, e] = .75
+    #         source[1, e] = .25
+    ### BOX SOURCE ###
+    source = np.zeros((problem.num_groups, problem.n_elements))
+    for e in range(problem.n_elements):
+        centroid = problem.grid.centroid(e)
+        if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
+            source[0, e] = 7.39
+            source[1, e] = 2.61
+    # source = np.ones((problem.num_groups, problem.n_elements))
     phis = problem.solver.solve(source, ua_bool=False)
-    np.savetxt('nda_out.txt', phis)
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
@@ -78,5 +88,30 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric_fine", "scattering1g", "nda_1gscat")
+@filename_to_problem
+def make_lhs(problem):
+    source = np.ones((problem.num_groups, problem.n_elements))
+    A = problem.op.make_lhs(0, ho_sols=0)
+    print(A)
+
+@filename_to_problem
+def test_triangulation(problem):
+    triang = problem.grid.setup_triangulation()
+    plt.figure()
+    plt.triplot(triang)
+    plt.savefig(problem.filename)
+
+@filename_to_problem
+def test_phi_at_gnodes(problem):
+    triang = problem.grid.setup_triangulation()
+    phi_prev = np.ones((problem.num_groups, problem.grid.num_nodes))
+    for e in range(problem.grid.num_elts):
+        g_nodes = problem.grid.gauss_nodes(e)
+        phi_vals = problem.grid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
+        print("Element:", e)
+        print(g_nodes)
+
+#test_phi_at_gnodes("iron-water-coarse4", "iron-water", "nda_triangles")
+#make_lhs("std3", "std3", "test")
+test_problem("iron-water-fine", "iron-water", "nda_iron-water")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")

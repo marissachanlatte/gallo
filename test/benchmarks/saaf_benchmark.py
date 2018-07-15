@@ -35,15 +35,18 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
+    # source = np.zeros((problem.num_groups, problem.n_elements))
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     if .25 < centroid[0] < .75 and .25 < centroid[1] < .75:
+    #         source[0, e] = 1
     # ### BOX SOURCE ###
     # source = np.zeros((problem.num_groups, problem.n_elements))
-    # for g in range(problem.num_groups):
-    #     for e in range(problem.n_elements):
-    #         centroid = problem.grid.centroid(e)
-    #         if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
-    #             source[g, e] = 1
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
+    #         source[0, e] = 1
     phis, angs = problem.solver.solve(source)
-    np.savetxt('saaf_out.txt', phis)
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
@@ -54,7 +57,7 @@ def test_problem(problem):
 
 @filename_to_problem
 def make_lhs(problem):
-    source = np.ones(problem.n_elements)
+    source = np.ones((problem.num_groups, problem.n_elements))
     A = problem.op.make_lhs([.5773503, -.5773503], 0)
     print(A)
 

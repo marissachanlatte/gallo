@@ -32,6 +32,17 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
+    # source = np.zeros((problem.num_groups, problem.n_elements))
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     if .25 < centroid[0] < .75 and .25 < centroid[1] < .75:
+    #         source[0, e] = 1
+    # ### BOX SOURCE ###
+    # source = np.zeros((problem.num_groups, problem.n_elements))
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
+    #         source[0, e] = 1
     phis = problem.solver.solve(source)
 
     # Plot Everything
@@ -73,5 +84,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric_fine", "simple3g", "diff_upscat")
+test_problem("symmetric_fine", "scattering1g", "diff_1gscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
