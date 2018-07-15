@@ -9,25 +9,10 @@ class Element(NamedTuple):
     vertices: Tuple[int]
     mat_id: int
 
-class Node():
-    def __init__(self, position, node_id, interior_node_id, isinterior):
-        self.position = position
-        self.id = node_id
-        self.isinterior = isinterior
-        self.interior_node_id = interior_node_id
-
-    def get_position(self):
-        return self.position
-
-    def get_node_id(self):
-        return self.id
-
-    def get_interior_node_id(self):
-        return self.interior_node_id
-
-    def is_interior(self):
-        return self.isinterior
-
+class Node(NamedTuple):
+    position: Tuple[float, float]
+    id: int
+    is_interior: bool
 
 class FEGrid():
     def __init__(self, node_file, ele_file):
@@ -70,22 +55,21 @@ class FEGrid():
                     if y > self.ymax:
                         self.ymax = y
                 is_interior = not int(boundary)
-                interior_node_id = -1
-                if is_interior:
-                    interior_node_id = self.num_interior_nodes
-                    self.num_interior_nodes += 1
-                    self.interior_nodes.append(
-                        Node([x, y], int(node_id), interior_node_id,
-                             is_interior))
-                self.nodes.append(
-                    Node([x, y], int(node_id), interior_node_id, is_interior))
+                #interior_node_id = -1
+                #if is_interior:
+                    #interior_node_id = self.num_interior_nodes
+                    #self.num_interior_nodes += 1
+                    #self.interior_nodes.append(
+                        #Node([x, y], int(node_id), is_interior))
+                self.nodes.append(Node((x, y), int(node_id), is_interior))
+        assert self.num_nodes == len(self.nodes)
 
         with open(ele_file) as ef:
             line = ef.readline()
             data = line.split(" ")
-            self.num_ele = int(data[0])
+            self.num_elts = int(data[0])
             self.elts_list = []
-            for i in range(self.num_ele):
+            for i in range(self.num_elts):
                 line = ef.readline()
                 #remove extra whitespace
                 line = ' '.join(line.split())
@@ -93,8 +77,7 @@ class FEGrid():
                 el_id, *vertices, mat_id = data
                 vertices = [int(vert) for vert in vertices]
                 self.elts_list.append(Element(int(el_id), vertices, int(mat_id)))
-            self.num_elts = len(self.elts_list)
-
+        assert self.num_elts == len(self.elts_list)
         # Set Up Angular quadrature
         sn_ord = 4
         it, quad1d, solid_angle = 0, np.polynomial.legendre.leggauss(sn_ord), 4*np.pi
@@ -131,7 +114,7 @@ class FEGrid():
             raise RuntimeError("Boundary must be xmin, ymin, xmax, or ymax")
 
     def is_corner(self, node_number):
-        x, y = self.node(node_number).get_position()
+        x, y = self.node(node_number).position
         on_xboundary = (x == self.xmax or x == self.xmin)
         on_yboundary = (y == self.ymax or y == self.ymin)
         if on_xboundary and on_yboundary:
@@ -146,7 +129,7 @@ class FEGrid():
         return self.num_elts
 
     def get_num_nodes(self):
-        return np.size(self.nodes)
+        return len(self.nodes)
 
     def get_num_interior_nodes(self):
         return self.num_interior_nodes
@@ -172,11 +155,11 @@ class FEGrid():
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
         element = self.elts_list[elt_number].vertices
-        xbase = self.get_node(elt_number, local_node_number).get_position()
+        xbase = self.get_node(elt_number, local_node_number).position
         dx = np.zeros((2, 2))
         for ivert in range(2):
             other_node_number = element[(local_node_number + ivert + 1) % 3]
-            dx[ivert] = self.nodes[other_node_number].get_position()
+            dx[ivert] = self.nodes[other_node_number].position
             dx[ivert] -= xbase
         det = dx[0, 0] * dx[1, 1] - dx[1, 0] * dx[0, 1]
         retval = np.zeros(2)
@@ -188,8 +171,8 @@ class FEGrid():
         vandermonde = np.zeros((3, 3))
         for i in range(3):
             vandermonde[i, 0] = 1
-            vandermonde[i, 1] = self.get_node(elt_number, i).get_position()[0]
-            vandermonde[i, 2] = self.get_node(elt_number, i).get_position()[1]
+            vandermonde[i, 1] = self.get_node(elt_number, i).position[0]
+            vandermonde[i, 2] = self.get_node(elt_number, i).position[1]
         coefficients = np.linalg.inv(vandermonde)
         return coefficients
 
@@ -200,9 +183,9 @@ class FEGrid():
         other_verts = np.delete(all_verts, vert_local_idx)
 
         # Get position of vertices
-        posa = self.node(current_vert).get_position()
-        posb = self.node(other_verts[0]).get_position()
-        posc = self.node(other_verts[1]).get_position()
+        posa = self.node(current_vert).position
+        posb = self.node(other_verts[0]).position
+        posc = self.node(other_verts[1]).position
 
         ab_boundary = (((posa[0] == posb[0]) and
                         (posb[0] == self.xmin or posb[0] == self.xmax))
@@ -232,7 +215,7 @@ class FEGrid():
         points = np.zeros((2, 2))
         for i, n in enumerate(verts):
             node = self.node(n)
-            points[i] = node.get_position()
+            points[i] = node.position
         a = None
         b = None
         if points[0, 0] == points[1, 0]:
@@ -262,8 +245,8 @@ class FEGrid():
         a, b = self.boundary_edges(boundary_vertices, e)
         xstd = np.array([-np.sqrt(3/5), 0, np.sqrt(3/5)])
         nodes = np.array([(b-a)/2*xstd[i] + (a+b)/2 for i in range(gorder)])
-        pos_n = self.node(boundary_vertices[0]).get_position()
-        pos_ns = self.node(boundary_vertices[1]).get_position()
+        pos_n = self.node(boundary_vertices[0]).position
+        pos_ns = self.node(boundary_vertices[1]).position
         gauss_nodes = np.zeros((gorder, 2))
         for i in range(gorder):
             if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
@@ -293,8 +276,8 @@ class FEGrid():
         #                       [0.09157621350977, 0.81684757298046],
         #                       [0.81684757298046, 0.09157621350977]])
         # Get nodes of element
-        el_nodes = np.array([self.get_node(elt_number, i) for i in [1, 2, 0]])
-        pos = np.array([el_nodes[i].get_position() for i in range(3)])
+        el_nodes = [self.get_node(elt_number, i) for i in [1, 2, 0]]
+        pos = np.array([el_nodes[i].position for i in range(3)])
         area = self.element_area(elt_number)
         # Transformation Function
         # x(u, v) = alpha + u(beta - alpha) + v(gamma - alpha)
@@ -309,11 +292,11 @@ class FEGrid():
     def element_area(self, elt_number):
         e = self.elts_list[elt_number]
         n = self.nodes[e.vertices[0]]
-        xbase = n.get_position()
+        xbase = n.position
         dx = np.zeros((2, 2))
         for ivert in [1, 2]:
             other_node_number = e.vertices[ivert]
-            dx[ivert - 1, :] = self.nodes[other_node_number].get_position()
+            dx[ivert - 1, :] = self.nodes[other_node_number].position
             for idir in range(2):
                 dx[ivert - 1, idir] -= xbase[idir]
         # WARNING: the following calculation is correct for triangles in 2D *only*.
@@ -344,7 +327,7 @@ class FEGrid():
             retval[i] = 0.0
         for ivert in range(3):
             n = self.nodes[e[ivert]]
-            x = n.get_position()
+            x = n.position
             for idir in range(2):
                 retval[idir] += x[idir]
         for idir in range(2):
@@ -352,8 +335,8 @@ class FEGrid():
         return retval
 
     def assign_normal(self, nid, bid):
-        pos_n = self.node(nid).get_position()
-        pos_ns = self.node(bid).get_position()
+        pos_n = self.node(nid).position
+        pos_ns = self.node(bid).position
         if (pos_n[0] == self.xmax and pos_ns[0] == self.xmax):
             normal = np.array([1, 0])
         elif (pos_n[0] == self.xmin and pos_ns[0] == self.xmin):
@@ -367,8 +350,8 @@ class FEGrid():
         return normal
 
     def boundary_basis_product(self, nid, bid, gauss_nodes, bn, bns, e):
-        pos_n = self.node(nid).get_position()
-        pos_ns = self.node(bid).get_position()
+        pos_n = self.node(nid).position
+        pos_ns = self.node(bid).position
         if not ((pos_n[0] == self.xmax and pos_ns[0] == self.xmax)
                 or (pos_n[0] == self.xmin and pos_ns[0] == self.xmin)
                 or (pos_n[1] == self.ymax and pos_ns[1] == self.ymax)
@@ -384,7 +367,7 @@ class FEGrid():
     def setup_triangulation(self):
         x = np.zeros(self.num_nodes)
         y = np.zeros(self.num_nodes)
-        positions = (self.node(i).get_position() for i in range(self.num_nodes))
+        positions = (self.node(i).position for i in range(self.num_nodes))
         for i, pos in enumerate(positions):
             x[i], y[i] = pos
         # Setup triangles

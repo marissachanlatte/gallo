@@ -46,7 +46,7 @@ class NDA():
                 # Get global node
                 n_global = self.fegrid.get_node(e, n)
                 # Get node IDs
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
@@ -56,7 +56,7 @@ class NDA():
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
-                    nsid = ns_global.get_node_id()
+                    nsid = ns_global.id
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
@@ -86,7 +86,7 @@ class NDA():
                     integral = self.fegrid.gauss_quad(e, drift_product@grad[1])
                     sparse_matrix[nid, nsid] += integral
                     # Check if boundary nodes
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -147,7 +147,7 @@ class NDA():
                 # Array of values of basis function evaluated at interior gauss nodes
                 fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(self.num_gnodes)])
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)

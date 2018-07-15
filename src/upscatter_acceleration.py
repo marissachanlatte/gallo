@@ -51,8 +51,8 @@ class UA():
                     fns_vals = np.array([bns[0] + bns[1] * g_nodes[i, 0] + bns[2] * g_nodes[i, 1] for i in range(3)])
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
-                    nid = n_global.get_node_id()
-                    nsid = ns_global.get_node_id()
+                    nid = n_global.id
+                    nsid = ns_global.id
                     # Calculate gradients
                     ngrad = self.fegrid.gradient(e, n)
                     nsgrad = self.fegrid.gradient(e, ns)
@@ -81,7 +81,7 @@ class UA():
                     E = integral
 
                     sparse_matrix[nid, nsid] += A + C + E
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -131,7 +131,7 @@ class UA():
                 # Array of values of basis function evaluated at interior gauss nodes
                 fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
 
                 # Subtract Phi Prevs
                 # Find Phi at Gauss Nodes

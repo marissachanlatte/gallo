@@ -45,8 +45,8 @@ class Diffusion():
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
-                    nid = n_global.get_node_id()
-                    nsid = ns_global.get_node_id()
+                    nid = n_global.id
+                    nsid = ns_global.id
                     # Calculate gradients
                     grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
                     # Integrate for A (basis function derivatives)
@@ -56,7 +56,7 @@ class Diffusion():
                     # Integrate for B (basis functions multiplied)
                     integral = self.fegrid.gauss_quad(e, fn_vals * fns_vals)
                     sparse_matrix[nid, nsid] += sig_r * integral
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -104,7 +104,7 @@ class Diffusion():
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes

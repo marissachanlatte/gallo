@@ -9,7 +9,7 @@ def _setup_triangles(grid):
     # Setup xy
     x = np.zeros(nodes)
     y = np.zeros(nodes)
-    positions = (grid.node(i).get_position() for i in range(nodes))
+    positions = (grid.node(i).position for i in range(nodes))
     for i, pos in enumerate(positions):
         x[i], y[i] = pos
     # Setup triangles
@@ -32,8 +32,10 @@ def plot(grid, solution, filename):
     plt.triplot(triang)
     if inf != sup:
         plt.tricontourf(tri_refi, sol_refi, levels=np.linspace(inf, sup, 11))
+        #plt.tricontourf(triang, solution, levels=np.linspace(inf, sup, 11))
     else:
         plt.tricontourf(tri_refi, sol_refi)
+        #plt.tricontourf(triang, solution)
     plt.colorbar()
     plt.savefig(filename)
     plt.clf()
