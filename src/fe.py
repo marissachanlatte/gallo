@@ -338,9 +338,9 @@ class FEGrid():
         # Using thirdorder Gaussian Quadrature formula
         # 2*Area*(-27/96*f(1/3, 1/3)+25/96*(f(1/5, 1/5) + f(1/5, 3/5) + f(3/5, 1/5)))
         area = self.element_area(elt_number)
-        #integral = area*(-27/48*f_values[0]+25/48*np.sum(f_values[1:]))
-        integral = area*(0.22338158967801*np.sum(f_values[0:3])
-                         + 0.10995174365532*np.sum(f_values[3:]))
+        integral = area*(-27/48*f_values[0]+25/48*np.sum(f_values[1:]))
+        #integral = area*(0.22338158967801*np.sum(f_values[0:3])
+                         #+ 0.10995174365532*np.sum(f_values[3:]))
         return integral
 
     def gauss_quad1d(self, f_values, boundary_vertices, e):
