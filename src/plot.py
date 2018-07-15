@@ -14,7 +14,7 @@ def _setup_triangles(grid):
         x[i], y[i] = pos
     # Setup triangles
     elts = grid.get_num_elts()
-    triangles = np.array([grid.element(i).get_vertices() for i in range(elts)])
+    triangles = np.array([grid.element(i).vertices for i in range(elts)])
     triang = tri.Triangulation(x, y, triangles=triangles)
     return triang
 

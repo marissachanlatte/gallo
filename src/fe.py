@@ -1,27 +1,13 @@
 import os
+from typing import NamedTuple, Tuple
 
 import numpy as np
 import matplotlib.tri as tri
 
-class Element():
-    def __init__(self, el_id, vertices, mat_id):
-        """ Constructor for a triangular element in 2D """
-        self.el_id = el_id
-        self.vertices = vertices
-        self.mat_id = mat_id
-
-    def __getitem__(self, index):
-        return self.vertices[index]
-
-    def get_el_id(self):
-        return self.el_id
-
-    def get_vertices(self):
-        return self.vertices
-
-    def get_mat_id(self):
-        return self.mat_id
-
+class Element(NamedTuple):
+    el_id: int
+    vertices: Tuple[int]
+    mat_id: int
 
 class Node():
     def __init__(self, position, node_id, interior_node_id, isinterior):
@@ -107,7 +93,7 @@ class FEGrid():
                 el_id, *vertices, mat_id = data
                 vertices = [int(vert) for vert in vertices]
                 self.elts_list.append(Element(int(el_id), vertices, int(mat_id)))
-            self.num_elts = np.size(self.elts_list)
+            self.num_elts = len(self.elts_list)
 
         # Set Up Angular quadrature
         sn_ord = 4
@@ -154,7 +140,7 @@ class FEGrid():
             return False
 
     def get_node(self, elt_number, local_node_number):
-        return self.nodes[self.elts_list[elt_number][local_node_number]]
+        return self.nodes[self.elts_list[elt_number].vertices[local_node_number]]
 
     def get_num_elts(self):
         return self.num_elts
@@ -172,7 +158,7 @@ class FEGrid():
         return self.nodes[node_number]
 
     def get_mat_id(self, elt_number):
-        return self.element(elt_number).get_mat_id()
+        return self.element(elt_number).mat_id
 
     def evaluate_basis_function(self, coefficients, point):
         # Evaluates linear basis functions of the form c1 + c2x + c3y at the point x, y
@@ -185,7 +171,7 @@ class FEGrid():
 
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
-        element = self.elts_list[elt_number].get_vertices()
+        element = self.elts_list[elt_number].vertices
         xbase = self.get_node(elt_number, local_node_number).get_position()
         dx = np.zeros((2, 2))
         for ivert in range(2):
@@ -209,7 +195,7 @@ class FEGrid():
 
     def boundary_nonzero(self, current_vert, e):
         # returns the points on the boundary where the basis function is non zero
-        all_verts = np.array(self.element(e).get_vertices())
+        all_verts = np.array(self.element(e).vertices)
         vert_local_idx = np.where(all_verts == current_vert)[0][0]
         other_verts = np.delete(all_verts, vert_local_idx)
 
@@ -322,11 +308,11 @@ class FEGrid():
 
     def element_area(self, elt_number):
         e = self.elts_list[elt_number]
-        n = self.nodes[e[0]]
+        n = self.nodes[e.vertices[0]]
         xbase = n.get_position()
         dx = np.zeros((2, 2))
         for ivert in [1, 2]:
-            other_node_number = e[ivert]
+            other_node_number = e.vertices[ivert]
             dx[ivert - 1, :] = self.nodes[other_node_number].get_position()
             for idir in range(2):
                 dx[ivert - 1, idir] -= xbase[idir]
@@ -402,7 +388,7 @@ class FEGrid():
         for i, pos in enumerate(positions):
             x[i], y[i] = pos
         # Setup triangles
-        triangles = np.array([self.element(i).get_vertices() for i in range(self.num_elts)])
+        triangles = np.array([self.element(i).vertices for i in range(self.num_elts)])
         triang = tri.Triangulation(x, y, triangles=triangles)
         return triang
 
