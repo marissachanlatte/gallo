@@ -132,7 +132,9 @@ class SAAF():
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # First Scattering Term
                 # Multiply Phi & Basis Function
-                ssource = self.compute_scattering_source(midx, phi_vals, group_id)
+                ssource = np.zeros(self.num_gnodes)
+                for gnode in range(self.num_gnodes):
+                    ssource[gnode] = self.compute_scattering_source(midx, phi_vals[:, gnode], group_id)
                 product = fn_vals * ssource
                 ssource_integrated = self.fegrid.gauss_quad(e, product)
                 rhs_at_node[nid] += ssource_integrated / (4 * np.pi)
@@ -149,8 +151,7 @@ class SAAF():
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
-        ssource = np.zeros(self.num_gnodes)
-        for gnode in range(self.num_gnodes):
-            for g_prime in range(self.num_groups):
-                ssource[gnode] += scatmat[g_prime, group_id]*phi[g_prime, gnode]
+        ssource = 0
+        for g_prime in range(self.num_groups):
+            ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
