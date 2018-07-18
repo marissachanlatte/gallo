@@ -46,7 +46,7 @@ def _split_and_remove_whitespace(line):
 class FEGrid():
     # Discretization Orders
     num_gauss_nodes = 4
-    sn_ord = 4
+    sn_ord = 2
     angs, weights = setup_ang_quad(sn_ord)
     num_angs = len(weights)
     def __init__(self, node_file, ele_file):
@@ -287,7 +287,7 @@ class FEGrid():
         for i in range(2):
             retval[i] = 0.0
         for ivert in range(3):
-            n = self.nodes[e[ivert]]
+            n = self.nodes[e.vertices[ivert]]
             x = n.position
             for idir in range(2):
                 retval[idir] += x[idir]
