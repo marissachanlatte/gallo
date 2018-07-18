@@ -38,11 +38,17 @@ class NDA():
             g_nodes = self.fegrid.gauss_nodes(e)
             # Dertmine Gradients for Each Basis function
             grad = np.array([self.fegrid.gradient(e, i) for i in range(3)])
+            vertices = self.fegrid.element(e).vertices
             if ho_sols !=0:
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
                 # Find Psi at Gauss Nodes
                 psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(self.num_angs)])
+                # Find Psi at vertices
+                psi_at_verts = np.zeros((self.num_angs, 3))
+                for m in range(self.num_angs):
+                    for i, vtx in enumerate(vertices):
+                        psi_at_verts[m, i] = psi[0, m, vtx]
             for n in range(3):
                 # Get global node
                 n_global = self.fegrid.get_node(e, n)
@@ -78,7 +84,8 @@ class NDA():
                     if ho_sols == 0:
                         drift_vector = np.zeros((self.num_gnodes, 2))
                     else:
-                        drift_vector = self.compute_drift_vector(inv_sigt, D, grad[n], phi_vals[0], psi_vals[:, 0])
+                        drift_vector = self.compute_drift_vector(inv_sigt, D, grad, phi_vals[0], psi_at_verts)
+                        #drift_vector = self.compute_drift_vector(inv_sigt, D, grad[n], phi_vals[0], psi_vals[:, 0])
 
                     # Integrate drift_vector@gradient*basis_function
                     drift_product = np.array([drift_vector[i]*fn_vals[i] for i in range(self.num_gnodes)])
@@ -180,8 +187,12 @@ class NDA():
         # Calculate drift_vector
         drift_vector = np.zeros((self.num_gnodes, 2))
         for node in range(self.num_gnodes):
-            for i, ang in enumerate(self.angs):
-                drift_vector[node] += self.weights[i]*inv_sigt*ang*(ang@grad)*psi[i, node]
-                drift_vector[node] -= self.weights[i]*D*grad*psi[i, node]
+            for m, ang in enumerate(self.angs):
+                deriv = psi[m]@grad
+                dir_deriv = psi[m]@(grad@ang)
+                drift_vector[node] += self.weights[m]*inv_sigt*ang*dir_deriv
+                drift_vector[node] -= self.weights[m]*D*deriv
+                # drift_vector[node] += self.weights[i]*inv_sigt*ang*(ang@grad)*psi[i, node]
+                # drift_vector[node] -= self.weights[i]*D*grad*psi[i, node]
             drift_vector[node] /= phi[node]
         return drift_vector
