@@ -39,6 +39,16 @@ def plot(grid, solution, filename):
     plt.clf()
     plt.close()
 
+def plot_1d(grid, solution, y_fixed):
+    points = []
+    for node in range(grid.num_nodes):
+        x, y = grid.node(node).position
+        if y == y_fixed:
+            points.append([x, solution[node]])
+    points = np.array(points)
+    points = points[points[:, 0].argsort()]
+    return(points)
+
 def plot_mesh(grid, filename):
     triang = _setup_triangles(grid)
     elts = grid.num_elts
