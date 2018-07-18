@@ -48,7 +48,7 @@ class Solver():
             return scalar_flux, ang_fluxes
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=1000,
-                       tol=1e-6, verbose=True):
+                       tol=1e-4, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -76,7 +76,7 @@ class Solver():
                 phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
             if not scattering:
                 break
-            norm = np.linalg.norm(phi - phi_prev[group_id], float('inf'))
+            norm = np.linalg.norm(phi - phi_prev[group_id], float('inf'))/np.linalg.norm(phi, float('inf'))
             if verbose: print("Norm: ", norm)
             if norm < tol:
                 break
@@ -95,7 +95,7 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-5):
+    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-2):
         phis = np.ones((self.num_groups, self.num_nodes))
         ang_fluxes = np.zeros((self.num_groups, self.num_angs, self.num_nodes))
         for it_count in range(max_iter):
