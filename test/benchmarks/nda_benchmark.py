@@ -19,7 +19,7 @@ def to_problem(mesh, mat, filename):
     matfile = "../test_inputs/" + mat + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
-    n_elements = grid.get_num_elts()
+    n_elements = grid.num_elts
     num_groups = mats.get_num_groups()
     op = NDA(grid, mats)
     solver = Solver(op)
@@ -40,14 +40,14 @@ def test_problem(problem):
     #     if centroid[0] < .5:
     #         source[0, e] = .75
     #         source[1, e] = .25
-    ### BOX SOURCE ###
-    source = np.zeros((problem.num_groups, problem.n_elements))
-    for e in range(problem.n_elements):
-        centroid = problem.grid.centroid(e)
-        if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
-            source[0, e] = 7.39
-            source[1, e] = 2.61
-    # source = np.ones((problem.num_groups, problem.n_elements))
+    # ### BOX SOURCE ###
+    # source = np.zeros((problem.num_groups, problem.n_elements))
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
+    #         source[0, e] = 7.39
+    #         source[1, e] = 2.61
+    source = np.ones((problem.num_groups, problem.n_elements))
     phis = problem.solver.solve(source, ua_bool=False)
     # Plot Everything
     for g in range(problem.num_groups):
@@ -113,5 +113,5 @@ def test_phi_at_gnodes(problem):
 
 #test_phi_at_gnodes("iron-water-coarse4", "iron-water", "nda_triangles")
 #make_lhs("std3", "std3", "test")
-test_problem("iron-water-fine", "iron-water", "nda_iron-water")
+test_problem("symmetric_fine", "scattering1g", "nda_1gscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")

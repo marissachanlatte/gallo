@@ -23,7 +23,7 @@ def to_problem(mesh, mats, filename):
     mats = Materials(matfile)
     op = SAAF(grid, mats)
     solver = Solver(op)
-    n_elements = grid.get_num_elts()
+    n_elements = grid.num_elts
     num_groups = mats.get_num_groups()
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
