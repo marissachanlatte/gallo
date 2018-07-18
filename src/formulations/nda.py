@@ -36,6 +36,8 @@ class NDA():
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
+            # Dertmine Gradients for Each Basis function
+            grad = np.array([self.fegrid.gradient(e, i) for i in range(3)])
             if ho_sols !=0:
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
@@ -62,12 +64,10 @@ class NDA():
                     fns_vals = np.array([
                         self.fegrid.evaluate_basis_function(bns, g_nodes[i])
                         for i in range(self.num_gnodes)])
-                    # Calculate gradients
-                    grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
 
                     # Integrate for A (basis function derivatives)
                     area = self.fegrid.element_area(e)
-                    inprod = np.dot(grad[0], grad[1])
+                    inprod = np.dot(grad[n], grad[ns])
                     sparse_matrix[nid, nsid] += D * area * inprod
 
                     # Integrate for B (basis functions multiplied)
@@ -78,11 +78,11 @@ class NDA():
                     if ho_sols == 0:
                         drift_vector = np.zeros((self.num_gnodes, 2))
                     else:
-                        drift_vector = self.compute_drift_vector(inv_sigt, D, grad[0], phi_vals[0], psi_vals[:, 0])
+                        drift_vector = self.compute_drift_vector(inv_sigt, D, grad[n], phi_vals[0], psi_vals[:, 0])
 
                     # Integrate drift_vector@gradient*basis_function
                     drift_product = np.array([drift_vector[i]*fn_vals[i] for i in range(self.num_gnodes)])
-                    integral = self.fegrid.gauss_quad(e, drift_product@grad[1])
+                    integral = self.fegrid.gauss_quad(e, drift_product@grad[ns])
                     sparse_matrix[nid, nsid] += integral
                     # Check if boundary nodes
                     if not n_global.is_interior and not ns_global.is_interior:
