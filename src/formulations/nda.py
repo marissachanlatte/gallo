@@ -36,12 +36,14 @@ class NDA():
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
+            # More gauss nodes for higher order gaussian quad
+            ho_nodes = self.fegrid.gauss_nodes(e, ord=4)
             # Dertmine Gradients for Each Basis function
             grad = np.array([self.fegrid.gradient(e, i) for i in range(3)])
             vertices = self.fegrid.element(e).vertices
             if ho_sols !=0:
                 # Find Phi at Gauss Nodes
-                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
+                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, ho_nodes)
                 # Find Psi at Gauss Nodes
                 psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(self.num_angs)])
                 # Find Psi at vertices
@@ -85,10 +87,12 @@ class NDA():
                         drift_vector = np.zeros((self.num_gnodes, 2))
                     else:
                         drift_vector = self.compute_drift_vector(inv_sigt, D, grad, phi_vals[0], psi_at_verts)
-                        #drift_vector = self.compute_drift_vector(inv_sigt, D, grad[n], phi_vals[0], psi_vals[:, 0])
 
                     # Integrate drift_vector@gradient*basis_function
-                    drift_product = np.array([drift_vector[i]*fn_vals[i] for i in range(self.num_gnodes)])
+                    ho_vals = np.array([
+                        self.fegrid.evaluate_basis_function(bn, ho_nodes[i])
+                        for i in range(6)])
+                    drift_product = np.array([drift_vector[i]*ho_vals[i] for i in range(self.num_gnodes)])
                     integral = self.fegrid.gauss_quad(e, drift_product@grad[ns])
                     sparse_matrix[nid, nsid] += integral
                     # Check if boundary nodes
