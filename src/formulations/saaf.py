@@ -151,12 +151,6 @@ class SAAF():
                 ssource = self.compute_scattering_source(midx, phi_centroid, group_id)
                 Q = (ssource + source[group_id, e])/(4*np.pi)
                 rhs_at_node[nid] += inv_sigt*Q*(angles@grad[n])*area
-                # Second Scattering Term
-                # product = ssource*(angles@grad[n])
-                # ssource_integrated = self.fegrid.gauss_quad(e, product)
-                # rhs_at_node[nid] += inv_sigt*ssource_integrated/(4*np.pi)
-                # # Second Fixed Source Term
-                # rhs_at_node[nid] += inv_sigt*q_fixed*(angles@grad[n])*area
         return rhs_at_node
 
     def compute_scattering_source(self, midx, phi, group_id):
