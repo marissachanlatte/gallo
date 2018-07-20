@@ -19,12 +19,9 @@ def to_problem(mesh, mat, filename):
     matfile = "../test_inputs/" + mat + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
-    ho = SAAF(grid, mats)
-    ho_solver = Solver(ho)
     n_elements = grid.get_num_elts()
     num_groups = mats.get_num_groups()
-    source = np.ones((num_groups, n_elements))
-    op = NDA(grid, mats, ho_solver, source)
+    op = NDA(grid, mats)
     solver = Solver(op)
 
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
@@ -37,8 +34,7 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.ones((problem.num_groups, problem.n_elements))
-    phis = problem.solver.solve(source, ua_bool=False)
-    np.savetxt('nda_out.txt', phis)
+    phis = problem.solver.solve(source, ua_bool=True)
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
@@ -78,5 +74,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric_fine", "scattering1g", "nda_1gscat")
+test_problem("symmetric", "simple3g", "nda_upscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
