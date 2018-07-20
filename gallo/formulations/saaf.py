@@ -114,7 +114,7 @@ class SAAF():
                             pass
         return sparse_matrix
 
-    def make_rhs(self, group_id, source, angles, angle_id, phi_prev=None, eigenvalue=False):
+    def make_rhs(self, group_id, source, angles, angle_id, phi_prev=None):
         angles = np.array(angles)
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi

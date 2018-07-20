@@ -103,7 +103,7 @@ class Diffusion():
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
-    def make_rhs(self, group_id, source, phi_prev, eigenvalue=False):
+    def make_rhs(self, group_id, source, phi_prev):
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
@@ -113,9 +113,6 @@ class Diffusion():
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
-            if eigenvalue:
-                nu = self.mat_data.get_nu(midx, group_id)
-                sig_f = self.mat_data.get_sigf(midx, group_id)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
                 # Check if boundary node
@@ -141,49 +138,9 @@ class Diffusion():
                 ssource = self.compute_scattering_source(
                     midx, integral_product, group_id)
                 rhs_at_node[nid] += ssource
-                if eigenvalue:
-                    rhs_at_node[nid] += nu*sig_f*integral_product[group_id]
-                else:
-                    rhs_at_node[nid] += area*source[group_id, e]*1/3
+                rhs_at_node[nid] += area*source[group_id, e]*1/3
         return rhs_at_node
 
-    # def make_fission_source(self, group_id, phi_prev):
-    #     fission_source = np.zeros(self.num_nodes)
-    #     triang = self.fegrid.setup_triangulation()
-    #     for e in range(self.num_elts):
-    #         midx = self.fegrid.get_mat_id(e)
-    #         chi = self.mat_data.get_chi(midx, group_id)
-    #         sigf = np.array([self.mat_data.get_sigf(midx, g_prime) for g_prime in range(self.num_groups)])
-    #         nu = np.array([self.mat_data.get_nu(midx, g_prime) for g_prime in range(self.num_groups)])
-    #         # Determine basis functions for element
-    #         coef = self.fegrid.basis(e)
-    #         # Determine Gauss Nodes for element
-    #         g_nodes = self.fegrid.gauss_nodes(e)
-    #         for n in range(3):
-    #             n_global = self.fegrid.get_node(e, n)
-    #             nid = n_global.get_node_id()
-    #             # Check if boundary node
-    #             if not n_global.is_interior():
-    #                 continue
-    #             # Coefficients of basis functions b[0] + b[1]x + b[2]y
-    #             bn = coef[:, n]
-    #             # Array of values of basis function evaluated at interior gauss nodes
-    #             fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
-    #             # Find Phi at Gauss Nodes
-    #             phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
-    #             # Multiply Phi & Basis Function
-    #             product = fn_vals * phi_vals
-    #             integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
-    #                                          for g in range(self.num_groups)])
-    #             fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
-    #                 for g_prime in range(self.num_groups)]))
-    #             #fission_source[nid] += fiss
-    #             interp = tri.LinearTriInterpolator(triang, phi_prev[group_id])
-    #             centroid = self.fegrid.centroid(e)
-    #             phi_centroid = interp(centroid[0], centroid[1])
-    #             area = self.fegrid.element_area(e)
-    #             fission_source[nid] += nu[group_id]*sigf[group_id]*phi_centroid*area/3
-    #     return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
