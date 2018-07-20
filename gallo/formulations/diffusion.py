@@ -8,13 +8,12 @@ class Diffusion():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.num_nodes = self.fegrid.get_num_nodes()
-        self.num_elts = self.fegrid.get_num_elts()
+        self.num_nodes = self.fegrid.num_nodes
+        self.num_elts = self.fegrid.num_elts
 
     def make_lhs(self, group_id, ho_sols=None):
-        E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
-        for e in range(E):
+        for e in range(self.num_elts):
             # Determine material index of element
             midx = self.fegrid.get_mat_id(e)
             # Get Diffusion coefficient for material
@@ -46,8 +45,8 @@ class Diffusion():
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
-                    nid = n_global.get_node_id()
-                    nsid = ns_global.get_node_id()
+                    nid = n_global.id
+                    nsid = ns_global.id
                     # Calculate gradients
                     ngrad = self.fegrid.gradient(e, n)
                     nsgrad = self.fegrid.gradient(e, ns)
@@ -67,7 +66,7 @@ class Diffusion():
                     C = sig_r * integral
 
                     sparse_matrix[nid, nsid] += A + C
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -79,7 +78,7 @@ class Diffusion():
                                 # We have to calculate boundary integral twice,
                                 # once for each other vertex
                                 # Find the other vertices
-                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                all_verts = np.array(self.fegrid.element(e).vertices)
                                 vert_local_idx = np.where(all_verts == nid)[0][0]
                                 other_verts = np.delete(all_verts, vert_local_idx)
                                 # Calculate boundary integrals for other vertices
@@ -115,9 +114,6 @@ class Diffusion():
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
-                # Check if boundary node
-                if not n_global.is_interior():
-                    continue
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
@@ -126,7 +122,7 @@ class Diffusion():
                     fn_vals[i] = self.fegrid.evaluate_basis_function(
                         bn, g_nodes[i])
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)

@@ -22,8 +22,9 @@ class Solver():
         self.num_nodes = self.op.num_nodes
         self.num_elts = self.op.num_elts
         self.num_mats = self.mat_data.get_num_mats()
-        if not isinstance(self.op, Diffusion) and not isinstance(self.op, NDA):
-            self.angs = self.op.angs
+        self.num_angs = self.op.fegrid.num_angs
+        self.angs = self.op.fegrid.angs
+        self.weights = self.op.fegrid.weights
 
     def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev):
         lhs = self.op.make_lhs(ang, group_id)
@@ -44,11 +45,11 @@ class Solver():
             for i, ang in enumerate(self.angs):
                 ang = np.array(ang)
                 ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev)
-                scalar_flux += np.pi * ang_fluxes[i]
+                scalar_flux += self.weights[i] * ang_fluxes[i]
             return scalar_flux, ang_fluxes
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=1000,
-                       tol=1e-5, verbose=True):
+                       tol=1e-6, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -95,8 +96,9 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-4):
+    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-5):
         phis = np.ones((self.num_groups, self.num_nodes))
+        print(self.num_nodes)
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             if self.num_groups != 1 and verbose:
@@ -133,7 +135,7 @@ class Solver():
                             midx = self.op.fegrid.get_mat_id(elt)
                             for n in range(3):
                                 n_global = self.op.fegrid.get_node(elt, n)
-                                nid = n_global.get_node_id()
+                                nid = n_global.id
                                 eigs[g, nid] += eig_for_mat[midx, g]*1/3
                     epsilon = upscatter_accelerator.calculate_correction(phis, phis_prev, all_ho_sols)
                     phis += epsilon*eigs

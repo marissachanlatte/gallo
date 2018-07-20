@@ -17,7 +17,7 @@ def to_problem(mesh, mat, filename):
     matfile = "../test_inputs/" + mat + ".mat"
     grid = FEGrid(nodefile, elefile)
     mats = Materials(matfile)
-    n_elements = grid.get_num_elts()
+    n_elements = grid.num_elts
     num_groups = mats.get_num_groups()
     op = NDA(grid, mats)
     solver = Solver(op)
@@ -72,5 +72,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric", "scattering2g", "nda_upscat")
+test_problem("symmetric", "simple3g", "nda_upscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")

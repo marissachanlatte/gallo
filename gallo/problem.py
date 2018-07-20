@@ -15,11 +15,11 @@ class Problem(NamedTuple):
 
     @property
     def n_elements(self):
-        return self.grid.get_num_elts()
+        return self.grid.num_elts
 
     @property
     def num_groups(self):
-        return self.mats.get_num_groups()
+        return self.mats.num_groups
 
     @property
     def matrix(self):
@@ -27,4 +27,4 @@ class Problem(NamedTuple):
 
     @property
     def n_nodes(self):
-        return self.grid.get_num_nodes()
+        return self.grid.num_nodes

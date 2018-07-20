@@ -5,16 +5,16 @@ import numpy as np
 
 def _setup_triangles(grid):
     # Get number of nodes
-    nodes = grid.get_num_nodes()
+    nodes = grid.num_nodes
     # Setup xy
     x = np.zeros(nodes)
     y = np.zeros(nodes)
-    positions = (grid.node(i).get_position() for i in range(nodes))
+    positions = (grid.node(i).position for i in range(nodes))
     for i, pos in enumerate(positions):
         x[i], y[i] = pos
     # Setup triangles
-    elts = grid.get_num_elts()
-    triangles = np.array([grid.element(i).get_vertices() for i in range(elts)])
+    elts = grid.num_elts
+    triangles = np.array([grid.element(i).vertices for i in range(elts)])
     triang = tri.Triangulation(x, y, triangles=triangles)
     return triang
 
@@ -45,7 +45,7 @@ def plot_mesh(grid, filename):
     mats = np.zeros(elts)
     for i in range(elts):
         el = grid.element(i)
-        mats[i] = el.get_mat_id()
+        mats[i] = el.mat_id
     plt.figure()
     plt.tripcolor(triang, mats, shading='flat')
     plt.colorbar()

@@ -7,9 +7,9 @@ class UA():
         self.op = operator
         self.fegrid = self.op.fegrid
         self.mat_data = self.op.mat_data
-        self.num_nodes = self.fegrid.get_num_nodes()
+        self.num_nodes = self.fegrid.num_nodes
         self.num_groups = self.mat_data.get_num_groups()
-        self.num_elts = self.fegrid.get_num_elts()
+        self.num_elts = self.fegrid.num_elts
 
     def calculate_correction(self, phis, phis_prev, ho_sols):
         lhs = self.correction_lhs(ho_sols)
@@ -51,8 +51,8 @@ class UA():
                     fns_vals = np.array([bns[0] + bns[1] * g_nodes[i, 0] + bns[2] * g_nodes[i, 1] for i in range(3)])
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
-                    nid = n_global.get_node_id()
-                    nsid = ns_global.get_node_id()
+                    nid = n_global.id
+                    nsid = ns_global.id
                     # Calculate gradients
                     ngrad = self.fegrid.gradient(e, n)
                     nsgrad = self.fegrid.gradient(e, ns)
@@ -81,7 +81,7 @@ class UA():
                     E = integral
 
                     sparse_matrix[nid, nsid] += A + C + E
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -93,7 +93,7 @@ class UA():
                                 # We have to calculate boundary integral twice,
                                 # once for each other vertex
                                 # Find the other vertices
-                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                all_verts = np.array(self.fegrid.element(e).vertices)
                                 vert_local_idx = np.where(all_verts == nid)[0][0]
                                 other_verts = np.delete(all_verts, vert_local_idx)
                                 # Calculate boundary integrals for other vertices
@@ -131,7 +131,7 @@ class UA():
                 # Array of values of basis function evaluated at interior gauss nodes
                 fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
 
                 # Subtract Phi Prevs
                 # Find Phi at Gauss Nodes

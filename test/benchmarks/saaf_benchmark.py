@@ -21,7 +21,7 @@ def to_problem(mesh, mats, filename):
     mats = Materials(matfile)
     op = SAAF(grid, mats)
     solver = Solver(op)
-    n_elements = grid.get_num_elts()
+    n_elements = grid.num_elts
     num_groups = mats.get_num_groups()
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
@@ -41,7 +41,6 @@ def test_problem(problem):
     #         if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
     #             source[g, e] = 1
     phis, angs = problem.solver.solve(source)
-    np.savetxt('saaf_out.txt', phis)
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]

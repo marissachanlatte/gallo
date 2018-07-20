@@ -10,21 +10,12 @@ class SAAF():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.xmax = self.fegrid.get_boundary("xmax")
-        self.ymax = self.fegrid.get_boundary("ymax")
-        self.xmin = self.fegrid.get_boundary("xmin")
-        self.ymin = self.fegrid.get_boundary("ymin")
-        self.num_nodes = self.fegrid.get_num_nodes()
-        self.num_elts = self.fegrid.get_num_elts()
-
-        # S2 hard-coded
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        self.angs = np.zeros((4, 2))
-        for i, ang in enumerate(angles):
-            self.angs[i] = ang
-
+        self.xmax = self.fegrid.xmax
+        self.ymax = self.fegrid.ymax
+        self.xmin = self.fegrid.xmin
+        self.ymin = self.fegrid.ymin
+        self.num_nodes = self.fegrid.num_nodes
+        self.num_elts = self.fegrid.num_elts
 
     def make_lhs(self, angles, group_id):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
@@ -42,7 +33,7 @@ class SAAF():
                 # Get global node
                 n_global = self.fegrid.get_node(e, n)
                 # Get global node id
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
@@ -53,7 +44,7 @@ class SAAF():
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
-                    nsid = ns_global.get_node_id()
+                    nsid = ns_global.id
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
@@ -73,7 +64,7 @@ class SAAF():
                     C = sig_t * integral
                     sparse_matrix[nid, nsid] += A + C
                     # Check if boundary nodes
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -85,7 +76,7 @@ class SAAF():
                                 # We have to calculate boundary integral twice,
                                 # once for each other vertex
                                 # Find the other vertices
-                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                all_verts = np.array(self.fegrid.element(e).vertices)
                                 vert_local_idx = np.where(all_verts == nid)[0][0]
                                 other_verts = np.delete(all_verts, vert_local_idx)
                                 # Calculate boundary integrals for other vertices
@@ -136,7 +127,7 @@ class SAAF():
                     fn_vals[i] = self.fegrid.evaluate_basis_function(
                         bn, g_nodes[i])
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 ngrad = self.fegrid.gradient(e, n)
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
@@ -179,7 +170,7 @@ class SAAF():
             for n in range(3):
                 n_global = self.fegrid.get_node(e, n)
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Find Phi at Gauss Nodes

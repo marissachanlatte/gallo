@@ -10,20 +10,13 @@ class NDA():
         self.fegrid = grid
         self.mat_data = mat_data
         self.num_groups = self.mat_data.get_num_groups()
-        self.num_nodes = self.fegrid.get_num_nodes()
-        self.num_elts = self.fegrid.get_num_elts()
-
-        # S2 hard-coded
-        ang_one = .5773503
-        ang_two = -.5773503
-        self.ang_weight = np.pi
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        self.angs = np.zeros((4, 2))
-        for i, ang in enumerate(angles):
-            self.angs[i] = ang
+        self.num_nodes = self.fegrid.num_nodes
+        self.num_elts = self.fegrid.num_elts
+        self.num_angs = self.fegrid.num_angs
+        self.angs = self.fegrid.angs
+        self.weights = self.fegrid.weights
 
     def make_lhs(self, group_id, ho_sols):
-        E = self.fegrid.get_num_elts()
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         # Solve higher order equation
         if ho_sols !=0:
@@ -31,7 +24,7 @@ class NDA():
             psi = np.array([ho_sols[1]])
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
-        for e in range(E):
+        for e in range(self.num_elts):
             # Determine material index of element
             midx = self.fegrid.get_mat_id(e)
             # Get Diffusion coefficient for material
@@ -52,7 +45,7 @@ class NDA():
                 # Get global node
                 n_global = self.fegrid.get_node(e, n)
                 # Get node IDs
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
@@ -62,7 +55,7 @@ class NDA():
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
-                    nsid = ns_global.get_node_id()
+                    nsid = ns_global.id
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
@@ -96,7 +89,7 @@ class NDA():
 
                     sparse_matrix[nid, nsid] += A + C + E
                     # Check if boundary nodes
-                    if not n_global.is_interior() and not ns_global.is_interior():
+                    if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
                         bid = nsid
@@ -108,7 +101,7 @@ class NDA():
                                 # We have to calculate boundary integral twice,
                                 # once for each other vertex
                                 # Find the other vertices
-                                all_verts = np.array(self.fegrid.element(e).get_vertices())
+                                all_verts = np.array(self.fegrid.element(e).vertices)
                                 vert_local_idx = np.where(all_verts == nid)[0][0]
                                 other_verts = np.delete(all_verts, vert_local_idx)
                                 # Calculate boundary integrals for other vertices
@@ -158,7 +151,7 @@ class NDA():
                 fn_vals = np.array([self.fegrid.evaluate_basis_function(
                         bn, g_nodes[i]) for i in range(3)])
                 # Get node ids
-                nid = n_global.get_node_id()
+                nid = n_global.id
                 area = self.fegrid.element_area(e)
                 # Find Phi at Gauss Nodes
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
@@ -182,8 +175,8 @@ class NDA():
         kappa = np.zeros(2)
         # Use interpolated version of kappa
         for node in range(2):
-            for i, ang in enumerate(self.angs):
-                kappa[node] += self.ang_weight*np.abs(ang@normal)*psi[i, node]
+            for m, ang in enumerate(self.angs):
+                kappa[node] += self.weights[m]*np.abs(ang@normal)*psi[m, node]
             kappa[node] /= phi[node]
         return kappa
 
@@ -191,8 +184,8 @@ class NDA():
         # Calculate drift_vector
         drift_vector = np.zeros((3, 2))
         for node in range(3):
-            for i, ang in enumerate(self.angs):
-                drift_vector[node] += self.ang_weight*(inv_sigt*ang*(ang@grad))*psi[i, node]
-                drift_vector[node] -= self.ang_weight*(D*grad)*psi[i, node]
+            for m, ang in enumerate(self.angs):
+                drift_vector[node] += self.weights[m]*(inv_sigt*ang*(ang@grad))*psi[m, node]
+                drift_vector[node] -= self.weights[m]*(D*grad)*psi[m, node]
             drift_vector[node] /= phi[node]
         return drift_vector

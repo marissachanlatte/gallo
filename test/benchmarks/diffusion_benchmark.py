@@ -18,8 +18,8 @@ def to_problem(mesh, mat, filename):
     mats = Materials(matfile)
     op = Diffusion(grid, mats)
     solver = Solver(op)
-    n_elements = grid.get_num_elts()
-    num_groups = mats.get_num_groups()
+    n_elements = grid.num_elts
+    num_groups = mats.num_groups
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
 def filename_to_problem(func):
