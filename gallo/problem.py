@@ -1,9 +1,9 @@
 from typing import NamedTuple
 
-from formulations.diffusion import Diffusion
-from fe import FEGrid
-from materials import Materials
-from solvers import Solver
+from gallo.formulations.diffusion import Diffusion
+from gallo.fe import FEGrid
+from gallo.materials import Materials
+from gallo.solvers import Solver
 
 
 class Problem(NamedTuple):

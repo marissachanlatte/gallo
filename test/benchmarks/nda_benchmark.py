@@ -2,16 +2,14 @@ import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import matplotlib.pyplot as plt
-import sys
-sys.path.append('../../src')
 
-from formulations.nda import NDA
-from formulations.saaf import SAAF
-from fe import *
-from materials import Materials
-from problem import Problem
-from plot import plot
-from solvers import Solver
+from gallo.formulations.nda import NDA
+from gallo.formulations.saaf import SAAF
+from gallo.fe import *
+from gallo.materials import Materials
+from gallo.problem import Problem
+from gallo.plot import plot
+from gallo.solvers import Solver
 
 def to_problem(mesh, mat, filename):
     nodefile = "../test_inputs/" + mesh + ".node"
@@ -74,5 +72,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric", "simple3g", "nda_upscat")
+test_problem("symmetric", "scattering2g", "nda_upscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")

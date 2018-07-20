@@ -2,7 +2,8 @@ import itertools as itr
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
-from fe import *
+
+from gallo.fe import *
 
 class NDA():
     def __init__(self, grid, mat_data):

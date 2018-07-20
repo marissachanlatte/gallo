@@ -4,15 +4,13 @@ import scipy.sparse.linalg as linalg
 import matplotlib.pyplot as plt
 import cProfile
 from itertools import product
-import sys
-sys.path.append('../../src')
 
-from formulations.saaf import SAAF
-from fe import *
-from materials import Materials
-from problem import Problem
-from plot import *
-from solvers import *
+from gallo.formulations.saaf import SAAF
+from gallo.fe import *
+from gallo.materials import Materials
+from gallo.problem import Problem
+from gallo.plot import *
+from gallo.solvers import *
 
 def to_problem(mesh, mats, filename):
     nodefile = "../test_inputs/" + mesh + ".node"
@@ -139,5 +137,5 @@ def plot_from_file(problem):
         for i in range(4):
             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g))
 
-test_problem("symmetric_fine", "scattering1g", "saaf_1gscat")
+test_problem("symmetric", "scattering1g", "saaf_1gscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")

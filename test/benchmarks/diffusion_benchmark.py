@@ -2,15 +2,13 @@ import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import matplotlib.pyplot as plt
-import sys
-sys.path.append('../../src')
 
-from formulations.diffusion import Diffusion
-from fe import *
-from materials import Materials
-from problem import Problem
-from plot import plot
-from solvers import *
+from gallo.formulations.diffusion import Diffusion
+from gallo.fe import *
+from gallo.materials import Materials
+from gallo.problem import Problem
+from gallo.plot import plot
+from gallo.solvers import *
 
 def to_problem(mesh, mat, filename):
     nodefile = "../test_inputs/" + mesh + ".node"
@@ -73,5 +71,5 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric_fine", "simple3g", "diff_upscat")
+test_problem("symmetric", "simple3g", "diff_upscat")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")

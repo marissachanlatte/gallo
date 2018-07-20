@@ -6,10 +6,10 @@ import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
 import matplotlib.tri as tri
 
-from formulations.diffusion import Diffusion
-from formulations.nda import NDA
-from formulations.saaf import SAAF
-from upscatter_acceleration import UA
+from gallo.formulations.diffusion import Diffusion
+from gallo.formulations.nda import NDA
+from gallo.formulations.saaf import SAAF
+from gallo.upscatter_acceleration import UA
 
 class Solver():
     def __init__(self, operator):
