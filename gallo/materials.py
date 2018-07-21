@@ -30,10 +30,10 @@ class Materials():
                 attributes = line.split("|")
                 self.names.append(attributes[2].strip())
                 for j in range(self.num_groups):
-                    self.sig_t[i, j] = float(attributes[3])
                     self.sig_a[i, j] = float(attributes[4])
                     scat = np.array(attributes[5].split())
                     self.sig_s[i, j, :] = scat.astype(float)
+                    self.sig_t[i, j] = self.sig_a[i, j] + np.sum(self.sig_s[i, j, :])
                     self.sig_f[i, j] = float(attributes[6])
                     self.nu[i, j] = float(attributes[7])
                     self.chi[i, j] = float(attributes[8])
