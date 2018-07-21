@@ -10,6 +10,7 @@ class UA():
         self.num_nodes = self.fegrid.num_nodes
         self.num_groups = self.mat_data.get_num_groups()
         self.num_elts = self.fegrid.num_elts
+        self.num_gnodes = self.fegrid.num_gauss_nodes
 
     def calculate_correction(self, phis, phis_prev, ho_sols):
         lhs = self.correction_lhs(ho_sols)
@@ -42,13 +43,15 @@ class UA():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
-                fn_vals = np.array([bn[0] + bn[1] * g_nodes[i, 0] + bn[2] * g_nodes[i, 1] for i in range(3)])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(self.num_gnodes)])
                 n_global = self.fegrid.get_node(e, n)
                 for ns in range(3):
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
-                    fns_vals = np.array([bns[0] + bns[1] * g_nodes[i, 0] + bns[2] * g_nodes[i, 1] for i in range(3)])
+                    fns_vals = np.array([self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+                        for i in range(self.num_gnodes)])
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
                     nid = n_global.id
@@ -62,15 +65,12 @@ class UA():
                     inprod = np.dot(ngrad, nsgrad)
                     A = D * area * inprod
 
-                    # Multiply basis functions together
-                    f_vals = np.array([fn_vals[i]*fns_vals[i] for i in range(3)])
-
                     # Integrate for B (basis functions multiplied)
-                    integral = self.fegrid.gauss_quad(e, f_vals)
+                    integral = self.fegrid.gauss_quad(e, fn_vals*fns_vals)
                     C = sig_a * integral
 
                     # Calculate drift_vector
-                    drift_vector = np.zeros((3, 2))
+                    drift_vector = np.zeros((self.num_gnodes, 2))
                     for g in range(self.num_groups):
                         drift_vector += self.op.compute_drift_vector(inv_sigt[g],
                                                 diffs[g], ngrad, phi_vals[g],
@@ -129,7 +129,7 @@ class UA():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(self.num_gnodes)])
                 # Get node ids
                 nid = n_global.id
 

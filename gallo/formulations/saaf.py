@@ -16,6 +16,7 @@ class SAAF():
         self.ymin = self.fegrid.ymin
         self.num_nodes = self.fegrid.num_nodes
         self.num_elts = self.fegrid.num_elts
+        self.num_gnodes = self.fegrid.num_gauss_nodes
 
     def make_lhs(self, angles, group_id):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
@@ -37,9 +38,8 @@ class SAAF():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
-                fn_vals = np.array([
-                    self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-                    for i in range(3)])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(self.num_gnodes)])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -48,17 +48,15 @@ class SAAF():
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
-                    fns_vals = np.array([
-                        self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-                        for i in range(3)])
+                    fns_vals = np.array([self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+                        for i in range(self.num_gnodes)])
                     # Calculate gradients
                     grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
                     # Multiply basis functions together at the gauss nodes
                     f_vals = fn_vals * fns_vals
                     # Integrate for A (basis function derivatives)
                     area = self.fegrid.element_area(e)
-                    A = inv_sigt * (angles @ grad[0]) * (
-                        angles @ grad[1]) * area
+                    A = inv_sigt * (angles @ grad[0]) * (angles @ grad[1]) * area
                     # Integrate for B (basis functions multiplied)
                     integral = self.fegrid.gauss_quad(e, f_vals)
                     C = sig_t * integral
@@ -122,10 +120,8 @@ class SAAF():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.zeros(3)
-                for i in range(3):
-                    fn_vals[i] = self.fegrid.evaluate_basis_function(
-                        bn, g_nodes[i])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(self.num_gnodes)])
                 # Get node ids
                 nid = n_global.id
                 ngrad = self.fegrid.gradient(e, n)
@@ -153,46 +149,6 @@ class SAAF():
                 # Second Fixed Source Term
                 rhs_at_node[nid] += inv_sigt*q_fixed*(angles@ngrad)*area
         return rhs_at_node
-
-    def make_fission_source(self, group_id, angles, phi_prev):
-        fission_source = np.zeros(self.num_nodes)
-        triang = self.fegrid.setup_triangulation()
-        for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
-            inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
-            chi = self.mat_data.get_chi(midx, group_id)
-            sigf = np.array([self.mat_data.get_sigf(midx, g_prime) for g_prime in range(self.num_groups)])
-            nu = np.array([self.mat_data.get_nu(midx, g_prime) for g_prime in range(self.num_groups)])
-            # Determine basis functions for element
-            coef = self.fegrid.basis(e)
-            # Determine Gauss Nodes for element
-            g_nodes = self.fegrid.gauss_nodes(e)
-            for n in range(3):
-                n_global = self.fegrid.get_node(e, n)
-                # Get node ids
-                nid = n_global.id
-                # Coefficients of basis functions b[0] + b[1]x + b[2]y
-                bn = coef[:, n]
-                # Find Phi at Gauss Nodes
-                phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
-                # First Fission Term
-                # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i]) for i in range(3)])
-                product = fn_vals * phi_vals
-                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
-                                             for g in range(self.num_groups)])
-                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral_product[g_prime]
-                    for g_prime in range(self.num_groups)]))
-                fission_source[nid] += fiss/(4*np.pi)
-                # Second Fission Term
-                ngrad = self.fegrid.gradient(e, n)
-                integral = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
-                fiss = chi*np.sum(np.array([nu[g_prime]*sigf[g_prime]*integral[g_prime]
-                    for g_prime in range(self.num_groups)]))
-                fission_source[nid] += inv_sigt*fiss/(4*np.pi)
-        return fission_source
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)

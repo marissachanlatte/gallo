@@ -10,6 +10,7 @@ class Diffusion():
         self.num_groups = self.mat_data.get_num_groups()
         self.num_nodes = self.fegrid.num_nodes
         self.num_elts = self.fegrid.num_elts
+        self.num_gnodes = self.fegrid.num_gauss_nodes
 
     def make_lhs(self, group_id, ho_sols=None):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
@@ -28,20 +29,16 @@ class Diffusion():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
-                fn_vals = np.zeros(3)
-                for i in range(3):
-                    fn_vals[i] = (
-                        bn[0] + bn[1] * g_nodes[i, 0] + bn[2] * g_nodes[i, 1])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(self.num_gnodes)])
                 # Get global node
                 n_global = self.fegrid.get_node(e, n)
                 for ns in range(3):
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
-                    fns_vals = np.zeros(3)
-                    for i in range(3):
-                        fns_vals[i] = (bns[0] + bns[1] * g_nodes[i, 0] +
-                                       bns[2] * g_nodes[i, 1])
+                    fns_vals = np.array([self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+                        for i in range(self.num_gnodes)])
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
                     # Get node IDs
@@ -54,18 +51,11 @@ class Diffusion():
                     # Integrate for A (basis function derivatives)
                     area = self.fegrid.element_area(e)
                     inprod = np.dot(ngrad, nsgrad)
-                    A = D * area * inprod
-
-                    # Multiply basis functions together
-                    f_vals = np.zeros(3)
-                    for i in range(3):
-                        f_vals[i] = fn_vals[i] * fns_vals[i]
+                    sparse_matrix[nid, nsid] += D * area * inprod
 
                     # Integrate for B (basis functions multiplied)
-                    integral = self.fegrid.gauss_quad(e, f_vals)
-                    C = sig_r * integral
-
-                    sparse_matrix[nid, nsid] += A + C
+                    integral = self.fegrid.gauss_quad(e, fn_vals*fns_vals)
+                    sparse_matrix[nid, nsid] += sig_r * integral
                     if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
@@ -117,10 +107,8 @@ class Diffusion():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
-                fn_vals = np.zeros(3)
-                for i in range(3):
-                    fn_vals[i] = self.fegrid.evaluate_basis_function(
-                        bn, g_nodes[i])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(self.num_gnodes)])
                 # Get node ids
                 nid = n_global.id
                 area = self.fegrid.element_area(e)

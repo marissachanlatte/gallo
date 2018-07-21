@@ -10,6 +10,7 @@ from gallo.materials import Materials
 from gallo.problem import Problem
 from gallo.plot import plot
 from gallo.solvers import Solver
+from gallo.upscatter_acceleration import UA
 
 def to_problem(mesh, mat, filename):
     nodefile = "../test_inputs/" + mesh + ".node"
@@ -21,7 +22,6 @@ def to_problem(mesh, mat, filename):
     num_groups = mats.get_num_groups()
     op = NDA(grid, mats)
     solver = Solver(op)
-
     return Problem(op=op, mats=mats, grid=grid, solver=solver, filename=filename)
 
 def filename_to_problem(func):
@@ -31,7 +31,14 @@ def filename_to_problem(func):
 
 @filename_to_problem
 def test_problem(problem):
-    source = np.ones((problem.num_groups, problem.n_elements))
+    source = np.zeros((problem.num_groups, problem.n_elements))
+    for e in range(problem.n_elements):
+        centroid = problem.grid.centroid(e)
+        if all(3/8 < p < 5/8 for p in centroid):
+            source[0, e] = 7
+            source[1, e] = 2
+            source[2, e] = 1
+    #source = np.ones((problem.num_groups, problem.n_elements))
     phis = problem.solver.solve(source, ua_bool=True)
     # Plot Everything
     for g in range(problem.num_groups):
@@ -72,5 +79,11 @@ def plot1d(sol, filename, y):
     plt.clf()
     plt.close()
 
-test_problem("symmetric", "simple3g", "nda_upscat")
+@filename_to_problem
+def test_ua(problem):
+    eigenfunction = problem.ua.compute_eigenfunction(0)
+    print(eigenfunction)
+
+test_problem("mod-water", "fake-iron-water", "nda_iron-water")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
+#test_ua("symmetric_fine", "fake-mod", "test-eigenfunction")

@@ -15,6 +15,7 @@ class NDA():
         self.num_angs = self.fegrid.num_angs
         self.angs = self.fegrid.angs
         self.weights = self.fegrid.weights
+        self.num_gnodes = self.fegrid.num_gauss_nodes
 
     def make_lhs(self, group_id, ho_sols):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
@@ -49,9 +50,8 @@ class NDA():
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at gauss nodes
-                fn_vals = np.array([
-                    self.fegrid.evaluate_basis_function(bn, g_nodes[i])
-                    for i in range(3)])
+                fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
+                    for i in range(self.num_gnodes)])
                 for ns in range(3):
                     # Get global node
                     ns_global = self.fegrid.get_node(e, ns)
@@ -59,9 +59,8 @@ class NDA():
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
-                    fns_vals = np.array([
-                        self.fegrid.evaluate_basis_function(bns, g_nodes[i])
-                        for i in range(3)])
+                    fns_vals = np.array([self.fegrid.evaluate_basis_function(bns, g_nodes[i])
+                        for i in range(self.num_gnodes)])
                     # Calculate gradients
                     grad = np.array([self.fegrid.gradient(e, i) for i in [n, ns]])
                     # Integrate for A (basis function derivatives)
@@ -149,7 +148,7 @@ class NDA():
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes
                 fn_vals = np.array([self.fegrid.evaluate_basis_function(
-                        bn, g_nodes[i]) for i in range(3)])
+                        bn, g_nodes[i]) for i in range(self.num_gnodes)])
                 # Get node ids
                 nid = n_global.id
                 area = self.fegrid.element_area(e)
@@ -182,8 +181,8 @@ class NDA():
 
     def compute_drift_vector(self, inv_sigt, D, grad, phi, psi):
         # Calculate drift_vector
-        drift_vector = np.zeros((3, 2))
-        for node in range(3):
+        drift_vector = np.zeros((self.num_gnodes, 2))
+        for node in range(self.num_gnodes):
             for m, ang in enumerate(self.angs):
                 drift_vector[node] += self.weights[m]*(inv_sigt*ang*(ang@grad))*psi[m, node]
                 drift_vector[node] -= self.weights[m]*(D*grad)*psi[m, node]

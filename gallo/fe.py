@@ -47,7 +47,7 @@ class Node(NamedTuple):
 
 class FEGrid():
     # Discretization Orders
-    num_gauss_nodes = 3
+    num_gauss_nodes = 4
     sn_ord = 2
     angs, weights = setup_ang_quad(sn_ord)
     num_angs = len(weights)
@@ -209,37 +209,39 @@ class FEGrid():
             gauss_nodes[1] = [nodes[1], self.ymin]
         return gauss_nodes
 
-    def gauss_nodes(self, elt_number):
+
+    def gauss_nodes(self, elt_number, ord=3):
         # WARNING only works for 2D triangular elements
-        # Using second order Gaussian Quadrature nodes (0, .5), (.5, 0), (.5, .5)
+        # http://math2.uncc.edu/~shaodeng/TEACHING/math5172/Lectures/Lect_15.PDF
         # Transform the nodes on the standard triangle to the given element
-
+        if ord==2:
+            num_gnodes = 3
+            std_nodes = np.array([[0, 1/2], [1/2, 0], [1/2, 1/2]])
+        if ord==3:
+            num_gnodes = 4
+            # Set Standard Nodes
+            std_nodes = np.array([[1/3, 1/3], [1/5, 1/5], [1/5, 3/5], [3/5, 1/5]])
+        elif ord==4:
+            num_gnodes = 6
+            std_nodes = np.array([[0.44594849091597, 0.44594849091597],
+                                  [0.44594849091597, 0.10810301816807],
+                                  [0.10810301816807, 0.44594849091597],
+                                  [0.09157621350977, 0.09157621350977],
+                                  [0.09157621350977, 0.81684757298046],
+                                  [0.81684757298046, 0.09157621350977]])
         # Get nodes of element
-        alpha = self.get_node(elt_number, 1)
-        beta = self.get_node(elt_number, 2)
-        gamma = self.get_node(elt_number, 0)
-
-        # get position of nodes
-        apos = alpha.position
-        bpos = beta.position
-        cpos = gamma.position
-
-        g_nodes = np.zeros((3, 2))
+        el_nodes = [self.get_node(elt_number, i) for i in [1, 2, 0]]
+        pos = np.array([el_nodes[i].position for i in range(3)])
+        area = self.element_area(elt_number)
         # Transformation Function
         # x(u, v) = alpha + u(beta - alpha) + v(gamma - alpha)
-        # Transform of the node (0, .5)
-        g_nodes[0, 0] = (apos[0] + .5 * (cpos[0] - apos[0]))
-        g_nodes[0, 1] = (apos[1] + .5 * (cpos[1] - apos[1]))
-        # Transform of the node (.5, 0)
-        g_nodes[1, 0] = (apos[0] + .5 * (bpos[0] - apos[0]))
-        g_nodes[1, 1] = (apos[1] + .5 * (bpos[1] - apos[1]))
-        # Transform of the node (.5, .5)
-        g_nodes[2, 0] = (
-            apos[0] + .5 * (bpos[0] - apos[0]) + .5 * (cpos[0] - apos[0]))
-        g_nodes[2, 1] = (
-            apos[1] + .5 * (bpos[1] - apos[1]) + .5 * (cpos[1] - apos[1]))
-
-        return g_nodes
+        trans_nodes = np.zeros((num_gnodes, 2))
+        for i in range(num_gnodes):
+            stdnode = std_nodes[i]
+            N = np.array([[1 - stdnode[0] - stdnode[1]], [stdnode[0]], [stdnode[1]]])
+            for j in range(2):
+                trans_nodes[i, j] = np.sum(np.array([pos[k, j]*N[k] for k in range(3)]))
+        return trans_nodes
 
     def element_area(self, elt_number):
         e = self.elts_list[elt_number]
@@ -255,11 +257,15 @@ class FEGrid():
         area = np.abs(dx[0, 0] * dx[1, 1] - dx[1, 0] * dx[0, 1]) / 2
         return area
 
-    def gauss_quad(self, elt_number, f_values):
-        # Using second order Gaussian Quadrature formula
-        # 1/3*Area*[f(0, .5) + f(.5, 0) + f(.5, .5)]
+    def gauss_quad(self, elt_number, f_values, ord=3):
         area = self.element_area(elt_number)
-        integral = 1 / 3 * area * (np.sum(f_values))
+        if ord==2:
+            integral = 1 / 3 * area * (np.sum(f_values))
+        elif ord==3:
+            integral = area*(-27/48*f_values[0]+25/48*np.sum(f_values[1:]))
+        elif ord==4:
+            integral = area*(0.22338158967801*np.sum(f_values[0:3])
+                          + 0.10995174365532*np.sum(f_values[3:]))
         return integral
 
     def gauss_quad1d(self, f_values, boundary_vertices, e):

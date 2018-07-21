@@ -4,6 +4,7 @@ from gallo.formulations.diffusion import Diffusion
 from gallo.fe import FEGrid
 from gallo.materials import Materials
 from gallo.solvers import Solver
+from gallo.upscatter_acceleration import UA
 
 
 class Problem(NamedTuple):
