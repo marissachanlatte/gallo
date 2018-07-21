@@ -1,0 +1,9 @@
+1 | 7
+0 | 0 | 'moderator' | 15 | 2 | 10  1   1   1   0   0   0  | 0 | 0 | 0
+0 | 1 | 'moderator' | 15 | 2 | 0   10  1   1   1   0   0  | 0 | 0 | 0
+0 | 2 | 'moderator' | 15 | 2 | 0   0   10  1   1   1   0  | 0 | 0 | 0
+0 | 3 | 'moderator' | 15 | 2 | 0   0   0   10  1   1   1  | 0 | 0 | 0
+0 | 4 | 'moderator' | 15 | 2 | 0   0   0   1   10  1   1  | 0 | 0 | 0
+0 | 5 | 'moderator' | 15 | 2 | 0   0   0   1   1   10  1  | 0 | 0 | 0
+0 | 6 | 'moderator' | 15 | 2 | 0   0   0   1   1   1   10 | 0 | 0 | 0
+MAT ID | GROUP ID | 'MAT NAME' | TOTAL | ABSORPTION | SCATTERING | FISSION | NU | CHI
