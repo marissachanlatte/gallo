@@ -174,7 +174,8 @@ class UA():
         eigenfunction = eig_vectors[:, idx]
         # normalize
         eigenfunction = eigenfunction/(np.sum(eigenfunction))
-        return eigenfunction
+        assert np.abs(eigenfunction.imag).max() < 1e-7, "Complex Eigenfunction"
+        return eigenfunction.real
 
     def compute_absorption(self, midx, eigs):
         # Compute sig_a
