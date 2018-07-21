@@ -77,7 +77,7 @@ class Solver():
                 phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
             if not scattering:
                 break
-            norm = np.linalg.norm(phi - phi_prev[group_id], 2)
+            norm = np.linalg.norm(phi - phi_prev[group_id], float('inf'))/np.linalg.norm(phi, float('inf'))
             if verbose: print("Norm: ", norm)
             if norm < tol:
                 break
@@ -98,7 +98,6 @@ class Solver():
 
     def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-5):
         phis = np.ones((self.num_groups, self.num_nodes))
-        print(self.num_nodes)
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             if self.num_groups != 1 and verbose:
@@ -139,7 +138,7 @@ class Solver():
                                 eigs[g, nid] += eig_for_mat[midx, g]*1/3
                     epsilon = upscatter_accelerator.calculate_correction(phis, phis_prev, all_ho_sols)
                     phis += epsilon*eigs
-                res = np.max(np.abs(phis_prev - phis))
+                res = np.linalg.norm(phis - phis_prev, float('inf'))/np.linalg.norm(phis, float('inf'))
                 if verbose:
                     print("GS Norm: ", res)
             if res < tol:
