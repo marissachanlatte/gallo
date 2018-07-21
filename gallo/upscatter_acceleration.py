@@ -162,7 +162,7 @@ class UA():
         return ssource
 
     def compute_eigenfunction(self, midx):
-        scatmat = self.mat_data.get_sigs(midx)
+        scatmat = np.transpose(self.mat_data.get_sigs(midx))
         all_sigts = np.array([self.mat_data.get_sigt(midx, g) for g in range(self.num_groups)])
         T = np.diag(all_sigts)
         SL = np.tril(scatmat, -1)
