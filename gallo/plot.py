@@ -41,7 +41,7 @@ def plot(grid, solution, filename):
 
 def plot_mesh(grid, filename):
     triang = _setup_triangles(grid)
-    elts = grid.get_num_elts()
+    elts = grid.num_elts
     mats = np.zeros(elts)
     for i in range(elts):
         el = grid.element(i)
