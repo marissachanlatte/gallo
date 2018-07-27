@@ -27,17 +27,19 @@ class Solver():
         self.weights = self.op.fegrid.weights
 
     def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev):
-        lhs = self.op.make_lhs(ang, group_id)
+        lhs = self.op.make_lhs(ang, group_id).tocsr()
         rhs = self.op.make_rhs(group_id, source, ang, angle_id, phi_prev)
         ang_flux = linalg.cg(lhs, rhs)[0]
+        #ang_flux = linalg.spsolve(lhs, rhs)
         return ang_flux
 
     def get_scalar_flux(self, group_id, source, phi_prev, ho_sols=None):
         scalar_flux = 0
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols)
+            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols).tocsr()
             rhs = self.op.make_rhs(group_id, source, phi_prev)
             scalar_flux = linalg.cg(lhs, rhs)[0]
+            #scalar_flux = linalg.spsolve(lhs, rhs)
             return scalar_flux
         else:
             ang_fluxes = np.zeros((4, self.num_nodes))
