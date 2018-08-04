@@ -18,7 +18,7 @@ def _setup_triangles(grid):
     triang = tri.Triangulation(x, y, triangles=triangles)
     return triang
 
-def plot(grid, solution, filename):
+def plot(grid, solution, filename=None, savefig=True):
     triang = _setup_triangles(grid)
     # Interpolate to Refined Triangular Grid
     interp_lin = tri.LinearTriInterpolator(triang, solution)
@@ -35,9 +35,10 @@ def plot(grid, solution, filename):
     else:
         plt.tricontourf(tri_refi, sol_refi)
     plt.colorbar()
-    plt.savefig(filename)
-    plt.clf()
-    plt.close()
+    if savefig:
+        plt.savefig(filename)
+        plt.clf()
+        plt.close()
 
 def plot_mesh(grid, filename):
     triang = _setup_triangles(grid)
@@ -52,3 +53,14 @@ def plot_mesh(grid, filename):
     plt.savefig(filename)
     plt.clf()
     plt.close()
+
+def plot_1d(grid, solution, y_fixed, save=False, filename=None):
+    fluxes = []
+    for node in range(grid.num_nodes):
+        x, y = grid.node(node).position
+        if y == y_fixed:
+            fluxes.append([x, solution[node]])
+    # Sort Fluxes by X Val
+    fluxes = np.array(fluxes)
+    fluxes = fluxes[fluxes[:, 0].argsort()]
+    return fluxes
