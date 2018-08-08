@@ -161,7 +161,7 @@ class UA():
                 ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
 
-    def compute_eigenfunction(self, midx):
+    def compute_eigenfunction(self, midx, eig_vals=False):
         scatmat = np.transpose(self.mat_data.get_sigs(midx))
         all_sigts = np.array([self.mat_data.get_sigt(midx, g) for g in range(self.num_groups)])
         T = np.diag(all_sigts)
@@ -171,6 +171,9 @@ class UA():
         A = np.matmul(np.linalg.inv(T - SL - SD), SU)
         eig_values, eig_vectors = np.linalg.eig(A)
         idx = np.argmax(eig_values)
+        if eig_vals:
+            spectral_radius = eig_values[idx]
+            return spectral_radius
         eigenfunction = eig_vectors[:, idx]
         # normalize
         eigenfunction = eigenfunction/(np.sum(eigenfunction))
