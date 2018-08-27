@@ -1,6 +1,7 @@
 import os
 from typing import NamedTuple, Tuple
 
+import attr
 import numpy as np
 import matplotlib.tri as tri
 
@@ -27,7 +28,9 @@ def setup_ang_quad(sn_ord):
             weights.append(weight)
     return np.array(angs), np.array(weights)
 
-class Element(NamedTuple):
+
+@attr.s(slots=True, frozen=True, auto_attribs=True, repr=False)
+class Element:
     el_id: int
     vertices: Tuple[int]
     mat_id: int
@@ -39,7 +42,9 @@ class Element(NamedTuple):
         self.mat_id
         )
 
-class Node(NamedTuple):
+
+@attr.s(slots=True, frozen=True, auto_attribs=True)
+class Node:
     position: Tuple[float, float]
     id: int
     is_interior: bool
