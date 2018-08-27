@@ -90,6 +90,16 @@ class TestFe:
         C = np.linalg.inv(V)
         assert_array_equal(C, self.stdgrid.basis(0))
 
+    def test_boundary_nonzero(self):
+        ele14_nz = self.fegrid.boundary_nonzero(0, 14)
+        eq_(ele14_nz, [0, 3])
+        ele0_nz = self.stdgrid.boundary_nonzero(0, 0)
+        eq_(ele0_nz, -1)
+        ele7_nz = self.fegrid.boundary_nonzero(0, 7)
+        eq_(ele7_nz, [0, 0])
+        ele11_nz = self.fegrid.boundary_nonzero(4, 11)
+        eq_(ele11_nz, [4, 4])
+
     def test_gauss_nodes1d(self):
         nodes05 = np.array([[(-(.5-0)/2*1/np.sqrt(3)+(.5+0)/2), 0], [((.5-0)/2*1/np.sqrt(3)+(.5+0)/2), 0]])
         nodes15 = np.array([[(-(1-.5)/2*1/np.sqrt(3)+(1+.5)/2), 0], [((1-.5)/2*1/np.sqrt(3)+(.5+1)/2), 0]])
