@@ -32,7 +32,7 @@ class SAAF():
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
                 # Get global node
-                n_global = self.fegrid.get_node(e, n)
+                n_global = self.fegrid.node(e, n)
                 # Get global node id
                 nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
@@ -42,7 +42,7 @@ class SAAF():
                     for i in range(self.num_gnodes)])
                 for ns in range(3):
                     # Get global node
-                    ns_global = self.fegrid.get_node(e, ns)
+                    ns_global = self.fegrid.node(e, ns)
                     # Get node IDs
                     nsid = ns_global.id
                     # Coefficients of basis function
@@ -116,7 +116,7 @@ class SAAF():
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
-                n_global = self.fegrid.get_node(e, n)
+                n_global = self.fegrid.node(e, n)
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes

@@ -45,14 +45,14 @@ class UA():
                 # Array of values of basis function evaluated at gauss nodes
                 fn_vals = np.array([self.fegrid.evaluate_basis_function(bn, g_nodes[i])
                     for i in range(self.num_gnodes)])
-                n_global = self.fegrid.get_node(e, n)
+                n_global = self.fegrid.node(e, n)
                 for ns in range(3):
                     # Coefficients of basis function
                     bns = coef[:, ns]
                     # Array of values of basis function evaluated at gauss nodes
                     fns_vals = np.array([self.fegrid.evaluate_basis_function(bns, g_nodes[i])
                         for i in range(self.num_gnodes)])
-                    ns_global = self.fegrid.get_node(e, ns)
+                    ns_global = self.fegrid.node(e, ns)
                     # Get node IDs
                     nid = n_global.id
                     nsid = ns_global.id
@@ -125,7 +125,7 @@ class UA():
             coef = self.fegrid.basis(e)
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
-                n_global = self.fegrid.get_node(e, n)
+                n_global = self.fegrid.node(e, n)
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes

@@ -135,7 +135,7 @@ class Solver():
                         for elt in range(self.num_elts):
                             midx = self.op.fegrid.get_mat_id(elt)
                             for n in range(3):
-                                n_global = self.op.fegrid.get_node(elt, n)
+                                n_global = self.op.fegrid.node(elt, n)
                                 nid = n_global.id
                                 eigs[g, nid] += eig_for_mat[midx, g]*1/3
                     epsilon = upscatter_accelerator.calculate_correction(phis, phis_prev, all_ho_sols)

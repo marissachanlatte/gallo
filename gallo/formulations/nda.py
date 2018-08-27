@@ -44,7 +44,7 @@ class NDA():
                 psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(4)])
             for n in range(3):
                 # Get global node
-                n_global = self.fegrid.get_node(e, n)
+                n_global = self.fegrid.node(e, n)
                 # Get node IDs
                 nid = n_global.id
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y

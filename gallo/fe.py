@@ -62,16 +62,13 @@ class FEGrid():
         self.nodes, extrema = parse.parse_nodes(node_file)
         self.xmin, self.xmax, self.ymin, self.ymax = extrema
 
-
     @property
     def num_nodes(self):
         return len(self.nodes)
 
-
     @property
     def num_elts(self):
         return len(self.elts_list)
-
 
     def is_corner(self, node_number):
         x, y = self.node(node_number).position
@@ -82,15 +79,14 @@ class FEGrid():
         else:
             return False
 
-    def get_node(self, elt_number, local_node_number):
-        return self.nodes[self.elts_list[elt_number].vertices[local_node_number]]
-
-
     def element(self, elt_number):
         return self.elts_list[elt_number]
 
-    def node(self, node_number):
-        return self.nodes[node_number]
+    def node(self, node_or_elt_number, local_node_number=None):
+        if local_node_number is None:
+            return self.nodes[node_or_elt_number]
+        else:
+            return self.nodes[self.elts_list[node_or_elt_number].vertices[local_node_number]]
 
     def get_mat_id(self, elt_number):
         return self.element(elt_number).mat_id
@@ -107,7 +103,7 @@ class FEGrid():
     def gradient(self, elt_number, local_node_number):
         # WARNING: The following only works for 2D triangular elements
         element = self.elts_list[elt_number].vertices
-        xbase = self.get_node(elt_number, local_node_number).position
+        xbase = self.node(elt_number, local_node_number).position
         dx = np.zeros((2, 2))
         for ivert in range(2):
             other_node_number = element[(local_node_number + ivert + 1) % 3]
@@ -123,8 +119,8 @@ class FEGrid():
         vandermonde = np.zeros((3, 3))
         for i in range(3):
             vandermonde[i, 0] = 1
-            vandermonde[i, 1] = self.get_node(elt_number, i).position[0]
-            vandermonde[i, 2] = self.get_node(elt_number, i).position[1]
+            vandermonde[i, 1] = self.node(elt_number, i).position[0]
+            vandermonde[i, 2] = self.node(elt_number, i).position[1]
         coefficients = np.linalg.inv(vandermonde)
         return coefficients
 
@@ -235,7 +231,7 @@ class FEGrid():
                                   [0.09157621350977, 0.81684757298046],
                                   [0.81684757298046, 0.09157621350977]])
         # Get nodes of element
-        el_nodes = [self.get_node(elt_number, i) for i in [1, 2, 0]]
+        el_nodes = [self.node(elt_number, i) for i in [1, 2, 0]]
         pos = np.array([el_nodes[i].position for i in range(3)])
         area = self.element_area(elt_number)
         # Transformation Function
