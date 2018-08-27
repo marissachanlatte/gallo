@@ -74,10 +74,7 @@ class FEGrid():
         x, y = self.node(node_number).position
         on_xboundary = (x == self.xmax or x == self.xmin)
         on_yboundary = (y == self.ymax or y == self.ymin)
-        if on_xboundary and on_yboundary:
-            return True
-        else:
-            return False
+        return on_xboundary and on_yboundary
 
     def element(self, elt_number):
         return self.elts_list[elt_number]
