@@ -4,3 +4,5 @@ python:
 # command to run tests
 script:
   - nosetests --with-coverage --cover-package=gallo
+after_success:
+  - codecov
