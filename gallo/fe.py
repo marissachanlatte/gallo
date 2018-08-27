@@ -85,8 +85,6 @@ class FEGrid():
         else:
             return self.nodes[self.elts_list[node_or_elt_number].vertices[local_node_number]]
 
-
-
     def evaluate_basis_function(self, coefficients, point):
         # Evaluates linear basis functions of the form c1 + c2x + c3y at the point x, y
         if len(coefficients) != 3:
@@ -160,22 +158,17 @@ class FEGrid():
         for i, n in enumerate(verts):
             node = self.node(n)
             points[i] = node.position
-        a = None
-        b = None
+        a, b = None, None
         if points[0, 0] == points[1, 0]:
             if points[0, 1] > points[1, 1]:
-                a = points[1, 1]
-                b = points[0, 1]
+                b, a = points[:, 1]
             elif points[0, 1] < points[1, 1] or points[0, 1] == points[1, 1]:
-                a = points[0, 1]
-                b = points[1, 1]
+                a, b = points[:, 1]
         elif points[0, 1] == points[1, 1]:
             if points[0, 0] > points[1, 0]:
-                a = points[1, 0]
-                b = points[0, 0]
+                b, a = points[:, 0]
             elif points[0, 0] < points[1, 0]:
-                a = points[0, 0]
-                b = points[1, 0]
+                a, b = points[:, 0]
         if a is None and b is None:
             raise RuntimeError("Boundary Edge Error")
         else:
