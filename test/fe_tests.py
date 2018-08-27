@@ -2,7 +2,7 @@ from nose.tools import *
 from numpy.testing import *
 import numpy as np
 
-from gallo.fe import FEGrid
+from gallo.fe import FEGrid, setup_ang_quad
 
 class TestFe:
     @classmethod
@@ -14,6 +14,36 @@ class TestFe:
         cls.stdnode = "test/test_inputs/std.node"
         cls.stdele = "test/test_inputs/std.ele"
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
+
+    def test_ang_quad(self):
+        angs, weights = setup_ang_quad(2)
+        s2_angs = np.array([[ 0.57735,  0.57735],
+                            [-0.57735,  0.57735],
+                            [-0.57735, -0.57735],
+                            [ 0.57735, -0.57735]])
+        s2_weights = np.array([np.pi, np.pi, np.pi, np.pi])
+        assert_array_almost_equal(angs, s2_angs, 5)
+        assert_array_equal(weights, s2_weights)
+        angs, weights = setup_ang_quad(4)
+        s4_angs = np.array([[ 0.86884614,  0.35988786],
+                            [ 0.35988786,  0.86884614],
+                            [-0.35988786,  0.86884614],
+                            [-0.86884614,  0.35988786],
+                            [-0.86884614, -0.35988786],
+                            [-0.35988786, -0.86884614],
+                            [ 0.35988786, -0.86884614],
+                            [ 0.86884614, -0.35988786],
+                            [ 0.35947479,  0.35947479],
+                            [-0.35947479,  0.35947479],
+                            [-0.35947479, -0.35947479],
+                            [ 0.35947479, -0.35947479]])
+        s4_weights = np.array([1.02438721, 1.02438721, 1.02438721,
+                               1.02438721, 1.02438721, 1.02438721,
+                               1.02438721, 1.02438721, 1.09281823,
+                               1.09281823, 1.09281823, 1.09281823])
+        assert_array_almost_equal(angs, s4_angs, 5)
+        assert_array_almost_equal(weights, s4_weights, 5)
+
 
     def test_is_corner(self):
         eq_(self.fegrid.is_corner(0), True)
