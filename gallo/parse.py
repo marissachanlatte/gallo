@@ -24,6 +24,8 @@ def parse_nodes(node_file):
         for line in nf.readlines():
             if line.startswith('#'):
                 continue
+            if line.strip() == '':
+                continue
             node_id, x, y, boundary =  _split_and_remove_whitespace(line)
             x, y = float(x), float(y)
             # Set boundary data
