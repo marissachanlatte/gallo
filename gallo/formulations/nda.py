@@ -26,8 +26,9 @@ class NDA():
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
+            elt = self.fegrid.element(e)
             # Determine material index of element
-            midx = self.fegrid.get_mat_id(e)
+            midx = elt.mat_id
             # Get Diffusion coefficient for material
             D = self.mat_data.get_diff(midx, group_id)
             # Get removal cross section
@@ -54,7 +55,7 @@ class NDA():
                     for i in range(self.num_gnodes)])
                 for ns in range(3):
                     # Get global node
-                    ns_global = self.fegrid.get_node(e, ns)
+                    ns_global = self.fegrid.node(e, ns)
                     nsid = ns_global.id
                     # Coefficients of basis function
                     bns = coef[:, ns]
@@ -137,13 +138,14 @@ class NDA():
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
+            elt = self.fegrid.element(e)
+            midx = elt.mat_id
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):
-                n_global = self.fegrid.get_node(e, n)
+                n_global = self.fegrid.node(e, n)
                 # Coefficients of basis functions b[0] + b[1]x + b[2]y
                 bn = coef[:, n]
                 # Array of values of basis function evaluated at interior gauss nodes

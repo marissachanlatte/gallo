@@ -133,7 +133,8 @@ class Solver():
                     eigs = np.zeros((self.num_groups, self.num_nodes))
                     for g in range(self.num_groups):
                         for elt in range(self.num_elts):
-                            midx = self.op.fegrid.get_mat_id(elt)
+                            e = self.op.fegrid.element(elt)
+                            midx = e.mat_id
                             for n in range(3):
                                 n_global = self.op.fegrid.node(elt, n)
                                 nid = n_global.id

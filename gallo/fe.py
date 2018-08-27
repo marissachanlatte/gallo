@@ -85,8 +85,7 @@ class FEGrid():
         else:
             return self.nodes[self.elts_list[node_or_elt_number].vertices[local_node_number]]
 
-    def get_mat_id(self, elt_number):
-        return self.element(elt_number).mat_id
+
 
     def evaluate_basis_function(self, coefficients, point):
         # Evaluates linear basis functions of the form c1 + c2x + c3y at the point x, y

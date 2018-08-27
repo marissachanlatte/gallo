@@ -21,8 +21,9 @@ class SAAF():
     def make_lhs(self, angles, group_id):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         for e in range(self.num_elts):
+            elt = self.fegrid.element(e)
             # Determine material index of element
-            midx = self.fegrid.get_mat_id(e)
+            midx = elt.mat_id
             # Get sigt and precomputed inverse
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             sig_t = self.mat_data.get_sigt(midx, group_id)
@@ -109,7 +110,8 @@ class SAAF():
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
+            elt = self.fegrid.element(e)
+            midx = elt.mat_id
             inv_sigt = self.mat_data.get_inv_sigt(midx, group_id)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)

@@ -36,12 +36,6 @@ class TestFe:
         eq_(self.fegrid.is_corner(17), False)
         eq_(self.fegrid.is_corner(18), False)
 
-    def test_get_mat_id(self):
-        eq_(self.fegrid.get_mat_id(0), 0)
-        eq_(self.fegrid.get_mat_id(21), 1)
-        eq_(self.fegrid.get_mat_id(17), 1)
-        eq_(self.fegrid.get_mat_id(13), 0)
-
     def test_evaluate_basis_function(self):
         eq_(self.fegrid.evaluate_basis_function([1, 0, 0], [3, 2]), 1)
         eq_(self.fegrid.evaluate_basis_function([1, 1, 1], [4, 5]), 10)

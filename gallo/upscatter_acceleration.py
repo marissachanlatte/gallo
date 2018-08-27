@@ -25,7 +25,8 @@ class UA():
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
+            elt = self.fegrid.element(e)
+            midx = elt.mat_id
             eigs = self.compute_eigenfunction(midx)
             diffs = np.array([self.mat_data.get_diff(midx, g)*eigs[g] for g in range(self.num_groups)])
             D = np.sum(diffs)
@@ -121,7 +122,8 @@ class UA():
         rhs_at_node = np.zeros(self.num_nodes)
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
+            elt = self.fegrid.element(e)
+            midx = elt.mat_id
             coef = self.fegrid.basis(e)
             g_nodes = self.fegrid.gauss_nodes(e)
             for n in range(3):

@@ -15,8 +15,9 @@ class Diffusion():
     def make_lhs(self, group_id, ho_sols=None):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
         for e in range(self.num_elts):
+            elt = self.fegrid.element(e)
             # Determine material index of element
-            midx = self.fegrid.get_mat_id(e)
+            midx = elt.mat_id
             # Get Diffusion coefficient for material
             D = self.mat_data.get_diff(midx, group_id)
             # Get removal cross section
@@ -97,7 +98,8 @@ class Diffusion():
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
         for e in range(self.num_elts):
-            midx = self.fegrid.get_mat_id(e)
+            elt = self.fegrid.element(e)
+            midx = elt.mat_id
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
