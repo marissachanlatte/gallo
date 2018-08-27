@@ -125,11 +125,6 @@ class TestFe:
         eq_(self.stdgrid.element_area(0), .5, "element_area")
         eq_(self.stdgrid.element_area(1), .5, "element_area")
 
-    def test_quad1d(self):
-        fvals = [1, 1, 1]
-        eq_(self.fegrid.gauss_quad1d(fvals, [1, 5], 6), .5)
-        eq_(self.fegrid.gauss_quad1d(fvals, [0, 5], 9), .5)
-
     def test_quad(self):
         fvals = np.array([1, 1, 1])
         fvals2 = np.array([2, 2, 2])
@@ -137,6 +132,19 @@ class TestFe:
         eq_(self.stdgrid.gauss_quad(1, fvals, ord=2), .5)
         eq_(self.stdgrid.gauss_quad(0, fvals2, ord=2), 1)
 
+    def test_quad1d(self):
+        fvals = [1, 1, 1]
+        eq_(self.fegrid.gauss_quad1d(fvals, [1, 5], 6), .5)
+        eq_(self.fegrid.gauss_quad1d(fvals, [0, 5], 9), .5)
+
     def test_centroid(self):
         eq_(self.stdgrid.centroid(0)[0], 1/3)
         eq_(self.stdgrid.centroid(0)[1], 1/3)
+
+    def test_assign_normal(self):
+        normal = self.fegrid.assign_normal(0, 3)
+        assert_array_equal(normal, [-1, 0])
+        normal = self.fegrid.assign_normal(0, 1)
+        assert_array_equal(normal, [0, -1])
+        normal = self.fegrid.assign_normal(4, 8)
+        eq_(normal, -1)
