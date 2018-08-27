@@ -1,14 +1,12 @@
 from nose.tools import *
 from numpy.testing import *
 import numpy as np
-import sys
-sys.path.append('../src')
 
-from formulations.nda import *
-from formulations.saaf import *
-from upscatter_acceleration import *
-from fe import *
-from materials import *
+from gallo.formulations.nda import NDA
+from gallo.formulations.saaf import SAAF
+from gallo.upscatter_acceleration import UA
+from gallo.fe import FEGrid
+from gallo.materials import Materials
 
 class TestNDA:
     @classmethod

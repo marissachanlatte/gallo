@@ -2,13 +2,11 @@ from nose.tools import *
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
-import sys
-sys.path.append('../src')
 
-from formulations.diffusion import Diffusion
-from fe import *
-from materials import Materials
-from plot import plot
+from gallo.formulations.diffusion import Diffusion
+from gallo.fe import FEGrid
+from gallo.materials import Materials
+from gallo.plot import plot
 
 class TestDiffusion():
     @classmethod

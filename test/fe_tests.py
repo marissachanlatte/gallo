@@ -1,10 +1,8 @@
 from nose.tools import *
 from numpy.testing import *
 import numpy as np
-import sys
-sys.path.append('../src')
 
-from fe import *
+from gallo.fe import FEGrid
 
 class TestFe:
     @classmethod
@@ -16,12 +14,6 @@ class TestFe:
         cls.stdnode = "test/test_inputs/std.node"
         cls.stdele = "test/test_inputs/std.ele"
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
-
-    def test_get_boundary(self):
-        eq_(self.fegrid.get_boundary("xmin"), 0)
-        eq_(self.fegrid.get_boundary("xmax"), 1)
-        eq_(self.fegrid.get_boundary("ymin"), 0)
-        eq_(self.fegrid.get_boundary("ymax"), 1)
 
     def test_is_corner(self):
         eq_(self.fegrid.is_corner(0), True)
@@ -44,21 +36,6 @@ class TestFe:
         eq_(self.fegrid.is_corner(17), False)
         eq_(self.fegrid.is_corner(18), False)
 
-    def test_get_node(self):
-        eq_(self.fegrid.get_node(15, 2).get_node_id(), 9, "Get Node")
-
-    def test_get_num_elts(self):
-        eq_(self.fegrid.get_num_elts(), 30)
-        eq_(self.stdgrid.get_num_elts(), 2)
-
-    def test_get_num_nodes(self):
-        eq_(self.fegrid.get_num_nodes(), 19)
-        eq_(self.stdgrid.get_num_nodes(), 4)
-
-    def test_num_interior_nodes(self):
-        eq_(self.fegrid.get_num_interior_nodes(), 13, "interior nodes")
-        eq_(self.stdgrid.get_num_interior_nodes(), 0)
-
     def test_get_mat_id(self):
         eq_(self.fegrid.get_mat_id(0), 0)
         eq_(self.fegrid.get_mat_id(21), 1)
@@ -72,7 +49,7 @@ class TestFe:
         eq_(self.fegrid.evaluate_basis_function([0, 1, 1], [0, 12]), 12)
 
     def test_gradient(self):
-        num_ele = self.fegrid.get_num_elts()
+        num_ele = self.fegrid.num_elts
         for e in range(num_ele):
             coef = self.fegrid.basis(e)
             for n in range(3):
@@ -96,7 +73,7 @@ class TestFe:
         assert_array_equal(self.fegrid.gauss_nodes1d([1, 5], 6), nodes15)
 
     def test_gauss_nodes(self):
-        C = self.stdgrid.gauss_nodes(0)
+        C = self.stdgrid.gauss_nodes(0, ord=2)
         eq_(C[0, 0], 0, "node x1")
         eq_(C[0, 1], .5, "node y1")
         eq_(C[1, 0], .5, "node x2")
@@ -116,9 +93,9 @@ class TestFe:
     def test_quad(self):
         fvals = np.array([1, 1, 1])
         fvals2 = np.array([2, 2, 2])
-        eq_(self.stdgrid.gauss_quad(0, fvals), .5, "quadrature")
-        eq_(self.stdgrid.gauss_quad(1, fvals), .5)
-        eq_(self.stdgrid.gauss_quad(0, fvals2), 1)
+        eq_(self.stdgrid.gauss_quad(0, fvals, ord=2), .5)
+        eq_(self.stdgrid.gauss_quad(1, fvals, ord=2), .5)
+        eq_(self.stdgrid.gauss_quad(0, fvals2, ord=2), 1)
 
     def test_centroid(self):
         eq_(self.stdgrid.centroid(0)[0], 1/3)

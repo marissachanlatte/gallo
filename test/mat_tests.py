@@ -1,10 +1,8 @@
 from nose.tools import *
 import numpy as np
 from numpy.testing import *
-import sys
-sys.path.append('../src')
 
-from materials import Materials
+from gallo.materials import Materials
 
 
 class TestMaterials:
