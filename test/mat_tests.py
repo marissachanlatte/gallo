@@ -30,6 +30,11 @@ class TestMaterials:
         eq_(self.materials.get_nu(0, 1), 1.43, "nu")
         eq_(self.materials.get_nu(1, 0), 0, "nu")
         eq_(self.materials.get_nu(1, 1), 0, "nu")
+        eq_(self.materials.get_chi(0, 0), 0, "chi")
+        eq_(self.materials.get_chi(0, 1), 0, "chi")
+        eq_(self.materials.get_chi(1, 0), 1, "chi")
+        eq_(self.materials.get_chi(1, 1), 1, "chi")
+
 
         # Test scattering
         mats1 = self.materials.get_sigs(0)
