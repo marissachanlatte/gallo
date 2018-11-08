@@ -123,10 +123,11 @@ class Diffusion():
                     integral_product[g] = self.fegrid.gauss_quad(e, product[g])
                 ssource = self.compute_scattering_source(
                     midx, integral_product, group_id)
-                rhs_at_node[nid] += ssource
-                rhs_at_node[nid] += area*source[group_id, e]*1/3
+                fsource = self.compute_fission_source(midx, integral_product, group_id)
+                rhs_at_node[nid] += ssource # Scattering Source
+                rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
+                rhs_at_node[nid] += fsource # Fission Source
         return rhs_at_node
-
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
@@ -135,3 +136,13 @@ class Diffusion():
             if g_prime != group_id:
                 ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
+
+    def compute_fission_source(self, midx, phi, group_id):
+        fsource = 0
+        chi = self.mat_data.get_chi(midx, group_id)
+        for g_prime in range(self.num_groups):
+            nu = self.mat_data.get_nu(midx, g_prime)
+            sigf = self.mat_data.get_sigf(midx, g_prime)
+            fsource += nu*sigf*phi[g_prime]
+        fsource *= chi
+        return fsource
