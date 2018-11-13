@@ -8,6 +8,7 @@ from gallo.formulations.diffusion import Diffusion
 from gallo.fe import FEGrid
 from gallo.materials import Materials
 from gallo.plot import plot
+from gallo.solvers import Solver
 
 class TestDiffusion():
     @classmethod
@@ -24,6 +25,12 @@ class TestDiffusion():
         cls.fissionfile = "test/test_inputs/fissiontest.mat"
         cls.fissionmat = Materials(cls.fissionfile)
         cls.fissop = Diffusion(cls.stdgrid, cls.fissionmat)
+        cls.solver = Solver(cls.fissop)
+        cls.symnode = "test/test_inputs/symmetric-9.node"
+        cls.symele = "test/test_inputs/symmetric-9.ele"
+        cls.symgrid = FEGrid(cls.symnode, cls.symele)
+        cls.symfissop = Diffusion(cls.symgrid, cls.fissionmat)
+        cls.symsolver = Solver(cls.symfissop)
 
     def test_matrix(self):
         A = self.operator.make_lhs(0)
@@ -37,3 +44,8 @@ class TestDiffusion():
     def test_fiss_rhs(self):
         rhs = self.fissop.make_rhs(0, np.array([[0, 0, 0, 0]]), np.array([[1, 1, 1, 1]]))
         assert_array_almost_equal(rhs, np.array([1/6, 1/3, 1/6, 1/3]), 10)
+
+    def test_eigenvalue(self):
+        source = np.zeros((self.symfissop.num_groups, self.symfissop.num_elts))
+        phi, k = self.symsolver.solve(source, eigenvalue=True)
+        assert_allclose(k, 0.234582, rtol=0.5)

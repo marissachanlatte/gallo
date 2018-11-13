@@ -98,8 +98,7 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-5):
-        phis = np.ones((self.num_groups, self.num_nodes))
+    def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-5):
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             if self.num_groups != 1 and verbose:
@@ -151,17 +150,57 @@ class Solver():
         else:
             return phis, ang_fluxes
 
-    def solve(self, source, ua_bool=False):
+    def integrate_flux(self, flux):
+        # Integrate Flux Over Total Domain
+        integral = 0
+        for ele in range(self.op.fegrid.num_elts):
+            elt = self.op.fegrid.element(ele)
+            area = self.op.fegrid.element_area(ele)
+            vertices = elt.vertices
+            func = 0
+            for vtx in vertices:
+                func += flux[vtx]
+            func /= 3
+            integral += func*area
+        return integral
+
+    def power_iteration(self, source, tol=1e-3):
+        k = np.ones(self.num_groups)
+        phi = np.ones((self.num_groups, self.num_nodes))
+        fiss_source = np.array([self.op.make_rhs(g, source, phi) for g in range(self.num_groups)])
+        int_fiss = np.array([self.integrate_flux(fiss_source[g]) for g in range(self.num_groups)])
+        err = 1
+        while err > tol:
+            phi_new = self.solve_outer(source, (1/k)*phi)
+            fiss_source_new = np.array([self.op.make_rhs(g, source, phi_new) for g in range(self.num_groups)])
+            int_fiss_new = np.array([self.integrate_flux(fiss_source_new[g]) for g in range(self.num_groups)]) # Integrate Fission Source
+            k_new = k*(int_fiss_new/int_fiss)
+            err_k = np.linalg.norm((k_new - k)/k_new)
+            err_phi = np.linalg.norm((phi_new - phi)/phi_new)
+            err = max(err_k, err_phi)
+            int_fiss = np.copy(int_fiss_new)
+            phi = np.copy(phi_new)
+            k = np.copy(k_new)
+        return phi, k
+
+    def solve(self, source, ua_bool=False, eigenvalue=False):
         start = time.time()
+        phis = np.ones((self.num_groups, self.num_nodes))
         if ua_bool:
             self.ua_bool = True
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            phis = self.solve_outer(source)
-            end = time.time()
-            print("Runtime:", np.round(end - start, 5), "seconds")
-            return phis
+            if eigenvalue:
+                phis, k = self.power_iteration(source)
+                end = time.time()
+                print("Runtime:", np.round(end - start, 5), "seconds")
+                return phis, k
+            else:
+                phis = self.solve_outer(source, phis)
+                end = time.time()
+                print("Runtime:", np.round(end - start, 5), "seconds")
+                return phis
         else:
-            phis, ang_fluxes = self.solve_outer(source)
+            phis, ang_fluxes = self.solve_outer(source, phis)
             end = time.time()
             print("Runtime:", np.round(end - start, 5), "seconds")
             return phis, ang_fluxes
