@@ -4,6 +4,7 @@ import time
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
+import scipy.linalg as dense_linalg
 import matplotlib.tri as tri
 
 from gallo.formulations.diffusion import Diffusion
@@ -36,9 +37,9 @@ class Solver():
     def get_scalar_flux(self, group_id, source, phi_prev, ho_sols=None):
         scalar_flux = 0
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols).tocsr()
+            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols).todense()
             rhs = self.op.make_rhs(group_id, source, phi_prev)
-            scalar_flux = linalg.spsolve(lhs, rhs)
+            scalar_flux = dense_linalg.solve(lhs, rhs, sym_pos=True)
             return scalar_flux
         else:
             ang_fluxes = np.zeros((4, self.num_nodes))
@@ -50,7 +51,7 @@ class Solver():
             return scalar_flux, ang_fluxes
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=1000,
-                       tol=1e-6, verbose=True):
+                       tol=1e-5, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -97,7 +98,7 @@ class Solver():
         else:
             return phi, ang_fluxes
 
-    def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-5):
+    def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-4):
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
         for it_count in range(max_iter):
             if self.num_groups != 1 and verbose:
@@ -167,7 +168,7 @@ class Solver():
     def power_iteration(self, source, tol=1e-3):
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
-        fiss_source = np.array([self.op.make_rhs(g, source, phi) for g in range(self.num_groups)])
+        fiss_source = np.array([self.op.make_rhs(g, source, phi, fission_source=True) for g in range(self.num_groups)])
         int_fiss = self.integrate_flux(fiss_source)
         err = 1
         it = 0
@@ -175,7 +176,7 @@ class Solver():
             it += 1
             print("Power Iteration ", it)
             phi_new = self.solve_outer(source, (1/k)*phi)
-            fiss_source_new = np.array([self.op.make_rhs(g, source, phi_new) for g in range(self.num_groups)])
+            fiss_source_new = np.array([self.op.make_rhs(g, source, phi_new, fission_source=True) for g in range(self.num_groups)])
             int_fiss_new = self.integrate_flux(fiss_source_new)  # Integrate Fission Source
             k_new = k*(int_fiss_new/int_fiss)
             err_k = np.linalg.norm((k_new - k)/k_new)

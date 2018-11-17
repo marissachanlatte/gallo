@@ -93,7 +93,7 @@ class Diffusion():
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
-    def make_rhs(self, group_id, source, phi_prev):
+    def make_rhs(self, group_id, source, phi_prev, fission_source=False):
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
@@ -122,8 +122,9 @@ class Diffusion():
                                                 for g in range(self.num_groups)])
                 ssource = self.compute_scattering_source(midx, integral_product, group_id)
                 fsource = self.compute_fission_source(midx, integral_product, group_id)
-                rhs_at_node[nid] += ssource # Scattering Source
-                rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
+                if not fission_source:
+                    rhs_at_node[nid] += ssource # Scattering Source
+                    rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
                 rhs_at_node[nid] += fsource # Fission Source
         return rhs_at_node
 
