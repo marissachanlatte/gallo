@@ -118,11 +118,9 @@ class Diffusion():
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
-                integral_product = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                ssource = self.compute_scattering_source(
-                    midx, integral_product, group_id)
+                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
+                                                for g in range(self.num_groups)])
+                ssource = self.compute_scattering_source(midx, integral_product, group_id)
                 fsource = self.compute_fission_source(midx, integral_product, group_id)
                 rhs_at_node[nid] += ssource # Scattering Source
                 rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
