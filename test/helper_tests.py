@@ -36,4 +36,4 @@ class TestHelpers():
         true_integral = np.array([(flux[i, 0] + flux[i, 1] + flux[i, 3])/3 +
                               (flux[i, 1] + flux[i, 2] + flux[i, 3])/3 for i in range(g)])
         true_integral = np.sum(true_integral)*0.5
-        assert_equal(integral, true_integral)
+        assert_almost_equal(integral, true_integral, decimal=10)

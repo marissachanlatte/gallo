@@ -1,8 +1,7 @@
 from nose.tools import *
 from numpy.testing import *
+from nose.plugins.attrib import attr
 import numpy as np
-import scipy.sparse as sps
-import scipy.sparse.linalg as linalg
 
 from gallo.formulations.diffusion import Diffusion
 from gallo.fe import FEGrid
@@ -13,12 +12,6 @@ from gallo.solvers import Solver
 class TestDiffusion():
     @classmethod
     def setup_class(cls):
-        cls.nodefile = "test/test_inputs/box_source.node"
-        cls.elefile = "test/test_inputs/box_source.ele"
-        cls.matfile = "test/test_inputs/box_source.mat"
-        cls.fegrid = FEGrid(cls.nodefile, cls.elefile)
-        cls.materials = Materials(cls.matfile)
-        cls.operator = Diffusion(cls.fegrid, cls.materials)
         cls.stdnode = "test/test_inputs/std.node"
         cls.stdele = "test/test_inputs/std.ele"
         cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
@@ -31,9 +24,16 @@ class TestDiffusion():
         cls.symgrid = FEGrid(cls.symnode, cls.symele)
         cls.symfissop = Diffusion(cls.symgrid, cls.fissionmat)
         cls.symsolver = Solver(cls.symfissop)
+        cls.orignode = "test/test_inputs/origin_centered10_fine.node"
+        cls.origele = "test/test_inputs/origin_centered10_fine.ele"
+        cls.origrid = FEGrid(cls.orignode, cls.origele)
+        cls.twoscatfile = "test/test_inputs/scattering2g.mat"
+        cls.twoscatmat = Materials(cls.twoscatfile)
+        cls.twop = Diffusion(cls.origrid, cls.twoscatmat)
+        cls.twosolv = Solver(cls.twop)
 
     def test_matrix(self):
-        A = self.operator.make_lhs(0)
+        A = self.symfissop.make_lhs(0)
         assert (A!=A.transpose()).nnz==0
         assert (A.diagonal() >= 0).all()
 
@@ -41,3 +41,10 @@ class TestDiffusion():
         source = np.zeros((self.symfissop.num_groups, self.symfissop.num_elts))
         phi, k = self.symsolver.solve(source, eigenvalue=True)
         assert_allclose(k, 0.234582, rtol=0.5)
+
+    @attr('slow')
+    def test_two_group(self):
+        source = np.ones((self.twop.num_groups, self.twop.num_elts))
+        phis = self.twosolv.solve(source, eigenvalue=False)
+        gold_phis = np.loadtxt("test/test_outputs/diff2g.out")
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
