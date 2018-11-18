@@ -21,7 +21,7 @@ class Diffusion():
             # Get Diffusion coefficient for material
             D = self.mat_data.get_diff(midx, group_id)
             # Get total cross section
-            sig_t = self.mat_data.get_sigt(midx, group_id)
+            sig_r = self.mat_data.get_sigr(midx, group_id)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
             # Determine Gauss Nodes for element
@@ -56,7 +56,7 @@ class Diffusion():
 
                     # Integrate for B (basis functions multiplied)
                     integral = self.fegrid.gauss_quad(e, fn_vals*fns_vals)
-                    sparse_matrix[nid, nsid] += sig_t * integral
+                    sparse_matrix[nid, nsid] += sig_r * integral
                     if not n_global.is_interior and not ns_global.is_interior:
                         # Assign boundary id, marks end of region along
                         # boundary where basis function is nonzero
@@ -93,7 +93,7 @@ class Diffusion():
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
-    def make_rhs(self, group_id, source, phi_prev, fission_source=False):
+    def make_rhs(self, group_id, source, phi_prev, eigenvalue=False):
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()
@@ -121,18 +121,16 @@ class Diffusion():
                 integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
                                                 for g in range(self.num_groups)])
                 ssource = self.compute_scattering_source(midx, integral_product, group_id)
-                fsource = self.compute_fission_source(midx, integral_product, group_id)
-                if not fission_source:
-                    rhs_at_node[nid] += ssource # Scattering Source
-                    rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
-                rhs_at_node[nid] += fsource # Fission Source
+                rhs_at_node[nid] += ssource # Scattering Source
+                rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
         return rhs_at_node
 
     def compute_scattering_source(self, midx, phi, group_id):
         scatmat = self.mat_data.get_sigs(midx)
         ssource = 0
         for g_prime in range(self.num_groups):
-            ssource += scatmat[g_prime, group_id]*phi[g_prime]
+            if g_prime != group_id:
+                ssource += scatmat[g_prime, group_id]*phi[g_prime]
         return ssource
 
     def compute_fission_source(self, midx, phi, group_id):
