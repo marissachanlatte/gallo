@@ -37,10 +37,6 @@ class TestDiffusion():
         assert (A!=A.transpose()).nnz==0
         assert (A.diagonal() >= 0).all()
 
-    def test_fission_source(self):
-        A = self.fissop.compute_fission_source(0, np.array([1]), 0)
-        assert (A == 1)
-
     def test_eigenvalue(self):
         source = np.zeros((self.symfissop.num_groups, self.symfissop.num_elts))
         phi, k = self.symsolver.solve(source, eigenvalue=True)
