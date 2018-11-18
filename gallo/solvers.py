@@ -150,33 +150,47 @@ class Solver():
         else:
             return phis, ang_fluxes
 
-    def integrate_flux(self, flux):
-        # Integrate Flux Over Total Domain
-        integral = 0
+    def flux_at_elt(self, flux):
+        """ Takes in fluxes at nodes and returns averaged fluxes for each element. """
+        elt_flux = np.zeros((self.num_groups, self.num_elts))
         for g in range(self.num_groups):
-            for ele in range(self.op.fegrid.num_elts):
-                elt = self.op.fegrid.element(ele)
-                area = self.op.fegrid.element_area(ele)
-                vertices = elt.vertices
+            for ele in range(self.num_elts):
+                vertices = self.op.fegrid.element(ele).vertices
                 func = 0
                 for vtx in vertices:
                     func += flux[g, vtx]
                     func /= 3
-                    integral += func*area
-        return integral
+                    elt_flux[g, ele] += func
+        return elt_flux
+
+    def integrate_flux(self, flux):
+        # Integrate Flux Over Total Domain
+        areas = np.array([self.op.fegrid.element_area(ele) for ele in range(self.num_elts)])
+        elt_fluxes = self.flux_at_elt(flux)
+        return np.sum(areas*elt_fluxes)
+
+    def make_fission_source(self, phi):
+        fiss_source = np.zeros((self.num_groups, self.num_elts))
+        flux_at_elt = self.flux_at_elt(phi)
+        for group in range(self.num_groups):
+            for elt in range(self.num_elts):
+                midx = self.op.fegrid.element(elt).mat_id
+                phi = flux_at_elt[:, elt]
+                fiss_source[group, elt] = self.op.compute_fission_source(midx, phi, group)
+        return fiss_source
 
     def power_iteration(self, source, tol=1e-3):
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
-        fiss_source = np.array([self.op.make_rhs(g, source, phi, fission_source=True) for g in range(self.num_groups)])
+        fiss_source = self.make_fission_source(phi)
         int_fiss = self.integrate_flux(fiss_source)
         err = 1
         it = 0
         while err > tol:
             it += 1
             print("Power Iteration ", it)
-            phi_new = self.solve_outer(source, (1/k)*phi)
-            fiss_source_new = np.array([self.op.make_rhs(g, source, phi_new, fission_source=True) for g in range(self.num_groups)])
+            phi_new = self.solve_outer(fiss_source, (1/k)*phi)
+            fiss_source_new = self.make_fission_source(phi_new)
             int_fiss_new = self.integrate_flux(fiss_source_new)  # Integrate Fission Source
             k_new = k*(int_fiss_new/int_fiss)
             err_k = np.linalg.norm((k_new - k)/k_new)

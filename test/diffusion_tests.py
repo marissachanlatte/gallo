@@ -41,10 +41,6 @@ class TestDiffusion():
         A = self.fissop.compute_fission_source(0, np.array([1]), 0)
         assert (A == 1)
 
-    def test_fiss_rhs(self):
-        rhs = self.fissop.make_rhs(0, np.array([[0, 0, 0, 0]]), np.array([[1, 1, 1, 1]]))
-        assert_array_almost_equal(rhs, np.array([1/6, 1/3, 1/6, 1/3]), 10)
-
     def test_eigenvalue(self):
         source = np.zeros((self.symfissop.num_groups, self.symfissop.num_elts))
         phi, k = self.symsolver.solve(source, eigenvalue=True)
