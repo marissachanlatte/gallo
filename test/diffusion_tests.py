@@ -19,8 +19,8 @@ class TestDiffusion():
         cls.fissionmat = Materials(cls.fissionfile)
         cls.fissop = Diffusion(cls.stdgrid, cls.fissionmat)
         cls.solver = Solver(cls.fissop)
-        cls.symnode = "test/test_inputs/symmetric-9.node"
-        cls.symele = "test/test_inputs/symmetric-9.ele"
+        cls.symnode = "test/test_inputs/symmetric_fine.node"
+        cls.symele = "test/test_inputs/symmetric_fine.ele"
         cls.symgrid = FEGrid(cls.symnode, cls.symele)
         cls.symfissop = Diffusion(cls.symgrid, cls.fissionmat)
         cls.symsolver = Solver(cls.symfissop)
@@ -31,6 +31,14 @@ class TestDiffusion():
         cls.twoscatmat = Materials(cls.twoscatfile)
         cls.twop = Diffusion(cls.origrid, cls.twoscatmat)
         cls.twosolv = Solver(cls.twop)
+        cls.onescatfile = "test/test_inputs/scattering1g.mat"
+        cls.onescatmat = Materials(cls.onescatfile)
+        cls.oneop = Diffusion(cls.symgrid, cls.onescatmat)
+        cls.onesolv = Solver(cls.oneop)
+        cls.noscatfile = "test/test_inputs/noscatter.mat"
+        cls.noscatmat = Materials(cls.noscatfile)
+        cls.nop = Diffusion(cls.symgrid, cls.noscatmat)
+        cls.nosolv = Solver(cls.nop)
 
     def test_matrix(self):
         A = self.symfissop.make_lhs(0)
@@ -47,4 +55,18 @@ class TestDiffusion():
         source = np.ones((self.twop.num_groups, self.twop.num_elts))
         phis = self.twosolv.solve(source, eigenvalue=False)
         gold_phis = np.loadtxt("test/test_outputs/diff2g.out")
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    @attr('slow')
+    def test_one_group(self):
+        source = np.ones((self.oneop.num_groups, self.oneop.num_elts))
+        phis = self.onesolv.solve(source, eigenvalue=False)
+        gold_phis = np.array([np.loadtxt("test/test_outputs/diff1g.out")])
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    @attr('slow')
+    def test_no_scat(self):
+        source = np.ones((self.nop.num_groups, self.nop.num_elts))
+        phis = self.nosolv.solve(source, eigenvalue=False)
+        gold_phis = np.array([np.loadtxt("test/test_outputs/diff_no_scat.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
