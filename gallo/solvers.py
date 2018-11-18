@@ -11,6 +11,7 @@ from gallo.formulations.diffusion import Diffusion
 from gallo.formulations.nda import NDA
 from gallo.formulations.saaf import SAAF
 from gallo.upscatter_acceleration import UA
+from gallo.helpers import Helper
 
 class Solver():
     def __init__(self, operator):
@@ -26,6 +27,7 @@ class Solver():
         self.num_angs = self.op.fegrid.num_angs
         self.angs = self.op.fegrid.angs
         self.weights = self.op.fegrid.weights
+        self.helper = Helper(self.op.fegrid, self.mat_data)
 
     def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev):
         lhs = self.op.make_lhs(ang, group_id).tocsr()
@@ -65,7 +67,7 @@ class Solver():
             # Run preliminary solve on low-order system
             ho_sols = 0
             phi_prev[group_id] = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=ho_sols)
-        for i in range(max_iter):
+        for i in range(1, max_iter):
             if scattering and verbose:
                 print("Within-Group Iteration: ", i)
             if isinstance(self.op, NDA):
@@ -100,7 +102,7 @@ class Solver():
 
     def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-4):
         ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
-        for it_count in range(max_iter):
+        for it_count in range(1, max_iter):
             if self.num_groups != 1 and verbose:
                 print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
@@ -150,48 +152,19 @@ class Solver():
         else:
             return phis, ang_fluxes
 
-    def flux_at_elt(self, flux):
-        """ Takes in fluxes at nodes and returns averaged fluxes for each element. """
-        elt_flux = np.zeros((self.num_groups, self.num_elts))
-        for g in range(self.num_groups):
-            for ele in range(self.num_elts):
-                vertices = self.op.fegrid.element(ele).vertices
-                func = 0
-                for vtx in vertices:
-                    func += flux[g, vtx]
-                    func /= 3
-                    elt_flux[g, ele] += func
-        return elt_flux
-
-    def integrate_flux(self, flux):
-        # Integrate Flux Over Total Domain
-        areas = np.array([self.op.fegrid.element_area(ele) for ele in range(self.num_elts)])
-        elt_fluxes = self.flux_at_elt(flux)
-        return np.sum(areas*elt_fluxes)
-
-    def make_fission_source(self, phi):
-        fiss_source = np.zeros((self.num_groups, self.num_elts))
-        flux_at_elt = self.flux_at_elt(phi)
-        for group in range(self.num_groups):
-            for elt in range(self.num_elts):
-                midx = self.op.fegrid.element(elt).mat_id
-                phi = flux_at_elt[:, elt]
-                fiss_source[group, elt] = self.op.compute_fission_source(midx, phi, group)
-        return fiss_source
-
     def power_iteration(self, source, tol=1e-3):
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
-        fiss_source = self.make_fission_source(phi)
-        int_fiss = self.integrate_flux(fiss_source)
+        fiss_source = self.helper.make_full_fission_source(phi)
+        int_fiss = self.helper.integrate_flux(fiss_source)
         err = 1
         it = 0
         while err > tol:
             it += 1
             print("Power Iteration ", it)
             phi_new = self.solve_outer(fiss_source, (1/k)*phi)
-            fiss_source_new = self.make_fission_source(phi_new)
-            int_fiss_new = self.integrate_flux(fiss_source_new)  # Integrate Fission Source
+            fiss_source_new = self.helper.make_full_fission_source(phi_new)
+            int_fiss_new = self.helper.integrate_flux(fiss_source_new)  # Integrate Fission Source
             k_new = k*(int_fiss_new/int_fiss)
             err_k = np.linalg.norm((k_new - k)/k_new)
             err_phi = np.linalg.norm((phi_new - phi)/phi_new)
