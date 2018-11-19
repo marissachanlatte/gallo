@@ -51,14 +51,11 @@ class Node:
 
 
 class FEGrid():
-    # Discretization Orders
-    num_gauss_nodes = 4
-    sn_ord = 2
-    angs, weights = setup_ang_quad(sn_ord)
-    num_angs = len(weights)
-    def __init__(self, node_file, ele_file):
+    def __init__(self, node_file, ele_file, sn_ord=2, num_gauss_nodes=4):
+        self.angs, self.weights = setup_ang_quad(sn_ord)
+        self.num_angs = len(self.weights)
+        self.num_gauss_nodes = num_gauss_nodes
         self.elts_list = parse.parse_elts(ele_file)
-
         self.nodes, extrema = parse.parse_nodes(node_file)
         self.xmin, self.xmax, self.ymin, self.ymax = extrema
 
