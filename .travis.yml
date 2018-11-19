@@ -3,6 +3,6 @@ python:
   - "3.6"
 # command to run tests
 script:
-  travis_wait - nosetests --with-coverage --cover-package=gallo
+  - travis_wait nosetests --with-coverage --cover-package=gallo
 after_success:
   - codecov
