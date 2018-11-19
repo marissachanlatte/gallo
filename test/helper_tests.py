@@ -27,7 +27,7 @@ class TestHelpers():
         flux_at_elt = self.helper.flux_at_elt(flux)
         true_flux = np.array([[(flux[0, 0] + flux[0, 1] + flux[0, 3])/3,
                               (flux[0, 1] + flux[0, 2] + flux[0, 3])/3]])
-        assert_array_equal(flux_at_elt, true_flux)
+        assert_array_almost_equal(flux_at_elt, true_flux, decimal=10)
 
     def test_integrate_flux(self):
         g = 2
