@@ -90,11 +90,11 @@ class TestSAAF:
         A = self.op.make_lhs(np.array([ang_one, ang_two]), 0)
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
 
-    # def test_eigenvalue(self):
-    #     source = np.zeros((self.fissionop.num_groups, self.fissionop.num_elts))
-    #     phi, k = self.fissolv.solve(source, eigenvalue=True)
-    #     print(k)
-    #     assert_allclose(k, 0.234582, rtol=0.5)
+    def test_eigenvalue(self):
+        source = np.zeros((self.fissionop.num_groups, self.fissionop.num_elts))
+        fluxes = self.fissolv.solve(source, eigenvalue=True)
+        k = fluxes['k']
+        assert_allclose(k, 0.234582, rtol=0.5)
 
     # def hand_calculation_lhs_test(self):
     #     angles0 = np.array([.5773503, .5773503])
