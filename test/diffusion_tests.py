@@ -47,26 +47,31 @@ class TestDiffusion():
 
     def test_eigenvalue(self):
         source = np.zeros((self.symfissop.num_groups, self.symfissop.num_elts))
-        phi, k = self.symsolver.solve(source, eigenvalue=True)
+        fluxes = self.symsolver.solve(source, eigenvalue=True)
+        phi = fluxes['Phi']
+        k = fluxes['k']
         assert_allclose(k, 0.234582, rtol=0.5)
 
     @attr('slow')
     def test_two_group(self):
         source = np.ones((self.twop.num_groups, self.twop.num_elts))
-        phis = self.twosolv.solve(source, eigenvalue=False)
+        fluxes = self.twosolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
         gold_phis = np.loadtxt("test/test_outputs/diff2g.out")
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_one_group(self):
         source = np.ones((self.oneop.num_groups, self.oneop.num_elts))
-        phis = self.onesolv.solve(source, eigenvalue=False)
+        fluxes = self.onesolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/diff1g.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_no_scat(self):
         source = np.ones((self.nop.num_groups, self.nop.num_elts))
-        phis = self.nosolv.solve(source, eigenvalue=False)
+        fluxes = self.nosolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/diff_no_scat.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)

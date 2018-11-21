@@ -96,7 +96,7 @@ class Diffusion():
                         sparse_matrix[nid, nsid] += boundary_integral
         return sparse_matrix
 
-    def make_rhs(self, group_id, source, phi_prev, eigenvalue=False):
+    def make_rhs(self, group_id, source, phi_prev):
         rhs_at_node = np.zeros(self.num_nodes)
         # Interpolate Phi
         triang = self.fegrid.setup_triangulation()

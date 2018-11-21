@@ -40,6 +40,7 @@ class NDA():
             g_nodes = self.fegrid.gauss_nodes(e)
             if ho_sols !=0:
                 # Find Phi at Gauss Nodes
+                print(np.shape(phi))
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi, g_nodes)
                 # Find Psi at Gauss Nodes
                 psi_vals = np.array([self.fegrid.phi_at_gauss_nodes(triang, psi[:, i], g_nodes) for i in range(4)])

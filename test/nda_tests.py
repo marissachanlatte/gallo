@@ -38,42 +38,48 @@ class TestNDA:
     @attr('slow')
     def test_no_scat(self):
         source = 10*np.ones((self.nop.num_groups, self.nop.num_elts))
-        phis = self.nosolv.solve(source, eigenvalue=False)
+        fluxes = self.nosolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/nda_no_scat.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_tg_no_scat(self):
         source = 10*np.ones((self.nop.num_groups, self.nop.num_elts))
-        phis = self.nosolv.solve(source, ua_bool=True)
+        fluxes = self.nosolv.solve(source, ua_bool=True)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/tgnda_no_scat.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_tg_1g(self):
         source = 10*np.ones((self.oneop.num_groups, self.oneop.num_elts))
-        phis = self.onesolv.solve(source, ua_bool=True)
+        fluxes = self.onesolv.solve(source, ua_bool=True)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/tgnda1g.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_1g(self):
         source = 10*np.ones((self.oneop.num_groups, self.oneop.num_elts))
-        phis = self.onesolv.solve(source, ua_bool=False)
+        fluxes = self.onesolv.solve(source, ua_bool=False)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/nda1g.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_2g(self):
         source = np.ones((self.twop.num_groups, self.twop.num_elts))
-        phis = self.twosolv.solve(source, ua_bool=False)
+        fluxes = self.twosolv.solve(source, ua_bool=False)
+        phis = fluxes['Phi']
         gold_phis = np.loadtxt("test/test_outputs/nda2g.out")
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_tg_2g(self):
         source = np.ones((self.twop.num_groups, self.twop.num_elts))
-        phis = self.twosolv.solve(source, ua_bool=True)
+        fluxes = self.twosolv.solve(source, ua_bool=True)
+        phis = fluxes['Phi']
         gold_phis = np.loadtxt("test/test_outputs/tgnda2g.out")
         assert_array_almost_equal(phis, gold_phis, decimal=4)
     # def kappa_test(self):

@@ -80,7 +80,8 @@ class TestSAAF:
 
         cls.fissionmatfile = "test/test_inputs/fissiontest.mat"
         cls.fissionmat = Materials(cls.fissionmatfile)
-        cls.fissionop = SAAF(cls.stdgrid, cls.fissionmat)
+        cls.fissionop = SAAF(cls.symgrid, cls.fissionmat)
+        cls.fissolv = Solver(cls.fissionop)
 
     def symmetry_test(self):
         source = np.ones(self.fegrid.num_elts)
@@ -88,6 +89,12 @@ class TestSAAF:
         ang_two = -.5773503
         A = self.op.make_lhs(np.array([ang_one, ang_two]), 0)
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
+
+    # def test_eigenvalue(self):
+    #     source = np.zeros((self.fissionop.num_groups, self.fissionop.num_elts))
+    #     phi, k = self.fissolv.solve(source, eigenvalue=True)
+    #     print(k)
+    #     assert_allclose(k, 0.234582, rtol=0.5)
 
     # def hand_calculation_lhs_test(self):
     #     angles0 = np.array([.5773503, .5773503])
@@ -165,21 +172,24 @@ class TestSAAF:
     @attr('slow')
     def test_no_scat(self):
         source = 10*np.ones((self.symop.num_groups, self.symop.num_elts))
-        phis, _ = self.symsolv.solve(source)
+        fluxes = self.symsolv.solve(source)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/saaf_no_scat.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_1g(self):
         source = 10*np.ones((self.oneop.num_groups, self.oneop.num_elts))
-        phis, _ = self.onesolv.solve(source)
+        fluxes = self.onesolv.solve(source)
+        phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/saaf1g.out")])
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
     @attr('slow')
     def test_2g(self):
         source = 10*np.ones((self.twop.num_groups, self.twop.num_elts))
-        phis, _ = self.twosolv.solve(source)
+        fluxes = self.twosolv.solve(source)
+        phis = fluxes['Phi']
         gold_phis = np.loadtxt("test/test_outputs/saaf2g.out")
         assert_array_almost_equal(phis, gold_phis, decimal=4)
 
