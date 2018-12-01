@@ -30,10 +30,9 @@ class Solver():
         self.helper = Helper(self.op.fegrid, self.mat_data)
 
     def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev):
-        lhs = self.op.make_lhs(ang, group_id).tocsr()
+        lhs = self.op.make_lhs(ang, group_id).todense()
         rhs = self.op.make_rhs(group_id, source, ang, angle_id, phi_prev)
-        ang_flux = linalg.cg(lhs, rhs)[0]
-        #ang_flux = linalg.spsolve(lhs, rhs)
+        ang_flux = dense_linalg.solve(lhs, rhs)[0]
         return ang_flux
 
     def get_scalar_flux(self, group_id, source, phi_prev, ho_sols=None):
@@ -41,10 +40,10 @@ class Solver():
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
             lhs = self.op.make_lhs(group_id, ho_sols=ho_sols).todense()
             rhs = self.op.make_rhs(group_id, source, phi_prev)
-            scalar_flux = dense_linalg.solve(lhs, rhs, sym_pos=True)
+            scalar_flux = dense_linalg.solve(lhs, rhs)
             return {"Phi": scalar_flux, "Psi": None}
         else:
-            ang_fluxes = np.zeros((4, self.num_nodes))
+            ang_fluxes = np.zeros((self.num_angs, self.num_nodes))
             # Iterate over all angle possibilities
             for i, ang in enumerate(self.angs):
                 ang = np.array(ang)
@@ -53,7 +52,7 @@ class Solver():
             return {"Phi": scalar_flux, "Psi": ang_fluxes}
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=1000,
-                       tol=1e-5, verbose=True):
+                       tol=1e-8, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -98,7 +97,7 @@ class Solver():
         else:
             return {"Phi": phi, "Psi": fluxes['Psi'], "HO": None}
 
-    def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-4):
+    def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-6):
         ang_fluxes = np.zeros((self.num_groups, self.num_angs, self.num_nodes))
         for it_count in range(1, max_iter):
             if self.num_groups != 1 and verbose:
@@ -143,7 +142,7 @@ class Solver():
                 break
         return {"Phi": phis, "Psi": ang_fluxes}
 
-    def power_iteration(self, source, tol=1e-3):
+    def power_iteration(self, source, tol=1e-4):
         k = 1
         phi = np.ones((self.num_groups, self.num_nodes))
         fiss_source = self.helper.make_full_fission_source(phi)
