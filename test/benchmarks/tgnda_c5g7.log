@@ -1,0 +1,2335 @@
+Power Iteration  1
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Power Iteration  1
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.019100410664690374
+Within-Group Iteration:  2
+Norm:  0.0287417477516132
+Within-Group Iteration:  3
+Norm:  0.01897682927098769
+Within-Group Iteration:  4
+Norm:  0.020979839326808303
+Within-Group Iteration:  5
+Norm:  0.016408486696388273
+Within-Group Iteration:  6
+Norm:  0.0322646362091369
+Within-Group Iteration:  7
+Norm:  0.01754893942069232
+Within-Group Iteration:  8
+Norm:  0.027145189373447128
+Within-Group Iteration:  9
+Norm:  0.019279883678120287
+Within-Group Iteration:  10
+Norm:  0.033546723238739015
+Within-Group Iteration:  11
+Norm:  0.022648409846005912
+Within-Group Iteration:  12
+Norm:  0.015830886909096252
+Within-Group Iteration:  13
+Norm:  0.021366916990109272
+Within-Group Iteration:  14
+Norm:  0.0386379586897488
+Within-Group Iteration:  15
+Norm:  0.039318970790070115
+Within-Group Iteration:  16
+Norm:  0.015604609727472496
+Within-Group Iteration:  17
+Norm:  0.0069753802752645965
+Within-Group Iteration:  18
+Norm:  0.5752067916879963
+Within-Group Iteration:  19
+Norm:  0.5855064263243909
+Within-Group Iteration:  20
+Norm:  0.025162896067182226
+Within-Group Iteration:  21
+Norm:  0.03353900726132006
+Within-Group Iteration:  22
+Norm:  0.01692546602629487
+Within-Group Iteration:  23
+Norm:  0.04102844697150387
+Within-Group Iteration:  24
+Norm:  0.026248692378871293
+Within-Group Iteration:  25
+Norm:  0.009112464503324822
+Within-Group Iteration:  26
+Norm:  0.037167374352833155
+Within-Group Iteration:  27
+Norm:  0.024016224030418146
+Within-Group Iteration:  28
+Norm:  0.014746015064353631
+Within-Group Iteration:  29
+Norm:  0.01461240974057039
+Within-Group Iteration:  30
+Norm:  0.01652501382550245
+Within-Group Iteration:  31
+Norm:  0.016643190650346834
+Within-Group Iteration:  32
+Norm:  0.015392077108206293
+Within-Group Iteration:  33
+Norm:  0.03469182633335672
+Within-Group Iteration:  34
+Norm:  0.03500504553898788
+Within-Group Iteration:  35
+Norm:  0.09025423104598981
+Within-Group Iteration:  36
+Norm:  0.0818622499709717
+Within-Group Iteration:  37
+Norm:  0.0156278173966581
+Within-Group Iteration:  38
+Norm:  0.023907461376922012
+Within-Group Iteration:  39
+Norm:  0.03751592016491922
+Within-Group Iteration:  40
+Norm:  0.010599546027197137
+Within-Group Iteration:  41
+Norm:  0.00874558982136329
+Within-Group Iteration:  42
+Norm:  0.007618192760065838
+Within-Group Iteration:  43
+Norm:  0.01592868653380275
+Within-Group Iteration:  44
+Norm:  0.12242154777239506
+Within-Group Iteration:  45
+Norm:  0.10821369745208684
+Within-Group Iteration:  46
+Norm:  0.016896707634719673
+Within-Group Iteration:  47
+Norm:  0.010288260386977648
+Within-Group Iteration:  48
+Norm:  0.03945032884266001
+Within-Group Iteration:  49
+Norm:  0.02708255184623135
+Within-Group Iteration:  50
+Norm:  0.05149175821990577
+Within-Group Iteration:  51
+Norm:  0.05210775344775551
+Within-Group Iteration:  52
+Norm:  0.0173893011422195
+Within-Group Iteration:  53
+Norm:  0.0028146616080939107
+Within-Group Iteration:  54
+Norm:  0.30025795378172165
+Within-Group Iteration:  55
+Norm:  0.32303071432894265
+Within-Group Iteration:  56
+Norm:  0.02831459591200515
+Within-Group Iteration:  57
+Norm:  0.0994664461923803
+Within-Group Iteration:  58
+Norm:  0.09684296645735092
+Within-Group Iteration:  59
+Norm:  0.01611537062578021
+Within-Group Iteration:  60
+Norm:  0.007865014172019595
+Within-Group Iteration:  61
+Norm:  0.043794185892605884
+Within-Group Iteration:  62
+Norm:  0.030812848536674712
+Within-Group Iteration:  63
+Norm:  0.015376002014034143
+Within-Group Iteration:  64
+Norm:  0.02980396210583771
+Within-Group Iteration:  65
+Norm:  0.02915494372393353
+Within-Group Iteration:  66
+Norm:  0.07489306712131025
+Within-Group Iteration:  67
+Norm:  0.10336594873401903
+Within-Group Iteration:  68
+Norm:  0.01971256774279923
+Within-Group Iteration:  69
+Norm:  0.023345092806634674
+Within-Group Iteration:  70
+Norm:  0.016717701988911846
+Within-Group Iteration:  71
+Norm:  0.03220979224030339
+Within-Group Iteration:  72
+Norm:  0.017919863579662233
+Within-Group Iteration:  73
+Norm:  0.021507950638461084
+Within-Group Iteration:  74
+Norm:  0.016577686853355773
+Within-Group Iteration:  75
+Norm:  0.03233940989492651
+Within-Group Iteration:  76
+Norm:  0.018454759654190408
+Within-Group Iteration:  77
+Norm:  0.018014897164839908
+Within-Group Iteration:  78
+Norm:  0.02088113602005569
+Within-Group Iteration:  79
+Norm:  0.03442781687015541
+Within-Group Iteration:  80
+Norm:  0.016022098258304494
+Within-Group Iteration:  81
+Norm:  0.002764323125163985
+Within-Group Iteration:  82
+Norm:  0.051907188844686085
+Within-Group Iteration:  83
+Norm:  0.03245083594931323
+Within-Group Iteration:  84
+Norm:  0.03292730385687123
+Within-Group Iteration:  85
+Norm:  0.01660594093233057
+Within-Group Iteration:  86
+Norm:  0.0374201243157307
+Within-Group Iteration:  87
+Norm:  0.05386984436455153
+Within-Group Iteration:  88
+Norm:  0.02003018338042427
+Within-Group Iteration:  89
+Norm:  0.01625058889245652
+Within-Group Iteration:  90
+Norm:  0.04307280523318722
+Within-Group Iteration:  91
+Norm:  0.054576387533806774
+Within-Group Iteration:  92
+Norm:  0.0290564485854433
+Within-Group Iteration:  93
+Norm:  0.03011227625990671
+Within-Group Iteration:  94
+Norm:  0.013450995174042094
+Within-Group Iteration:  95
+Norm:  0.004475476145294785
+Within-Group Iteration:  96
+Norm:  0.21225533311017475
+Within-Group Iteration:  97
+Norm:  0.2177094378745075
+Within-Group Iteration:  98
+Norm:  0.01804391115155757
+Within-Group Iteration:  99
+Norm:  0.049009156173351165
+Within-Group Iteration:  100
+Norm:  0.03820110811159384
+Within-Group Iteration:  101
+Norm:  0.015316704709927674
+Within-Group Iteration:  102
+Norm:  0.04370397487887581
+Within-Group Iteration:  103
+Norm:  0.04175640841341202
+Within-Group Iteration:  104
+Norm:  0.021181253402842045
+Within-Group Iteration:  105
+Norm:  0.9962097598455582
+Within-Group Iteration:  106
+Norm:  1.7080255204511754
+Within-Group Iteration:  107
+Norm:  0.030734405152103125
+Within-Group Iteration:  108
+Norm:  0.03656951432483548
+Within-Group Iteration:  109
+Norm:  0.01612994732778795
+Within-Group Iteration:  110
+Norm:  0.02223725885510801
+Within-Group Iteration:  111
+Norm:  0.04334724444655171
+Within-Group Iteration:  112
+Norm:  0.03014169319952452
+Within-Group Iteration:  113
+Norm:  0.015384297483401125
+Within-Group Iteration:  114
+Norm:  0.029584080781389414
+Within-Group Iteration:  115
+Norm:  0.02815395049474625
+Within-Group Iteration:  116
+Norm:  0.3607995542976981
+Within-Group Iteration:  117
+Norm:  0.34427084558951304
+Within-Group Iteration:  118
+Norm:  0.01767088745036145
+Within-Group Iteration:  119
+Norm:  0.01692913220649642
+Within-Group Iteration:  120
+Norm:  0.015400254960574726
+Within-Group Iteration:  121
+Norm:  0.03600279334593203
+Within-Group Iteration:  122
+Norm:  0.10698318422280223
+Within-Group Iteration:  123
+Norm:  0.08864786555075074
+Within-Group Iteration:  124
+Norm:  0.008286292091851796
+Within-Group Iteration:  125
+Norm:  0.04477532786909129
+Within-Group Iteration:  126
+Norm:  0.04752280549904286
+Within-Group Iteration:  127
+Norm:  0.017441076592618163
+Within-Group Iteration:  128
+Norm:  0.01337103218779091
+Within-Group Iteration:  129
+Norm:  0.0350276866901309
+Within-Group Iteration:  130
+Norm:  0.018042306238335293
+Within-Group Iteration:  131
+Norm:  0.017995543894985883
+Within-Group Iteration:  132
+Norm:  0.020728537022121588
+Within-Group Iteration:  133
+Norm:  0.034281355243189746
+Within-Group Iteration:  134
+Norm:  0.01608238548941693
+Within-Group Iteration:  135
+Norm:  0.003872821852720195
+Within-Group Iteration:  136
+Norm:  0.08046639306140536
+Within-Group Iteration:  137
+Norm:  0.08598737552693021
+Within-Group Iteration:  138
+Norm:  0.010339694785125704
+Within-Group Iteration:  139
+Norm:  0.011245599092791849
+Within-Group Iteration:  140
+Norm:  0.021586846416745444
+Within-Group Iteration:  141
+Norm:  0.023006187924155465
+Within-Group Iteration:  142
+Norm:  0.02181176001928877
+Within-Group Iteration:  143
+Norm:  0.021831194875411627
+Within-Group Iteration:  144
+Norm:  0.03518487343868466
+Within-Group Iteration:  145
+Norm:  0.01585742125888185
+Within-Group Iteration:  146
+Norm:  0.0016046199982777227
+Within-Group Iteration:  147
+Norm:  0.08482075360752592
+Within-Group Iteration:  148
+Norm:  0.0866119061981198
+Within-Group Iteration:  149
+Norm:  0.01638862227182608
+Within-Group Iteration:  150
+Norm:  0.012587300813401772
+Within-Group Iteration:  151
+Norm:  0.0336071486099573
+Within-Group Iteration:  152
+Norm:  0.01933969392668618
+Within-Group Iteration:  153
+Norm:  0.016471314136810827
+Within-Group Iteration:  154
+Norm:  0.03984553005754629
+Within-Group Iteration:  155
+Norm:  0.05097818695567589
+Within-Group Iteration:  156
+Norm:  0.004927721800750789
+Within-Group Iteration:  157
+Norm:  0.00918742803884341
+Within-Group Iteration:  158
+Norm:  0.021165605308331514
+Within-Group Iteration:  159
+Norm:  0.03350063458408871
+Within-Group Iteration:  160
+Norm:  0.0197221360783045
+Within-Group Iteration:  161
+Norm:  0.01626161636330293
+Within-Group Iteration:  162
+Norm:  0.050116261653404194
+Within-Group Iteration:  163
+Norm:  0.06105014747040527
+Within-Group Iteration:  164
+Norm:  0.018690179855163896
+Within-Group Iteration:  165
+Norm:  0.0010137012132265101
+Within-Group Iteration:  166
+Norm:  0.07927015287052316
+Within-Group Iteration:  167
+Norm:  0.06956377879529183
+Within-Group Iteration:  168
+Norm:  0.015541115711215218
+Within-Group Iteration:  169
+Norm:  0.4632969032927465
+Within-Group Iteration:  170
+Norm:  0.4576692180521421
+Within-Group Iteration:  171
+Norm:  0.018534722292083704
+Within-Group Iteration:  172
+Norm:  0.03777870493376193
+Within-Group Iteration:  173
+Norm:  0.026175411982221376
+Within-Group Iteration:  174
+Norm:  0.03682776733624707
+Within-Group Iteration:  175
+Norm:  0.03681696254439404
+Within-Group Iteration:  176
+Norm:  0.015755616083617918
+Within-Group Iteration:  177
+Norm:  0.029574666149615497
+Within-Group Iteration:  178
+Norm:  0.042083939917812285
+Within-Group Iteration:  179
+Norm:  0.010539618468474714
+Within-Group Iteration:  180
+Norm:  0.014786439753081993
+Within-Group Iteration:  181
+Norm:  0.012003838717401957
+Within-Group Iteration:  182
+Norm:  0.015654483278379934
+Within-Group Iteration:  183
+Norm:  0.02995589345107981
+Within-Group Iteration:  184
+Norm:  0.042590254720752875
+Within-Group Iteration:  185
+Norm:  0.007854311038460623
+Within-Group Iteration:  186
+Norm:  0.010264245108661545
+Within-Group Iteration:  187
+Norm:  0.07890441348995901
+Within-Group Iteration:  188
+Norm:  0.08149413535935725
+Within-Group Iteration:  189
+Norm:  0.016244759392702205
+Within-Group Iteration:  190
+Norm:  0.053379749471141595
+Within-Group Iteration:  191
+Norm:  0.043647712722517516
+Within-Group Iteration:  192
+Norm:  0.015322617315079503
+Within-Group Iteration:  193
+Norm:  0.048027882863465314
+Within-Group Iteration:  194
+Norm:  0.14101641951179889
+Within-Group Iteration:  195
+Norm:  0.12509873968977758
+Within-Group Iteration:  196
+Norm:  0.027602820381727042
+Within-Group Iteration:  197
+Norm:  0.03480576380427393
+Within-Group Iteration:  198
+Norm:  0.01630894996065513
+Within-Group Iteration:  199
+Norm:  0.020376734150474644
+Within-Group Iteration:  200
+Norm:  0.04497313449268014
+Within-Group Iteration:  201
+Norm:  0.03421241406064771
+Within-Group Iteration:  202
+Norm:  0.015316736788527704
+Within-Group Iteration:  203
+Norm:  0.04148172746779874
+Within-Group Iteration:  204
+Norm:  0.03925916660084462
+Within-Group Iteration:  205
+Norm:  0.021127522540135047
+Within-Group Iteration:  206
+Norm:  0.2564305060212633
+Within-Group Iteration:  207
+Norm:  0.2650286205262226
+Within-Group Iteration:  208
+Norm:  0.01820587699671298
+Within-Group Iteration:  209
+Norm:  0.04347941597618341
+Within-Group Iteration:  210
+Norm:  0.03255648340505668
+Within-Group Iteration:  211
+Norm:  0.015385777184257836
+Within-Group Iteration:  212
+Norm:  0.029949351237065377
+Within-Group Iteration:  213
+Norm:  0.027541915604686815
+Within-Group Iteration:  214
+Norm:  0.049505441446305316
+Within-Group Iteration:  215
+Norm:  0.03061949238997272
+Within-Group Iteration:  216
+Norm:  0.044118684389493325
+Within-Group Iteration:  217
+Norm:  0.03347327741016038
+Within-Group Iteration:  218
+Norm:  0.015379069010739356
+Within-Group Iteration:  219
+Norm:  0.03079353937085681
+Within-Group Iteration:  220
+Norm:  0.027659163044294978
+Within-Group Iteration:  221
+Norm:  0.031065340716471646
+Within-Group Iteration:  222
+Norm:  0.01881654883928585
+Within-Group Iteration:  223
+Norm:  0.032256641103673336
+Within-Group Iteration:  224
+Norm:  0.017419131361081776
+Within-Group Iteration:  225
+Norm:  0.03096081341094607
+Within-Group Iteration:  226
+Norm:  0.02097460529359458
+Within-Group Iteration:  227
+Norm:  0.06258128223180139
+Within-Group Iteration:  228
+Norm:  0.07792000803393229
+Within-Group Iteration:  229
+Norm:  0.007492484045995286
+Within-Group Iteration:  230
+Norm:  0.013416030831708272
+Within-Group Iteration:  231
+Norm:  0.013357666522761099
+Within-Group Iteration:  232
+Norm:  0.024942452377264585
+Within-Group Iteration:  233
+Norm:  0.04259827993570923
+Within-Group Iteration:  234
+Norm:  0.030801897585740024
+Within-Group Iteration:  235
+Norm:  0.015420278788278277
+Within-Group Iteration:  236
+Norm:  0.027463449544498884
+Within-Group Iteration:  237
+Norm:  0.032989145353710315
+Within-Group Iteration:  238
+Norm:  0.016634301118580604
+Within-Group Iteration:  239
+Norm:  0.028643199234385876
+Within-Group Iteration:  240
+Norm:  0.041684164877266706
+Within-Group Iteration:  241
+Norm:  0.0215207973352638
+Within-Group Iteration:  242
+Norm:  0.014795618706287688
+Within-Group Iteration:  243
+Norm:  0.014726504991866745
+Within-Group Iteration:  244
+Norm:  0.01903121038456056
+Within-Group Iteration:  245
+Norm:  0.017929818608345006
+Within-Group Iteration:  246
+Norm:  0.015427051662440988
+Within-Group Iteration:  247
+Norm:  0.03604183318359304
+Within-Group Iteration:  248
+Norm:  0.030926678972828726
+Within-Group Iteration:  249
+Norm:  0.01724584001286361
+Within-Group Iteration:  250
+Norm:  0.007781114571349785
+Within-Group Iteration:  251
+Norm:  0.045706484206838656
+Within-Group Iteration:  252
+Norm:  0.0340099407553449
+Within-Group Iteration:  253
+Norm:  0.015332540971202381
+Within-Group Iteration:  254
+Norm:  0.03620486915433675
+Within-Group Iteration:  255
+Norm:  0.03238929792646509
+Within-Group Iteration:  256
+Norm:  0.019623645993633806
+Within-Group Iteration:  257
+Norm:  0.047708260347831544
+Within-Group Iteration:  258
+Norm:  0.6362153156030542
+Within-Group Iteration:  259
+Norm:  0.6344445881098235
+Within-Group Iteration:  260
+Norm:  0.0385102329358188
+Within-Group Iteration:  261
+Norm:  0.03995379258258219
+Within-Group Iteration:  262
+Norm:  0.01652766864894185
+Within-Group Iteration:  263
+Norm:  0.06524632153110667
+Within-Group Iteration:  264
+Norm:  0.05643502024834416
+Within-Group Iteration:  265
+Norm:  0.01627613087744347
+Within-Group Iteration:  266
+Norm:  0.03968196812785355
+Within-Group Iteration:  267
+Norm:  0.029993833515631008
+Within-Group Iteration:  268
+Norm:  0.04581942026706461
+Within-Group Iteration:  269
+Norm:  0.04634232657791077
+Within-Group Iteration:  270
+Norm:  0.017375901559348456
+Within-Group Iteration:  271
+Norm:  0.0029900278927675566
+Within-Group Iteration:  272
+Norm:  0.13210069443936218
+Within-Group Iteration:  273
+Norm:  0.13747447466959506
+Within-Group Iteration:  274
+Norm:  0.01693627395497543
+Within-Group Iteration:  275
+Norm:  0.008124333054412796
+Within-Group Iteration:  276
+Norm:  0.21681007219076034
+Within-Group Iteration:  277
+Norm:  0.20900172266061967
+Within-Group Iteration:  278
+Norm:  0.02132624604649721
+Within-Group Iteration:  279
+Norm:  0.006483624195987069
+Within-Group Iteration:  280
+Norm:  0.025286130552359065
+Within-Group Iteration:  281
+Norm:  0.036721022866075544
+Within-Group Iteration:  282
+Norm:  0.015165075894694586
+Within-Group Iteration:  283
+Norm:  0.0035384496036206473
+Within-Group Iteration:  284
+Norm:  0.03531792811856003
+Within-Group Iteration:  285
+Norm:  0.03999398802940686
+Within-Group Iteration:  286
+Norm:  0.014963723208058619
+Within-Group Iteration:  287
+Norm:  0.002756936723099334
+Within-Group Iteration:  288
+Norm:  0.040544993205726514
+Within-Group Iteration:  289
+Norm:  0.04504281140845084
+Within-Group Iteration:  290
+Norm:  0.01461155280844938
+Within-Group Iteration:  291
+Norm:  0.0022439222622325805
+Within-Group Iteration:  292
+Norm:  0.04481379640647153
+Within-Group Iteration:  293
+Norm:  0.06122699536429373
+Within-Group Iteration:  294
+Norm:  0.018681031310800573
+Within-Group Iteration:  295
+Norm:  0.01682797546408763
+Within-Group Iteration:  296
+Norm:  0.015387161950150831
+Within-Group Iteration:  297
+Norm:  0.023187058224994977
+Within-Group Iteration:  298
+Norm:  0.007666106466202592
+Within-Group Iteration:  299
+Norm:  0.017546191884424144
+Within-Group Iteration:  300
+Norm:  0.002532730985647881
+Within-Group Iteration:  301
+Norm:  0.01704038054290563
+Within-Group Iteration:  302
+Norm:  0.032089721924178305
+Within-Group Iteration:  303
+Norm:  0.015998257795469074
+Within-Group Iteration:  304
+Norm:  0.00577868002281687
+Within-Group Iteration:  305
+Norm:  0.025464275682387544
+Within-Group Iteration:  306
+Norm:  0.0332161176389348
+Within-Group Iteration:  307
+Norm:  0.016877993908119216
+Within-Group Iteration:  308
+Norm:  0.10166065371583925
+Within-Group Iteration:  309
+Norm:  0.09872521157877363
+Within-Group Iteration:  310
+Norm:  0.01693976091098129
+Within-Group Iteration:  311
+Norm:  0.10748432404261417
+Within-Group Iteration:  312
+Norm:  0.10346347376155193
+Within-Group Iteration:  313
+Norm:  0.010655663067546214
+Within-Group Iteration:  314
+Norm:  0.01643406632326775
+Within-Group Iteration:  315
+Norm:  0.016624786465243607
+Within-Group Iteration:  316
+Norm:  0.015412341966831365
+Within-Group Iteration:  317
+Norm:  0.0326217031568673
+Within-Group Iteration:  318
+Norm:  0.0326713336416646
+Within-Group Iteration:  319
+Norm:  0.09863311751370239
+Within-Group Iteration:  320
+Norm:  0.09250997182595987
+Within-Group Iteration:  321
+Norm:  0.05019567541872208
+Within-Group Iteration:  322
+Norm:  0.017396945495035277
+Within-Group Iteration:  323
+Norm:  0.015412562715082213
+Within-Group Iteration:  324
+Norm:  0.02405238727069765
+Within-Group Iteration:  325
+Norm:  0.008332417364697246
+Within-Group Iteration:  326
+Norm:  0.01762281383685821
+Within-Group Iteration:  327
+Norm:  0.0024599093278300306
+Within-Group Iteration:  328
+Norm:  0.08505563137599194
+Within-Group Iteration:  329
+Norm:  0.6272359383817223
+Within-Group Iteration:  330
+Norm:  0.989854147933007
+Within-Group Iteration:  331
+Norm:  1.5818015992841448
+Within-Group Iteration:  332
+Norm:  0.06393534149757431
+Within-Group Iteration:  333
+Norm:  0.03970962369281819
+Within-Group Iteration:  334
+Norm:  0.0161375207963345
+Within-Group Iteration:  335
+Norm:  0.01271694393866818
+Within-Group Iteration:  336
+Norm:  0.029846807440449468
+Within-Group Iteration:  337
+Norm:  0.016526699006933942
+Within-Group Iteration:  338
+Norm:  0.0038834550720103457
+Within-Group Iteration:  339
+Norm:  0.031770487589938126
+Within-Group Iteration:  340
+Norm:  0.03779054983243706
+Within-Group Iteration:  341
+Norm:  0.01614892456570296
+Within-Group Iteration:  342
+Norm:  0.036695909971566534
+Within-Group Iteration:  343
+Norm:  0.052818463254218864
+Within-Group Iteration:  344
+Norm:  0.020019267332175066
+Within-Group Iteration:  345
+Norm:  0.01624466928928951
+Within-Group Iteration:  346
+Norm:  0.04347386884457267
+Within-Group Iteration:  347
+Norm:  0.05496050723618727
+Within-Group Iteration:  348
+Norm:  0.027785647681618078
+Within-Group Iteration:  349
+Norm:  0.02942486641008346
+Within-Group Iteration:  350
+Norm:  0.015375914525560943
+Within-Group Iteration:  351
+Norm:  0.005672902003839493
+Within-Group Iteration:  352
+Norm:  0.027063365879619314
+Within-Group Iteration:  353
+Norm:  0.03411235191783115
+Within-Group Iteration:  354
+Norm:  0.016445923282318413
+Within-Group Iteration:  355
+Norm:  0.03135298993850728
+Within-Group Iteration:  356
+Norm:  0.04902794566012405
+Within-Group Iteration:  357
+Norm:  0.02227162496672506
+Within-Group Iteration:  358
+Norm:  0.05407083440318443
+Within-Group Iteration:  359
+Norm:  0.05373718970297012
+Within-Group Iteration:  360
+Norm:  0.017802946866046578
+Within-Group Iteration:  361
+Norm:  0.00843533752059145
+Within-Group Iteration:  362
+Norm:  0.04312935026027741
+Within-Group Iteration:  363
+Norm:  0.031047154085893723
+Within-Group Iteration:  364
+Norm:  0.015399993312432613
+Within-Group Iteration:  365
+Norm:  0.028583670354012384
+Within-Group Iteration:  366
+Norm:  0.029200887944688607
+Within-Group Iteration:  367
+Norm:  0.004497854994689838
+Within-Group Iteration:  368
+Norm:  0.13294588031839893
+Within-Group Iteration:  369
+Norm:  0.12224683962104083
+Within-Group Iteration:  370
+Norm:  0.01968205032049357
+Within-Group Iteration:  371
+Norm:  0.03380630935903089
+Within-Group Iteration:  372
+Norm:  0.02106485341306739
+Within-Group Iteration:  373
+Norm:  0.015825511316885803
+Within-Group Iteration:  374
+Norm:  0.022363002026472217
+Within-Group Iteration:  375
+Norm:  0.03596542979710471
+Within-Group Iteration:  376
+Norm:  0.008188061548883853
+Within-Group Iteration:  377
+Norm:  0.011079682215931943
+Within-Group Iteration:  378
+Norm:  0.01430163357948692
+Within-Group Iteration:  379
+Norm:  0.02598693008441315
+Within-Group Iteration:  380
+Norm:  0.028532241454079656
+Within-Group Iteration:  381
+Norm:  0.0038856995838736047
+Within-Group Iteration:  382
+Norm:  0.058693244040988024
+Within-Group Iteration:  383
+Norm:  0.06077093914999339
+Within-Group Iteration:  384
+Norm:  0.01702194762793316
+Within-Group Iteration:  385
+Norm:  0.002490026294585512
+Within-Group Iteration:  386
+Norm:  0.10578383448627601
+Within-Group Iteration:  387
+Norm:  0.10772484242446691
+Within-Group Iteration:  388
+Norm:  0.09895527558407892
+Within-Group Iteration:  389
+Norm:  0.09663914672057033
+Within-Group Iteration:  390
+Norm:  0.02934387257235145
+Within-Group Iteration:  391
+Norm:  0.08223232625447781
+Within-Group Iteration:  392
+Norm:  0.07377160267800788
+Within-Group Iteration:  393
+Norm:  0.015516611137391303
+Within-Group Iteration:  394
+Norm:  0.027187195984266683
+Within-Group Iteration:  395
+Norm:  0.016374524750033134
+Within-Group Iteration:  396
+Norm:  0.017269203482163185
+Within-Group Iteration:  397
+Norm:  0.007686212443915299
+Within-Group Iteration:  398
+Norm:  0.04207506957701047
+Within-Group Iteration:  399
+Norm:  0.029950322421484335
+Within-Group Iteration:  400
+Norm:  0.01546868685090852
+Within-Group Iteration:  401
+Norm:  0.025478817575922255
+Within-Group Iteration:  402
+Norm:  0.049098076513881504
+Within-Group Iteration:  403
+Norm:  0.04111728705223251
+Within-Group Iteration:  404
+Norm:  0.0179032527119305
+Within-Group Iteration:  405
+Norm:  0.036039966131246944
+Within-Group Iteration:  406
+Norm:  0.024699751140709866
+Within-Group Iteration:  407
+Norm:  0.014756525423610882
+Within-Group Iteration:  408
+Norm:  0.014605447248741868
+Within-Group Iteration:  409
+Norm:  0.019552501950135203
+Within-Group Iteration:  410
+Norm:  0.01773200406093643
+Within-Group Iteration:  411
+Norm:  0.015666013755169222
+Within-Group Iteration:  412
+Norm:  0.03305745674052352
+Within-Group Iteration:  413
+Norm:  0.02809960296223498
+Within-Group Iteration:  414
+Norm:  0.01725488075993904
+Within-Group Iteration:  415
+Norm:  0.0074900602672077835
+Within-Group Iteration:  416
+Norm:  0.05024233026998038
+Within-Group Iteration:  417
+Norm:  0.0389006294226495
+Within-Group Iteration:  418
+Norm:  0.015319296573758889
+Within-Group Iteration:  419
+Norm:  0.04595828990848373
+Within-Group Iteration:  420
+Norm:  0.052642519141239144
+Within-Group Iteration:  421
+Norm:  0.06130507233782256
+Within-Group Iteration:  422
+Norm:  0.027829663836088574
+Within-Group Iteration:  423
+Norm:  0.035208138983915546
+Within-Group Iteration:  424
+Norm:  0.017547537973813813
+Within-Group Iteration:  425
+Norm:  0.0056088009955328946
+Within-Group Iteration:  426
+Norm:  0.15940602394207345
+Within-Group Iteration:  427
+Norm:  0.16620895115972553
+Within-Group Iteration:  428
+Norm:  0.0037986157941222046
+Within-Group Iteration:  429
+Norm:  0.018245054917959632
+Within-Group Iteration:  430
+Norm:  0.003602674088631096
+Within-Group Iteration:  431
+Norm:  0.05430320059991238
+Within-Group Iteration:  432
+Norm:  0.04431755532173494
+Within-Group Iteration:  433
+Norm:  0.015332517308496683
+Within-Group Iteration:  434
+Norm:  0.04737553581426421
+Within-Group Iteration:  435
+Norm:  0.09772308953561357
+Within-Group Iteration:  436
+Norm:  0.08564852376796382
+Within-Group Iteration:  437
+Norm:  0.024279882136595748
+Within-Group Iteration:  438
+Norm:  0.01533565810799256
+Within-Group Iteration:  439
+Norm:  0.030553344025538318
+Within-Group Iteration:  440
+Norm:  0.03059541183313762
+Within-Group Iteration:  441
+Norm:  0.0709654501016807
+Within-Group Iteration:  442
+Norm:  0.06993365350339792
+Within-Group Iteration:  443
+Norm:  0.02424511703414759
+Within-Group Iteration:  444
+Norm:  0.016637521965655697
+Within-Group Iteration:  445
+Norm:  0.03221791788939477
+Within-Group Iteration:  446
+Norm:  0.01829445898496133
+Within-Group Iteration:  447
+Norm:  0.018515076319998162
+Within-Group Iteration:  448
+Norm:  0.01893723539373911
+Within-Group Iteration:  449
+Norm:  0.03320203580953957
+Within-Group Iteration:  450
+Norm:  0.016527683751539783
+Within-Group Iteration:  451
+Norm:  0.027270405919860047
+Within-Group Iteration:  452
+Norm:  0.04651032777968609
+Within-Group Iteration:  453
+Norm:  0.025124970454603678
+Within-Group Iteration:  454
+Norm:  0.03518068541940721
+Within-Group Iteration:  455
+Norm:  0.035168252927695
+Within-Group Iteration:  456
+Norm:  0.015777839686895404
+Within-Group Iteration:  457
+Norm:  0.029380578808697648
+Within-Group Iteration:  458
+Norm:  0.041785800689117754
+Within-Group Iteration:  459
+Norm:  0.01132660330811574
+Within-Group Iteration:  460
+Norm:  0.028893111320402363
+Within-Group Iteration:  461
+Norm:  0.0317724613431427
+Within-Group Iteration:  462
+Norm:  0.05319049558830093
+Within-Group Iteration:  463
+Norm:  0.0739113298045481
+Within-Group Iteration:  464
+Norm:  0.02839702914176813
+Within-Group Iteration:  465
+Norm:  0.015311569916835242
+Within-Group Iteration:  466
+Norm:  0.037983383058342736
+Within-Group Iteration:  467
+Norm:  0.03938483057245089
+Within-Group Iteration:  468
+Norm:  0.030942054131582616
+Within-Group Iteration:  469
+Norm:  0.025317548236324768
+Within-Group Iteration:  470
+Norm:  0.016148140846097465
+Within-Group Iteration:  471
+Norm:  0.020130702357898028
+Within-Group Iteration:  472
+Norm:  0.03496136419853487
+Within-Group Iteration:  473
+Norm:  0.015413840878437066
+Within-Group Iteration:  474
+Norm:  0.003710686953888867
+Within-Group Iteration:  475
+Norm:  0.03388335747425612
+Within-Group Iteration:  476
+Norm:  0.038842476377427625
+Within-Group Iteration:  477
+Norm:  0.015287925823088706
+Within-Group Iteration:  478
+Norm:  0.002151422337827655
+Within-Group Iteration:  479
+Norm:  0.04218098285031333
+Within-Group Iteration:  480
+Norm:  0.04914788115405166
+Within-Group Iteration:  481
+Norm:  0.0434791650441661
+Within-Group Iteration:  482
+Norm:  0.02157065538347356
+Within-Group Iteration:  483
+Norm:  0.015840855772550354
+Within-Group Iteration:  484
+Norm:  0.020909146492694992
+Within-Group Iteration:  485
+Norm:  0.026569467446256788
+Within-Group Iteration:  486
+Norm:  0.03338402384398235
+Within-Group Iteration:  487
+Norm:  0.019499920610601837
+Within-Group Iteration:  488
+Norm:  0.01641519552007581
+Within-Group Iteration:  489
+Norm:  0.04177607954728917
+Within-Group Iteration:  490
+Norm:  0.05286467406647029
+Within-Group Iteration:  491
+Norm:  0.013552770381176726
+Within-Group Iteration:  492
+Norm:  0.016078019990509736
+Within-Group Iteration:  493
+Norm:  0.015877077624698744
+Within-Group Iteration:  494
+Norm:  0.026228233738528547
+Within-Group Iteration:  495
+Norm:  0.03942496812192686
+Within-Group Iteration:  496
+Norm:  0.009623490690208018
+Within-Group Iteration:  497
+Norm:  0.004613681666928694
+Within-Group Iteration:  498
+Norm:  0.020193768662741272
+Within-Group Iteration:  499
+Norm:  0.02309788332474478
+Within-Group Iteration:  500
+Norm:  0.051940428454522014
+Within-Group Iteration:  501
+Norm:  0.05604030307180024
+Within-Group Iteration:  502
+Norm:  0.007332674658173225
+Within-Group Iteration:  503
+Norm:  0.029293981264112902
+Within-Group Iteration:  504
+Norm:  0.030680718997235536
+Within-Group Iteration:  505
+Norm:  0.014934092763553298
+Within-Group Iteration:  506
+Norm:  0.015531147576025393
+Within-Group Iteration:  507
+Norm:  0.015752068201696383
+Within-Group Iteration:  508
+Norm:  0.06840465151026794
+Within-Group Iteration:  509
+Norm:  0.023399484769765895
+Within-Group Iteration:  510
+Norm:  0.03944967709435299
+Within-Group Iteration:  511
+Norm:  0.015422029147921195
+Within-Group Iteration:  512
+Norm:  0.021489345327869842
+Within-Group Iteration:  513
+Norm:  0.013155950557040781
+Within-Group Iteration:  514
+Norm:  0.01724720387497417
+Within-Group Iteration:  515
+Norm:  0.006994358514964568
+Within-Group Iteration:  516
+Norm:  0.05016774513054706
+Within-Group Iteration:  517
+Norm:  0.03880251028731591
+Within-Group Iteration:  518
+Norm:  0.015319088143356356
+Within-Group Iteration:  519
+Norm:  0.045826984858575656
+Within-Group Iteration:  520
+Norm:  0.05129311928322925
+Within-Group Iteration:  521
+Norm:  0.051542587000838164
+Within-Group Iteration:  522
+Norm:  0.026891615581676066
+Within-Group Iteration:  523
+Norm:  0.03712908561949344
+Within-Group Iteration:  524
+Norm:  0.015025037653444085
+Within-Group Iteration:  525
+Norm:  0.0036737087395367486
+Within-Group Iteration:  526
+Norm:  0.034922950855241386
+Within-Group Iteration:  527
+Norm:  0.039662527568701575
+Within-Group Iteration:  528
+Norm:  0.014948586489490568
+Within-Group Iteration:  529
+Norm:  0.00292580235041776
+Within-Group Iteration:  530
+Norm:  0.0396319077944778
+Within-Group Iteration:  531
+Norm:  0.04377066426552333
+Within-Group Iteration:  532
+Norm:  0.014418778414098507
+Within-Group Iteration:  533
+Norm:  0.00277384514767647
+Within-Group Iteration:  534
+Norm:  0.04320816518554402
+Within-Group Iteration:  535
+Norm:  0.046830223997187406
+Within-Group Iteration:  536
+Norm:  0.013148105163450477
+Within-Group Iteration:  537
+Norm:  0.003041143832830238
+Within-Group Iteration:  538
+Norm:  0.06936152855096733
+Within-Group Iteration:  539
+Norm:  0.07292349208576908
+Within-Group Iteration:  540
+Norm:  0.006714626441578782
+Within-Group Iteration:  541
+Norm:  0.010501475785767277
+Within-Group Iteration:  542
+Norm:  0.02183934804889951
+Within-Group Iteration:  543
+Norm:  0.048737032823992305
+Within-Group Iteration:  544
+Norm:  0.04957618065065158
+Within-Group Iteration:  545
+Norm:  0.017485582628684354
+Within-Group Iteration:  546
+Norm:  0.010798852394850919
+Within-Group Iteration:  547
+Norm:  0.03144991269190175
+Within-Group Iteration:  548
+Norm:  0.014118223610214342
+Within-Group Iteration:  549
+Norm:  0.018037595522330065
+Within-Group Iteration:  550
+Norm:  0.020355853039812792
+Within-Group Iteration:  551
+Norm:  0.03362366307685946
+Within-Group Iteration:  552
+Norm:  0.016389387425361505
+Within-Group Iteration:  553
+Norm:  0.016372229640436088
+Within-Group Iteration:  554
+Norm:  0.05804933850213793
+Within-Group Iteration:  555
+Norm:  0.04763974131553196
+Within-Group Iteration:  556
+Norm:  0.015443147058096953
+Within-Group Iteration:  557
+Norm:  0.020098664709201658
+Within-Group Iteration:  558
+Norm:  0.027660834350534576
+Within-Group Iteration:  559
+Norm:  0.025339872968887043
+Within-Group Iteration:  560
+Norm:  0.033673104210525724
+Within-Group Iteration:  561
+Norm:  0.017449924746264025
+Within-Group Iteration:  562
+Norm:  0.02606177055677032
+Within-Group Iteration:  563
+Norm:  0.01862173586225397
+Within-Group Iteration:  564
+Norm:  0.03531280528873008
+Within-Group Iteration:  565
+Norm:  0.023668610513337896
+Within-Group Iteration:  566
+Norm:  0.014707129029284284
+Within-Group Iteration:  567
+Norm:  0.01451626915741041
+Within-Group Iteration:  568
+Norm:  0.015806536505844133
+Within-Group Iteration:  569
+Norm:  0.01589045731797712
+Within-Group Iteration:  570
+Norm:  0.015453809323267169
+Within-Group Iteration:  571
+Norm:  0.027336722476320924
+Within-Group Iteration:  572
+Norm:  0.02752242423332873
+Within-Group Iteration:  573
+Norm:  0.07426522543280248
+Within-Group Iteration:  574
+Norm:  0.0657086170223116
+Within-Group Iteration:  575
+Norm:  0.01549258336071003
+Within-Group Iteration:  576
+Norm:  0.08724740471162788
+Within-Group Iteration:  577
+Norm:  0.0879164987048271
+Within-Group Iteration:  578
+Norm:  0.060219311275816145
+Within-Group Iteration:  579
+Norm:  0.054658797345476594
+Within-Group Iteration:  580
+Norm:  0.040818831054191006
+Within-Group Iteration:  581
+Norm:  0.051240352313909956
+Within-Group Iteration:  582
+Norm:  0.03532039688685184
+Within-Group Iteration:  583
+Norm:  0.036831345438065134
+Within-Group Iteration:  584
+Norm:  0.024757344177383206
+Within-Group Iteration:  585
+Norm:  0.014688170502365674
+Within-Group Iteration:  586
+Norm:  0.014546389510533534
+Within-Group Iteration:  587
+Norm:  0.02946299238679809
+Within-Group Iteration:  588
+Norm:  0.029147205667683824
+Within-Group Iteration:  589
+Norm:  0.015612264923439746
+Within-Group Iteration:  590
+Norm:  0.07371324399064938
+Within-Group Iteration:  591
+Norm:  0.06723857404686356
+Within-Group Iteration:  592
+Norm:  0.01532904417528296
+Within-Group Iteration:  593
+Norm:  0.03439815697577561
+Within-Group Iteration:  594
+Norm:  0.04742077825059469
+Within-Group Iteration:  595
+Norm:  0.08240268572333863
+Within-Group Iteration:  596
+Norm:  0.05479496837531567
+Within-Group Iteration:  597
+Norm:  0.016220408437856628
+Within-Group Iteration:  598
+Norm:  0.015559395779132405
+Within-Group Iteration:  599
+Norm:  0.03304911510811615
+Within-Group Iteration:  600
+Norm:  0.0172641026671777
+Within-Group Iteration:  601
+Norm:  0.031771249947088895
+Within-Group Iteration:  602
+Norm:  0.021450397739772503
+Within-Group Iteration:  603
+Norm:  0.027865299294127042
+Within-Group Iteration:  604
+Norm:  0.04498547912827419
+Within-Group Iteration:  605
+Norm:  0.013233065387438065
+Within-Group Iteration:  606
+Norm:  0.0032708257522212248
+Within-Group Iteration:  607
+Norm:  0.06939768232177497
+Within-Group Iteration:  608
+Norm:  0.07297832432583098
+Within-Group Iteration:  609
+Norm:  0.006660587301332885
+Within-Group Iteration:  610
+Norm:  0.011448675009413533
+Within-Group Iteration:  611
+Norm:  0.02277740064569251
+Within-Group Iteration:  612
+Norm:  0.021818452760245823
+Within-Group Iteration:  613
+Norm:  0.02041544858816168
+Within-Group Iteration:  614
+Norm:  0.025325571368028342
+Within-Group Iteration:  615
+Norm:  0.014420971935688658
+Within-Group Iteration:  616
+Norm:  0.014405219161932338
+Within-Group Iteration:  617
+Norm:  0.015495861119043022
+Within-Group Iteration:  618
+Norm:  0.026715897381916792
+Within-Group Iteration:  619
+Norm:  0.0399908593696984
+Within-Group Iteration:  620
+Norm:  0.012270852495076404
+Within-Group Iteration:  621
+Norm:  0.00494834575986216
+Within-Group Iteration:  622
+Norm:  0.033380455217548496
+Within-Group Iteration:  623
+Norm:  0.03205393771739805
+Within-Group Iteration:  624
+Norm:  0.041540931423580674
+Within-Group Iteration:  625
+Norm:  0.04226643380251312
+Within-Group Iteration:  626
+Norm:  0.017339530100404277
+Within-Group Iteration:  627
+Norm:  0.0034607702066181043
+Within-Group Iteration:  628
+Norm:  0.1649030238447684
+Within-Group Iteration:  629
+Norm:  0.1540611820971147
+Within-Group Iteration:  630
+Norm:  0.01717176523745839
+Within-Group Iteration:  631
+Norm:  0.009311437197022572
+Within-Group Iteration:  632
+Norm:  0.06889251350600666
+Within-Group Iteration:  633
+Norm:  0.05865964458349526
+Within-Group Iteration:  634
+Norm:  0.047160673637855255
+Within-Group Iteration:  635
+Norm:  0.054151643348567625
+Within-Group Iteration:  636
+Norm:  0.016991726182672112
+Within-Group Iteration:  637
+Norm:  0.006119526135161868
+Within-Group Iteration:  638
+Norm:  0.05513181324322627
+Within-Group Iteration:  639
+Norm:  0.04413052855916752
+Within-Group Iteration:  640
+Norm:  0.015349114039886216
+Within-Group Iteration:  641
+Norm:  0.04689820655077445
+Within-Group Iteration:  642
+Norm:  0.23261290578359578
+Within-Group Iteration:  643
+Norm:  0.27002264669979215
+Within-Group Iteration:  644
+Norm:  0.02247624368008238
+Within-Group Iteration:  645
+Norm:  0.041296640926155884
+Within-Group Iteration:  646
+Norm:  0.04058634831935865
+Within-Group Iteration:  647
+Norm:  0.017226789246181422
+Within-Group Iteration:  648
+Norm:  0.5365499090245336
+Within-Group Iteration:  649
+Norm:  0.5453433908224137
+Within-Group Iteration:  650
+Norm:  0.998321437567375
+Within-Group Iteration:  651
+Norm:  2.5246184663806384
+Within-Group Iteration:  652
+Norm:  0.03285446810685625
+Within-Group Iteration:  653
+Norm:  0.017115662647605907
+Within-Group Iteration:  654
+Norm:  0.04295253052617752
+Within-Group Iteration:  655
+Norm:  0.027384198095655538
+Within-Group Iteration:  656
+Norm:  0.05644691735468973
+Within-Group Iteration:  657
+Norm:  0.06377652243294607
+Within-Group Iteration:  658
+Norm:  0.011702864034575463
+Within-Group Iteration:  659
+Norm:  0.011609484978759934
+Within-Group Iteration:  660
+Norm:  0.05884347452930064
+Within-Group Iteration:  661
+Norm:  0.06459582280609205
+Within-Group Iteration:  662
+Norm:  0.012034545779411897
+Within-Group Iteration:  663
+Norm:  0.03422250005881133
+Within-Group Iteration:  664
+Norm:  0.029176053270650714
+Within-Group Iteration:  665
+Norm:  0.016845568360968833
+Within-Group Iteration:  666
+Norm:  0.04830107122004074
+Within-Group Iteration:  667
+Norm:  0.03775379089979123
+Within-Group Iteration:  668
+Norm:  0.015318378348735435
+Within-Group Iteration:  669
+Norm:  0.041634296245208396
+Within-Group Iteration:  670
+Norm:  0.03814696368825159
+Within-Group Iteration:  671
+Norm:  0.01912451132635829
+Within-Group Iteration:  672
+Norm:  0.2599740344832738
+Within-Group Iteration:  673
+Norm:  0.26651155095724993
+Within-Group Iteration:  674
+Norm:  0.018137961879671156
+Within-Group Iteration:  675
+Norm:  0.018083948228040384
+Within-Group Iteration:  676
+Norm:  0.0075821142908064085
+Within-Group Iteration:  677
+Norm:  0.01016119816651412
+Within-Group Iteration:  678
+Norm:  0.016132842051506505
+Within-Group Iteration:  679
+Norm:  0.018407147544574697
+Within-Group Iteration:  680
+Norm:  0.033725668575590534
+Within-Group Iteration:  681
+Norm:  0.016652418167826203
+Within-Group Iteration:  682
+Norm:  0.42727020728020204
+Within-Group Iteration:  683
+Norm:  0.4366641745178451
+Within-Group Iteration:  684
+Norm:  0.04496503217893574
+Within-Group Iteration:  685
+Norm:  0.04806612087054456
+Within-Group Iteration:  686
+Norm:  0.01235580072057745
+Within-Group Iteration:  687
+Norm:  0.0036210383306909417
+Within-Group Iteration:  688
+Norm:  0.1047147671463571
+Within-Group Iteration:  689
+Norm:  0.10082054832881966
+Within-Group Iteration:  690
+Norm:  0.015828675813019995
+Within-Group Iteration:  691
+Norm:  0.13564454652424895
+Within-Group Iteration:  692
+Norm:  0.12866351955468927
+Within-Group Iteration:  693
+Norm:  0.01580195261964742
+Within-Group Iteration:  694
+Norm:  0.02417616086483858
+Within-Group Iteration:  695
+Norm:  0.03773377354266226
+Within-Group Iteration:  696
+Norm:  0.014100731623398068
+Within-Group Iteration:  697
+Norm:  0.00417172785514141
+Within-Group Iteration:  698
+Norm:  0.03874865533372975
+Within-Group Iteration:  699
+Norm:  0.04311849152080438
+Within-Group Iteration:  700
+Norm:  0.013483027496824873
+Within-Group Iteration:  701
+Norm:  0.003477261860360323
+Within-Group Iteration:  702
+Norm:  0.05383574759452531
+Within-Group Iteration:  703
+Norm:  0.057163780532990746
+Within-Group Iteration:  704
+Norm:  0.008701519091793541
+Within-Group Iteration:  705
+Norm:  0.006027867447022946
+Within-Group Iteration:  706
+Norm:  0.0177036329395649
+Within-Group Iteration:  707
+Norm:  0.021823378279913277
+Within-Group Iteration:  708
+Norm:  0.050743980970977876
+Within-Group Iteration:  709
+Norm:  0.05059914481494629
+Within-Group Iteration:  710
+Norm:  0.015473546348054855
+Within-Group Iteration:  711
+Norm:  0.011086388871332157
+Within-Group Iteration:  712
+Norm:  0.03016034336489682
+Within-Group Iteration:  713
+Norm:  0.017508052071475665
+Within-Group Iteration:  714
+Norm:  0.047560326932116405
+Within-Group Iteration:  715
+Norm:  0.0276444630510681
+Within-Group Iteration:  716
+Norm:  0.1597924494020211
+Within-Group Iteration:  717
+Norm:  0.16037705843660394
+Within-Group Iteration:  718
+Norm:  0.009768121081110687
+Within-Group Iteration:  719
+Norm:  0.021946178907367733
+Within-Group Iteration:  720
+Norm:  0.028731738333136504
+Within-Group Iteration:  721
+Norm:  0.03693583075418104
+Within-Group Iteration:  722
+Norm:  0.014426735001828126
+Within-Group Iteration:  723
+Norm:  0.0042483254253823785
+Within-Group Iteration:  724
+Norm:  0.03503415780917422
+Within-Group Iteration:  725
+Norm:  0.03990011508322062
+Within-Group Iteration:  726
+Norm:  0.014668636467973017
+Within-Group Iteration:  727
+Norm:  0.0034026213201010613
+Within-Group Iteration: Power Iteration  1
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.019106215793938352
+Within-Group Iteration:  2
+Norm:  3.08050166986945e-09
+Finished Group  3
+Number of Within-Group Iterations:  3
+Final Phi Norm:  3.08050166986945e-09
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.03198926020704992
+Within-Group Iteration:  2
+Norm:  3.484345788578155e-05
+Within-Group Iteration:  3
+Norm:  5.127726881194317e-08
+Within-Group Iteration:  4
+Norm:  7.546122913463945e-11
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  7.546122913463945e-11
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07300889290146059
+Within-Group Iteration:  2
+Norm:  2.1141988109686882e-07
+Within-Group Iteration:  3
+Norm:  5.234842282452668e-13
+Finished Group  5
+Number of Within-Group Iterations:  4
+Final Phi Norm:  5.234842282452668e-13
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.15274102632626904
+Within-Group Iteration:  2
+Norm:  1.3061359631594728e-06
+Within-Group Iteration:  3
+Norm:  1.477965999769182e-12
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  1.477965999769182e-12
+Calculating Upscatter Acceleration Term
+GS Norm:  0.9996879975879512
+Gauss-Seidel Iteration:  2
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.0191107074905647
+Within-Group Iteration:  2
+Norm:  7.960869225105334e-08
+Within-Group Iteration:  3
+Norm:  3.8841055170192075e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  3.8841055170192075e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.032422102378244465
+Within-Group Iteration:  2
+Norm:  5.5753721098325216e-05
+Within-Group Iteration:  3
+Norm:  1.284826056491746e-07
+Within-Group Iteration:  4
+Norm:  2.9607392683421795e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.9607392683421795e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.03586834495562615
+Within-Group Iteration:  2
+Norm:  1.9796108248906863e-05
+Within-Group Iteration:  3
+Norm:  5.3247112115649534e-08
+Within-Group Iteration:  4
+Norm:  1.4316797799678658e-10
+Finished Group  5
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.4316797799678658e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.0754449117279551
+Within-Group Iteration:  2
+Norm:  1.114051576063407e-05
+Within-Group Iteration:  3
+Norm:  2.3939067249151133e-09
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  2.3939067249151133e-09
+Calculating Upscatter Acceleration Term
+GS Norm:  0.03650680596656239
+Gauss-Seidel Iteration:  3
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.01911095781109331
+Within-Group Iteration:  2
+Norm:  5.9297284542469045e-08
+Within-Group Iteration:  3
+Norm:  2.8910661188419763e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  2.8910661188419763e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.032541803072823006
+Within-Group Iteration:  2
+Norm:  5.804536924374237e-05
+Within-Group Iteration:  3
+Norm:  1.4214966140947968e-07
+Within-Group Iteration:  4
+Norm:  3.481031301489159e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.481031301489159e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.046695312675196506
+Within-Group Iteration:  2
+Norm:  1.1681454026156415e-05
+Within-Group Iteration:  3
+Norm:  3.1809052118914216e-09
+Finished Group  5
+Number of Within-Group Iterations:  4
+Final Phi Norm:  3.1809052118914216e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.10283838559464976
+Within-Group Iteration:  2
+Norm:  0.00012616257374741774
+Within-Group Iteration:  3
+Norm:  2.779936168019677e-08
+Within-Group Iteration:  4
+Norm:  6.100224539077691e-12
+Finished Group  6
+Number of Within-Group Iterations:  5
+Final Phi Norm:  6.100224539077691e-12
+Calculating Upscatter Acceleration Term
+GS Norm:  0.023270404147926308
+Gauss-Seidel Iteration:  4
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.01911067924141865
+Within-Group Iteration:  2
+Norm:  9.03392751029874e-08
+Within-Group Iteration:  3
+Norm:  4.4100408400900384e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  4.4100408400900384e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.032523772586500306
+Within-Group Iteration:  2
+Norm:  5.8676242991248113e-05
+Within-Group Iteration:  3
+Norm:  1.4339825538193025e-07
+Within-Group Iteration:  4
+Norm:  3.504363295957485e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.504363295957485e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.04519017392318135
+Within-Group Iteration:  2
+Norm:  0.00011462315680931825
+Within-Group Iteration:  3
+Norm:  4.464167132661498e-06
+Within-Group Iteration:  4
+Norm:  1.724786565692747e-07
+Within-Group Iteration:  5
+Norm:  6.665995414499182e-09
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.665995414499182e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.093855798784551
+Within-Group Iteration:  2
+Norm:  4.924176744630253e-06
+Within-Group Iteration:  3
+Norm:  1.884226573516326e-10
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  1.884226573516326e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.01808484643379199
+Gauss-Seidel Iteration:  5
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.019110949699509407
+Within-Group Iteration:  2
+Norm:  4.151155546432869e-08
+Within-Group Iteration:  3
+Norm:  2.022613600205809e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  2.022613600205809e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.03254305179470644
+Within-Group Iteration:  2
+Norm:  5.8072809716197916e-05
+Within-Group Iteration:  3
+Norm:  1.4332662614872765e-07
+Within-Group Iteration:  4
+Norm:  3.5372402357597723e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.5372402357597723e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.0452036151199369
+Within-Group Iteration:  2
+Norm:  2.5202900905337875e-06
+Within-Group Iteration:  3
+Norm:  2.1458761190695335e-11
+Finished Group  5
+Number of Within-Group Iterations:  4
+Final Phi Norm:  2.1458761190695335e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.10010430883198791
+Within-Group Iteration:  2
+Norm:  5.723489338571837e-06
+Within-Group Iteration:  3
+Norm:  2.5076342599575085e-11
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  2.5076342599575085e-11
+Calculating Upscatter Acceleration Term
+GS Norm:  0.018656680270585344
+Gauss-Seidel Iteration:  6
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.019110700962363968
+Within-Group Iteration:  2
+Norm:  1.1744140935999982e-07
+Within-Group Iteration:  3
+Norm:  5.738768483470705e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  5.738768483470705e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0325298525723508
+Within-Group Iteration:  2
+Norm:  5.9070512950419935e-05
+Within-Group Iteration:  3
+Norm:  1.4351459984283084e-07
+Within-Group Iteration:  4
+Norm:  3.4866215648385407e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.4866215648385407e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.04548669475246026
+Within-Group Iteration:  2
+Norm:  1.1666989984757303e-05
+Within-Group Iteration:  3
+Norm:  9.851353620532623e-07
+Within-Group Iteration:  4
+Norm:  8.30875694515872e-08
+Within-Group Iteration:  5
+Norm:  7.008388209885722e-09
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  7.008388209885722e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.0940674919974006
+Within-Group Iteration:  2
+Norm:  3.697854471703142e-06
+Within-Group Iteration:  3
+Norm:  7.713633363545531e-11
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  7.713633363545531e-11
+Calculating Upscatter Acceleration Term
+GS Norm:  0.023158402548014625
+Gauss-Seidel Iteration:  7
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.019110954943219124
+Within-Group Iteration:  2
+Norm:  5.914165354398779e-10
+Finished Group  3
+Number of Within-Group Iterations:  3
+Final Phi Norm:  5.914165354398779e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.03253979609554003
+Within-Group Iteration:  2
+Norm:  5.738455208643456e-05
+Within-Group Iteration:  3
+Norm:  1.42972075997832e-07
+Within-Group Iteration:  4
+Norm:  3.56197845337567e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.56197845337567e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.044763830690738894
+Within-Group Iteration:  2
+Norm:  1.0586456329309951e-05
+Within-Group Iteration:  3
+Norm:  2.428645003297264e-09
+Finished Group  5
+Number of Within-Group Iterations:  4
+Final Phi Norm:  2.428645003297264e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.10182899747144765
+Within-Group Iteration:  2
+Norm:  5.895712548406355e-07
+Within-Group Iteration:  3
+Norm:  4.9067704332285e-13
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  4.9067704332285e-13
+Calculating Upscatter Acceleration Term
+GS Norm:  0.0315146275738775
+Gauss-Seidel Iteration:  8
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.019110658872199898
+Within-Group Iteration:  2
+Norm:  1.8174327205959917e-07
+Within-Group Iteration:  3
+Norm:  8.901646032015164e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  8.901646032015164e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.03253288677804967
+Within-Group Iteration:  2
+Norm:  6.008226473589791e-05
+Within-Group Iteration:  3
+Norm:  1.4415326718971478e-07
+Within-Group Iteration:  4
+Norm:  3.4584840543160514e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.4584840543160514e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.04631036784238954
+Within-Group Iteration:  2
+Norm:  5.1536436763252765e-05
+Within-Group Iteration:  3
+Norm:  4.4724527633081115e-07
+Within-Group Iteration:  4
+Norm:  3.8756230203664465e-09
+Finished Group  5
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.8756230203664465e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.09135229066226383
+Within-Group Iteration:  2
+Norm:  3.028960233308163e-06
+Within-Group Iteration:  3
+Norm:  4.4364357561420475e-11
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  4.4364357561420475e-11
+Calculating Upscatter Acceleration Term
+GS Norm:  0.04529451415916468
+Gauss-Seidel Iteration:  9
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
+Within-Group Iteration:  4
+Norm:  9.058042240479375e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  9.058042240479375e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.019111055874727945
+Within-Group Iteration:  2
+Norm:  1.0135024771276978e-07
+Within-Group Iteration:  3
+Norm:  4.910861454217921e-11
+Finished Group  3
+Number of Within-Group Iterations:  4
+Final Phi Norm:  4.910861454217921e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.03253744579079367
+Within-Group Iteration:  2
+Norm:  5.554142380577249e-05
+Within-Group Iteration:  3
+Norm:  1.4127768402093976e-07
+Within-Group Iteration:  4
+Norm:  3.593475553021909e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.593475553021909e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.043827205043336113
+Within-Group Iteration:  2
+Norm:  2.338199968997638e-05
+Within-Group Iteration:  3
+Norm:  2.392752116271712e-08
+Within-Group Iteration:  4
+Norm:  2.4480128737380378e-11
+Finished Group  5
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.4480128737380378e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.10750727290698628
+Within-Group Iteration:  2
+Norm:  1.9195448828096495e-06
+Within-Group Iteration:  3
+Norm:  1.1012724615199374e-11
+Finished Group  6
+Number of Within-Group Iterations:  4
+Final Phi Norm:  1.1012724615199374e-11
+Calculating Upscatter Acceleration Term
+GS Norm:  0.06707736662395719
+Gauss-Seidel Iteration:  10
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  0.015745207187581302
+Within-Group Iteration:  2
+Norm:  0.001269692533169828
+Within-Group Iteration:  3
+Norm:  5.3808621975804225e-05
+Within-Group Iteration:  4
+Norm:  2.2753284691849957e-06
+Within-Group Iteration:  5
+Norm:  9.62226652936428e-08
+Within-Group Iteration:  6
+Norm:  4.069198899304565e-09
+Finished Group  0
+Number of Within-Group Iterations:  7
+Final Phi Norm:  4.069198899304565e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.010640294201563809
+Within-Group Iteration:  2
+Norm:  0.00018099305083807798
+Within-Group Iteration:  3
+Norm:  1.5882296082011994e-05
+Within-Group Iteration:  4
+Norm:  1.3953000656286345e-06
+Within-Group Iteration:  5
+Norm:  1.2256819458584576e-07
+Within-Group Iteration:  6
+Norm:  1.0766927852478571e-08
+Within-Group Iteration:  7
+Norm:  9.45812709908381e-10
+Finished Group  1
+Number of Within-Group Iterations:  8
+Final Phi Norm:  9.45812709908381e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.006185818342703271
+Within-Group Iteration:  2
+Norm:  1.8299824123951416e-05
+Within-Group Iteration:  3
+Norm:  1.2874114928486122e-07
