@@ -24,8 +24,8 @@ class Helper():
     def integrate_flux(self, flux):
         # Integrate Flux Over Total Domain
         areas = np.array([self.fegrid.element_area(ele) for ele in range(self.num_elts)])
-        elt_fluxes = self.flux_at_elt(flux)
-        return np.sum(areas*elt_fluxes)
+        #elt_fluxes = self.flux_at_elt(flux)
+        return np.sum(areas*flux)
 
     def make_full_fission_source(self, phi):
         fiss_source = np.zeros((self.num_groups, self.num_elts))
