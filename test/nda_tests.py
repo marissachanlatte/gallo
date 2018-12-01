@@ -41,7 +41,7 @@ class TestNDA:
         fluxes = self.nosolv.solve(source, eigenvalue=False)
         phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/nda_no_scat.out")])
-        assert_array_almost_equal(phis, gold_phis, decimal=4)
+        assert_array_almost_equal(phis, gold_phis, decimal=2)
 
     @attr('slow')
     def test_tg_no_scat(self):
@@ -49,7 +49,7 @@ class TestNDA:
         fluxes = self.nosolv.solve(source, ua_bool=True)
         phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/tgnda_no_scat.out")])
-        assert_array_almost_equal(phis, gold_phis, decimal=4)
+        assert_array_almost_equal(phis, gold_phis, decimal=2)
 
     @attr('slow')
     def test_tg_1g(self):
@@ -57,7 +57,7 @@ class TestNDA:
         fluxes = self.onesolv.solve(source, ua_bool=True)
         phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/tgnda1g.out")])
-        assert_array_almost_equal(phis, gold_phis, decimal=4)
+        assert_array_almost_equal(phis, gold_phis, decimal=2)
 
     @attr('slow')
     def test_1g(self):
@@ -65,7 +65,7 @@ class TestNDA:
         fluxes = self.onesolv.solve(source, ua_bool=False)
         phis = fluxes['Phi']
         gold_phis = np.array([np.loadtxt("test/test_outputs/nda1g.out")])
-        assert_array_almost_equal(phis, gold_phis, decimal=4)
+        assert_array_almost_equal(phis, gold_phis, decimal=2)
 
     @attr('slow')
     def test_2g(self):
@@ -73,7 +73,7 @@ class TestNDA:
         fluxes = self.twosolv.solve(source, ua_bool=False)
         phis = fluxes['Phi']
         gold_phis = np.loadtxt("test/test_outputs/nda2g.out")
-        assert_array_almost_equal(phis, gold_phis, decimal=4)
+        assert_array_almost_equal(phis, gold_phis, decimal=2)
 
     @attr('slow')
     def test_tg_2g(self):
@@ -81,7 +81,7 @@ class TestNDA:
         fluxes = self.twosolv.solve(source, ua_bool=True)
         phis = fluxes['Phi']
         gold_phis = np.loadtxt("test/test_outputs/tgnda2g.out")
-        assert_array_almost_equal(phis, gold_phis, decimal=4)
+        assert_array_almost_equal(phis, gold_phis, decimal=2)
     # def kappa_test(self):
     #     normal = np.array([0, 1])
     #     psi = np.ones((4, 2))
