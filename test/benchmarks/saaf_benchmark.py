@@ -32,7 +32,7 @@ def filename_to_problem(func):
 
 @filename_to_problem
 def test_problem(problem):
-    source = np.ones((problem.num_groups, problem.n_elements))
+    source = np.zeros((problem.num_groups, problem.n_elements))
     # ### BOX SOURCE ###
     # source = np.zeros((problem.num_groups, problem.n_elements))
     # for g in range(problem.num_groups):
@@ -40,7 +40,11 @@ def test_problem(problem):
     #         centroid = problem.grid.centroid(e)
     #         if np.abs(centroid[0]) < 10 and np.abs(centroid[1]) < 10:
     #             source[g, e] = 1
-    phis, angs = problem.solver.solve(source)
+    fluxes = problem.solver.solve(source, eigenvalue=True)
+    print(fluxes['k'])
+    phis = fluxes['Phi']
+    np.savetxt("saaf_uo2.out", phis)
+    angs = fluxes['Psi']
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
@@ -136,5 +140,5 @@ def plot_from_file(problem):
         for i in range(4):
             plot(problem.grid, ang_fluxes[i], problem.filename + "_ang" + str(i) + "_group" + str(g))
 
-test_problem("symmetric", "scattering1g", "saaf_1gscat")
+test_problem("symmetric_fine", "c5g7uo2", "saaf_uo2")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
