@@ -31,9 +31,9 @@ class TestHelpers():
 
     def test_integrate_flux(self):
         g = 2
-        flux = np.random.rand(g, 4)
+        flux = np.random.rand(g, 2)
         integral = self.helper.integrate_flux(flux)
-        true_integral = np.array([(flux[i, 0] + flux[i, 1] + flux[i, 3])/3 +
-                              (flux[i, 1] + flux[i, 2] + flux[i, 3])/3 for i in range(g)])
-        true_integral = np.sum(true_integral)*0.5
+        #true_integral = np.array([(flux[i, 0] + flux[i, 1] + flux[i, 3])/3 +
+        #                      (flux[i, 1] + flux[i, 2] + flux[i, 3])/3 for i in range(g)])
+        true_integral = np.sum(flux)*0.5
         assert_almost_equal(integral, true_integral, decimal=10)
