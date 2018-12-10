@@ -4,12 +4,14 @@ import time
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
+import scipy.linalg as dense_linalg
 import matplotlib.tri as tri
 
 from gallo.formulations.diffusion import Diffusion
 from gallo.formulations.nda import NDA
 from gallo.formulations.saaf import SAAF
 from gallo.upscatter_acceleration import UA
+from gallo.helpers import Helper
 
 class Solver():
     def __init__(self, operator):
@@ -25,33 +27,32 @@ class Solver():
         self.num_angs = self.op.fegrid.num_angs
         self.angs = self.op.fegrid.angs
         self.weights = self.op.fegrid.weights
+        self.helper = Helper(self.op.fegrid, self.mat_data)
 
     def get_ang_flux(self, group_id, source, ang, angle_id, phi_prev):
-        lhs = self.op.make_lhs(ang, group_id).tocsr()
+        lhs = self.op.make_lhs(ang, group_id).todense()
         rhs = self.op.make_rhs(group_id, source, ang, angle_id, phi_prev)
-        ang_flux = linalg.cg(lhs, rhs)[0]
-        #ang_flux = linalg.spsolve(lhs, rhs)
+        ang_flux = dense_linalg.solve(lhs, rhs)[0]
         return ang_flux
 
     def get_scalar_flux(self, group_id, source, phi_prev, ho_sols=None):
         scalar_flux = 0
         if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols).tocsr()
+            lhs = self.op.make_lhs(group_id, ho_sols=ho_sols).todense()
             rhs = self.op.make_rhs(group_id, source, phi_prev)
-            scalar_flux = linalg.cg(lhs, rhs)[0]
-            #scalar_flux = linalg.spsolve(lhs, rhs)
-            return scalar_flux
+            scalar_flux = dense_linalg.solve(lhs, rhs)
+            return {"Phi": scalar_flux, "Psi": None}
         else:
-            ang_fluxes = np.zeros((4, self.num_nodes))
+            ang_fluxes = np.zeros((self.num_angs, self.num_nodes))
             # Iterate over all angle possibilities
             for i, ang in enumerate(self.angs):
                 ang = np.array(ang)
                 ang_fluxes[i] = self.get_ang_flux(group_id, source, ang, i, phi_prev)
                 scalar_flux += self.weights[i] * ang_fluxes[i]
-            return scalar_flux, ang_fluxes
+            return {"Phi": scalar_flux, "Psi": ang_fluxes}
 
     def solve_in_group(self, source, group_id, phi_prev, max_iter=1000,
-                       tol=1e-6, verbose=True):
+                       tol=1e-8, verbose=True):
         num_mats = self.mat_data.get_num_mats()
         for mat in range(num_mats):
             scatmat = self.mat_data.get_sigs(mat)
@@ -64,19 +65,19 @@ class Solver():
         if isinstance(self.op, NDA):
             # Run preliminary solve on low-order system
             ho_sols = 0
-            phi_prev[group_id] = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=ho_sols)
-        for i in range(max_iter):
+            fluxes = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=ho_sols)
+            phi_prev[group_id] = fluxes['Phi']
+        for i in range(1, max_iter):
             if scattering and verbose:
                 print("Within-Group Iteration: ", i)
             if isinstance(self.op, NDA):
                 ho_solver = Solver(self.ho_op)
-                ho_phis, ho_psis = ho_solver.get_scalar_flux(group_id, source, phi_prev)
-                ho_sols = [ho_phis, ho_psis]
-                phi = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=ho_sols)
-            elif isinstance(self.op, Diffusion):
-                phi = self.get_scalar_flux(group_id, source, phi_prev)
+                fluxes_ho = ho_solver.get_scalar_flux(group_id, source, phi_prev)
+                ho_phis, ho_psis = fluxes_ho['Phi'], fluxes_ho['Psi']
+                fluxes = self.get_scalar_flux(group_id, source, phi_prev, ho_sols=[ho_phis, ho_psis])
             else:
-                phi, ang_fluxes = self.get_scalar_flux(group_id, source, phi_prev)
+                fluxes = self.get_scalar_flux(group_id, source, phi_prev)
+            phi = fluxes['Phi']
             if not scattering:
                 break
             norm = np.linalg.norm(phi - phi_prev[group_id], float('inf'))/np.linalg.norm(phi, float('inf'))
@@ -91,34 +92,27 @@ class Solver():
         if scattering and verbose:
             print("Number of Within-Group Iterations: ", i + 1)
             print("Final Phi Norm: ", norm)
-        if isinstance(self.op, Diffusion):
-            return phi
-        elif isinstance(self.op, NDA):
-            return phi, ho_sols
+        if isinstance(self.op, NDA):
+            return {"Phi": phi, "Psi": None, "HO": [ho_phis, ho_psis]}
         else:
-            return phi, ang_fluxes
+            return {"Phi": phi, "Psi": fluxes['Psi'], "HO": None}
 
-    def solve_outer(self, source, verbose=True, max_iter=50, tol=1e-5):
-        phis = np.ones((self.num_groups, self.num_nodes))
-        ang_fluxes = np.zeros((self.num_groups, 4, self.num_nodes))
-        for it_count in range(max_iter):
+    def solve_outer(self, source, phis, verbose=True, max_iter=50, tol=1e-6):
+        ang_fluxes = np.zeros((self.num_groups, self.num_angs, self.num_nodes))
+        for it_count in range(1, max_iter):
             if self.num_groups != 1 and verbose:
                 print("Gauss-Seidel Iteration: ", it_count)
             phis_prev = np.copy(phis)
             if isinstance(self.op, NDA):
                 all_ho_sols = []
             for g in range(self.num_groups):
-                if isinstance(self.op, Diffusion):
-                    phi = self.solve_in_group(source, g, phis, verbose=verbose)
-                    phis[g] = phi
-                elif isinstance(self.op, NDA):
-                    phi, ho_sols = self.solve_in_group(source, g, phis, verbose=verbose)
-                    phis[g] = phi
-                    all_ho_sols.append(ho_sols)
+                if isinstance(self.op, NDA):
+                    fluxes = self.solve_in_group(source, g, phis, verbose=verbose)
+                    all_ho_sols.append(fluxes['HO'])
                 else:
-                    phi, psi = self.solve_in_group(source, g, phis)
-                    phis[g] = phi
-                    ang_fluxes[g] = psi
+                    fluxes = self.solve_in_group(source, g, phis)
+                    ang_fluxes[g] = fluxes['Psi']
+                phis[g] = fluxes['Phi']
             if self.num_groups == 1:
                 break
             else:
@@ -146,22 +140,41 @@ class Solver():
                     print("GS Norm: ", res)
             if res < tol:
                 break
-        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            return phis
-        else:
-            return phis, ang_fluxes
+        return {"Phi": phis, "Psi": ang_fluxes}
 
-    def solve(self, source, ua_bool=False):
+    def power_iteration(self, source, tol=1e-4):
+        k = 1
+        phi = np.ones((self.num_groups, self.num_nodes))
+        fiss_source = self.helper.make_full_fission_source(phi)
+        int_fiss = self.helper.integrate_flux(fiss_source)
+        err = 1
+        it = 0
+        while err > tol:
+            it += 1
+            print("Power Iteration ", it)
+            fluxes = self.solve_outer(fiss_source, (1/k)*phi)
+            phi_new = fluxes['Phi']
+            fiss_source_new = self.helper.make_full_fission_source(phi_new)
+            int_fiss_new = self.helper.integrate_flux(fiss_source_new)  # Integrate Fission Source
+            k_new = k*(int_fiss_new/int_fiss)
+            err_k = np.linalg.norm((k_new - k)/k_new)
+            err_phi = np.linalg.norm((phi_new - phi)/phi_new)
+            err = max(err_k, err_phi)
+            print("PI Norm: ", err)
+            int_fiss = np.copy(int_fiss_new)
+            phi = np.copy(phi_new)
+            k = np.copy(k_new)
+        return {"Phi": phi, "Psi": fluxes['Psi'], "k": k}
+
+    def solve(self, source, ua_bool=False, eigenvalue=False):
         start = time.time()
+        phis = np.ones((self.num_groups, self.num_nodes))
         if ua_bool:
             self.ua_bool = True
-        if isinstance(self.op, Diffusion) or isinstance(self.op, NDA):
-            phis = self.solve_outer(source)
-            end = time.time()
-            print("Runtime:", np.round(end - start, 5), "seconds")
-            return phis
+        if eigenvalue:
+            fluxes = self.power_iteration(source)
         else:
-            phis, ang_fluxes = self.solve_outer(source)
-            end = time.time()
-            print("Runtime:", np.round(end - start, 5), "seconds")
-            return phis, ang_fluxes
+            fluxes = self.solve_outer(source, phis)
+        end = time.time()
+        print("Runtime:", np.round(end - start, 5), "seconds")
+        return fluxes

@@ -1,24 +1,77 @@
 from nose.tools import *
+from numpy.testing import *
+from nose.plugins.attrib import attr
 import numpy as np
-import scipy.sparse as sps
-import scipy.sparse.linalg as linalg
 
 from gallo.formulations.diffusion import Diffusion
 from gallo.fe import FEGrid
 from gallo.materials import Materials
 from gallo.plot import plot
+from gallo.solvers import Solver
 
 class TestDiffusion():
     @classmethod
     def setup_class(cls):
-        cls.nodefile = "test/test_inputs/box_source.node"
-        cls.elefile = "test/test_inputs/box_source.ele"
-        cls.matfile = "test/test_inputs/box_source.mat"
-        cls.fegrid = FEGrid(cls.nodefile, cls.elefile)
-        cls.materials = Materials(cls.matfile)
-        cls.operator = Diffusion(cls.fegrid, cls.materials)
+        cls.stdnode = "test/test_inputs/std.node"
+        cls.stdele = "test/test_inputs/std.ele"
+        cls.stdgrid = FEGrid(cls.stdnode, cls.stdele)
+        cls.fissionfile = "test/test_inputs/fissiontest.mat"
+        cls.fissionmat = Materials(cls.fissionfile)
+        cls.fissop = Diffusion(cls.stdgrid, cls.fissionmat)
+        cls.solver = Solver(cls.fissop)
+        cls.symnode = "test/test_inputs/symmetric_fine.node"
+        cls.symele = "test/test_inputs/symmetric_fine.ele"
+        cls.symgrid = FEGrid(cls.symnode, cls.symele)
+        cls.symfissop = Diffusion(cls.symgrid, cls.fissionmat)
+        cls.symsolver = Solver(cls.symfissop)
+        cls.orignode = "test/test_inputs/origin_centered10_fine.node"
+        cls.origele = "test/test_inputs/origin_centered10_fine.ele"
+        cls.origrid = FEGrid(cls.orignode, cls.origele)
+        cls.twoscatfile = "test/test_inputs/scattering2g.mat"
+        cls.twoscatmat = Materials(cls.twoscatfile)
+        cls.twop = Diffusion(cls.origrid, cls.twoscatmat)
+        cls.twosolv = Solver(cls.twop)
+        cls.onescatfile = "test/test_inputs/scattering1g.mat"
+        cls.onescatmat = Materials(cls.onescatfile)
+        cls.oneop = Diffusion(cls.symgrid, cls.onescatmat)
+        cls.onesolv = Solver(cls.oneop)
+        cls.noscatfile = "test/test_inputs/noscatter.mat"
+        cls.noscatmat = Materials(cls.noscatfile)
+        cls.nop = Diffusion(cls.symgrid, cls.noscatmat)
+        cls.nosolv = Solver(cls.nop)
 
     def test_matrix(self):
-        A = self.operator.make_lhs(0)
+        A = self.symfissop.make_lhs(0)
         assert (A!=A.transpose()).nnz==0
         assert (A.diagonal() >= 0).all()
+
+    def test_eigenvalue(self):
+        source = np.zeros((self.symfissop.num_groups, self.symfissop.num_elts))
+        fluxes = self.symsolver.solve(source, eigenvalue=True)
+        phi = fluxes['Phi']
+        k = fluxes['k']
+        assert_allclose(k, 0.234582, rtol=0.5)
+
+    @attr('slow')
+    def test_two_group(self):
+        source = np.ones((self.twop.num_groups, self.twop.num_elts))
+        fluxes = self.twosolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
+        gold_phis = np.loadtxt("test/test_outputs/diff2g.out")
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    @attr('slow')
+    def test_one_group(self):
+        source = np.ones((self.oneop.num_groups, self.oneop.num_elts))
+        fluxes = self.onesolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
+        gold_phis = np.array([np.loadtxt("test/test_outputs/diff1g.out")])
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    @attr('slow')
+    def test_no_scat(self):
+        source = np.ones((self.nop.num_groups, self.nop.num_elts))
+        fluxes = self.nosolv.solve(source, eigenvalue=False)
+        phis = fluxes['Phi']
+        gold_phis = np.array([np.loadtxt("test/test_outputs/diff_no_scat.out")])
+        assert_array_almost_equal(phis, gold_phis, decimal=4)

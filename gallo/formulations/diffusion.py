@@ -1,7 +1,9 @@
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as linalg
+
 from gallo.fe import *
+from gallo.helpers import Helper
 
 class Diffusion():
     def __init__(self, grid, mat_data):
@@ -11,6 +13,7 @@ class Diffusion():
         self.num_nodes = self.fegrid.num_nodes
         self.num_elts = self.fegrid.num_elts
         self.num_gnodes = self.fegrid.num_gauss_nodes
+        self.helper = Helper(grid, mat_data)
 
     def make_lhs(self, group_id, ho_sols=None):
         sparse_matrix = sps.lil_matrix((self.num_nodes, self.num_nodes))
@@ -20,7 +23,7 @@ class Diffusion():
             midx = elt.mat_id
             # Get Diffusion coefficient for material
             D = self.mat_data.get_diff(midx, group_id)
-            # Get removal cross section
+            # Get total cross section
             sig_r = self.mat_data.get_sigr(midx, group_id)
             # Determine basis functions for element
             coef = self.fegrid.basis(e)
@@ -118,20 +121,9 @@ class Diffusion():
                 phi_vals = self.fegrid.phi_at_gauss_nodes(triang, phi_prev, g_nodes)
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
-                integral_product = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
-                ssource = self.compute_scattering_source(
-                    midx, integral_product, group_id)
-                rhs_at_node[nid] += ssource
-                rhs_at_node[nid] += area*source[group_id, e]*1/3
+                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
+                                                for g in range(self.num_groups)])
+                ssource = self.helper.compute_scattering_source(midx, integral_product, group_id)
+                rhs_at_node[nid] += ssource # Scattering Source
+                rhs_at_node[nid] += area*source[group_id, e]*1/3 # Fixed Source
         return rhs_at_node
-
-
-    def compute_scattering_source(self, midx, phi, group_id):
-        scatmat = self.mat_data.get_sigs(midx)
-        ssource = 0
-        for g_prime in range(self.num_groups):
-            if g_prime != group_id:
-                ssource += scatmat[g_prime, group_id]*phi[g_prime]
-        return ssource

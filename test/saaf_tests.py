@@ -1,10 +1,13 @@
 from nose.tools import *
 from numpy.testing import *
+from nose.plugins.attrib import attr
 import numpy as np
+import itertools as itr
 
 from gallo.formulations.saaf import SAAF
 from gallo.fe import FEGrid
 from gallo.materials import Materials
+from gallo.solvers import Solver
 
 class TestSAAF:
     @classmethod
@@ -22,6 +25,7 @@ class TestSAAF:
         cls.fe2grid = FEGrid(cls.node2file, cls.ele2file)
         cls.mats2 = Materials(cls.mat2file)
         cls.op2 = SAAF(cls.fe2grid, cls.mats2)
+        cls.solv2 = Solver(cls.op2)
 
         cls.stdnode = "test/test_inputs/std.node"
         cls.stdele = "test/test_inputs/std.ele"
@@ -49,21 +53,35 @@ class TestSAAF:
         cls.smgrid = FEGrid(cls.smnode, cls.smele)
         cls.smop = SAAF(cls.smgrid, cls.mats)
 
+
         cls.symnode = "test/test_inputs/symmetric_fine.node"
         cls.symele = "test/test_inputs/symmetric_fine.ele"
-        cls.symmatfile = "test/test_inputs/symmetricfine_test.mat"
+        cls.symmatfile = "test/test_inputs/noscatter.mat"
         cls.symmat = Materials(cls.symmatfile)
-        cls.symgrid = FEGrid(cls.symnode, cls.symele)
+        cls.symgrid = FEGrid(cls.symnode, cls.symele, sn_ord=2)
         cls.symop = SAAF(cls.symgrid, cls.symmat)
+        cls.symsolv = Solver(cls.symop)
 
         cls.scatmatfile = "test/test_inputs/scattering1g.mat"
         cls.scatmat = Materials(cls.scatmatfile)
         cls.scatop = SAAF(cls.stdgrid, cls.scatmat)
         cls.scat3op = SAAF(cls.std3grid, cls.scatmat)
 
+        cls.oneop = SAAF(cls.symgrid, cls.scatmat)
+        cls.onesolv = Solver(cls.oneop)
+
+        cls.orignode = "test/test_inputs/origin_centered10_fine.node"
+        cls.origele = "test/test_inputs/origin_centered10_fine.ele"
+        cls.origrid = FEGrid(cls.orignode, cls.origele)
+        cls.twomatfile = "test/test_inputs/scattering2g.mat"
+        cls.twoscatmat = Materials(cls.twomatfile)
+        cls.twop = SAAF(cls.origrid, cls.twoscatmat)
+        cls.twosolv = Solver(cls.twop)
+
         cls.fissionmatfile = "test/test_inputs/fissiontest.mat"
         cls.fissionmat = Materials(cls.fissionmatfile)
-        cls.fissionop = SAAF(cls.stdgrid, cls.fissionmat)
+        cls.fissionop = SAAF(cls.symgrid, cls.fissionmat)
+        cls.fissolv = Solver(cls.fissionop)
 
     def symmetry_test(self):
         source = np.ones(self.fegrid.num_elts)
@@ -71,6 +89,12 @@ class TestSAAF:
         ang_two = -.5773503
         A = self.op.make_lhs(np.array([ang_one, ang_two]), 0)
         ok_(np.allclose(A.A, A.transpose().A, rtol=1e-12))
+
+    def test_eigenvalue(self):
+        source = np.zeros((self.fissionop.num_groups, self.fissionop.num_elts))
+        fluxes = self.fissolv.solve(source, eigenvalue=True)
+        k = fluxes['k']
+        assert_allclose(k, 0.234582, rtol=0.5)
 
     # def hand_calculation_lhs_test(self):
     #     angles0 = np.array([.5773503, .5773503])
@@ -145,116 +169,139 @@ class TestSAAF:
                              0.        ,  0.        ,  0.        ,  0.7083334 ]])
         ok_(np.allclose(A0, hand0, rtol=1e-7))
 
-    @nottest
-    # Slow test, only enable when necessary
-    def balance_test(self):
+    @attr('slow')
+    def test_no_scat(self):
+        source = 10*np.ones((self.symop.num_groups, self.symop.num_elts))
+        fluxes = self.symsolv.solve(source)
+        phis = fluxes['Phi']
+        gold_phis = np.array([np.loadtxt("test/test_outputs/saaf_no_scat.out")])
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    @attr('slow')
+    def test_1g(self):
+        source = 10*np.ones((self.oneop.num_groups, self.oneop.num_elts))
+        fluxes = self.onesolv.solve(source)
+        phis = fluxes['Phi']
+        gold_phis = np.array([np.loadtxt("test/test_outputs/saaf1g.out")])
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    @attr('slow')
+    def test_2g(self):
+        source = 10*np.ones((self.twop.num_groups, self.twop.num_elts))
+        fluxes = self.twosolv.solve(source)
+        phis = fluxes['Phi']
+        gold_phis = np.loadtxt("test/test_outputs/saaf2g.out")
+        assert_array_almost_equal(phis, gold_phis, decimal=4)
+
+    # @attr('slow')
+    # def balance_test(self):
+        # # Assumes one group and vacuum boundary conditions
+        # n_elts = self.symgrid.num_elts
+        # n_nodes = self.symgrid.num_nodes
+        # source = 10*np.ones((self.symmat.num_groups, n_elts))
+        # scalar_flux, ang_fluxes = self.symsolv.solve(source)
+        # siga = self.symmat.get_siga(0, 0)
+        #
+        # # Calculate Total Source
+        # total_src = 0
+        # for i in range(n_elts):
+        #     e = self.symgrid.element(i)
+        #     total_src += 10*self.symgrid.element_area(i)
+        #
+        # # Calculate Total Sink
+        # total_sink = 0
+        # for i in range(n_elts):
+        #     e = self.symgrid.element(i)
+        #     area = self.symgrid.element_area(i)
+        #     vertices = e.vertices
+        #     phi = 0
+        #     for v in vertices:
+        #         phi += scalar_flux[0, v]
+        #     phi /= 3
+        #     total_sink += siga*phi*area
+        #
+        # # Calculate Total Out
+        # # CAUTION: Only for S2
+        # ang_one = .5773503
+        # ang_two = -.5773503
+        # angles = itr.product([ang_one, ang_two], repeat=2)
+        # total_out = 0
+        # for i, ang in enumerate(angles):
+        #     angle_out = 0
+        #     for e in range(n_elts):
+        #         # Figure out if element is on boundary
+        #         vertices = self.symgrid.element(e).vertices
+        #         interior = np.array([self.symgrid.node(v).is_interior for v in vertices])
+        #         print(interior)
+        #         if interior.sum() <= 1:
+        #             # Figure out what boundary we're on
+        #             for idx in [[0, 1], [0, 2], [1, 2]]:
+        #                 m, n = idx
+        #                 if interior[m] + interior[n] == 0:
+        #                     normal = self.symgrid.assign_normal(vertices[m], vertices[n])
+        #                     if type(normal) == int:
+        #                         continue
+        #                     if ang@normal > 0:
+        #                         psi = (ang_fluxes[0, i, vertices[m]] + ang_fluxes[0, i, vertices[n]])/2
+        #                         a, b = self.symgrid.boundary_edges([vertices[m], vertices[n]], e)
+        #                         boundary_length = np.abs(b - a)
+        #                         #angle_out += ang@normal*boundary_length*psi
+        #                         angle_out += boundary_length*psi
+        #     total_out += self.symgrid.weights[0]*angle_out
+        #
+        # assert_almost_equals((total_src-(total_sink + total_out))/total_src, 0, places=6)
         # Assumes one group and vacuum boundary conditions
-        n_elts = self.symgrid.num_elts
-        n_nodes = self.symgrid.num_nodes
-        source = np.ones(n_elts)
-        scalar_flux, ang_fluxes = self.symop.solve_outer(source, tol=1e-3)
-        siga = self.symmat.get_siga(0, 0)
-
-        # Calculate Total Source
-        total_src = 0
-        for i in range(n_elts):
-            e = self.symgrid.element(i)
-            total_src += self.symgrid.element_area(i)
-
-        # Calculate Total Sink
-        total_sink = 0
-        for i in range(n_elts):
-            e = self.symgrid.element(i)
-            area = self.symgrid.element_area(i)
-            vertices = e.vertices
-            phi = 0
-            for v in vertices:
-                phi += scalar_flux[v]
-            phi /= 3
-            total_sink += siga*phi*area
-
-        # Calculate Total Out
-        # CAUTION: Only for S2
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        total_out = 0
-        for i, ang in enumerate(angles):
-            angle_out = 0
-            for e in range(n_elts):
-                # Figure out if element is on boundary
-                vertices = self.symgrid.element(e).vertices
-                interior = -1*np.ones(3)
-                for k, v in enumerate(vertices):
-                    interior[k] = self.symgrid.node(v).is_interior()
-                if interior.sum() == 0 or interior.sum() == 1:
-                    # Figure out what boundary we're on
-                    for idx in [[0, 1], [0, 2], [1, 2]]:
-                        m = idx[0]
-                        n = idx[1]
-                        if not interior[m] and not interior[n]:
-                            normal = self.symop.assign_normal(vertices[m], vertices[n])
-                            if type(normal) == int:
-                                continue
-                            if ang@normal > 0:
-                                psi = (ang_fluxes[i, vertices[m]] + ang_fluxes[i, vertices[n]])/2
-                                a, b = self.symgrid.boundary_edges([vertices[m], vertices[n]], e)
-                                boundary_length = b - a
-                                angle_out += ang@normal*boundary_length*psi
-            total_out += np.pi*angle_out
-        assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)
-        # Assumes one group and vacuum boundary conditions
-        n_elts = self.fe2grid.num_elts
-        n_nodes = self.fe2grid.num_nodes
-        source = np.ones(n_elts)
-        scalar_flux, ang_fluxes = self.op2.solve(source, "eigenvalue", 0, tol=1e-5)
-        siga = self.mats2.get_siga(0, 0)
-
-        # Calculate Total Source
-        total_src = 0
-        for i in range(n_elts):
-            e = self.fe2grid.element(i)
-            total_src += self.fe2grid.element_area(i)
-
-        # Calculate Total Sink
-        total_sink = 0
-        for i in range(n_elts):
-            e = self.fe2grid.element(i)
-            area = self.fe2grid.element_area(i)
-            vertices = e.vertices
-            phi = 0
-            for v in vertices:
-                phi += scalar_flux[v]
-            phi /= 3
-            total_sink += siga*phi*area
-
-        # Calculate Total Out
-        # CAUTION: Only for S2
-        ang_one = .5773503
-        ang_two = -.5773503
-        angles = itr.product([ang_one, ang_two], repeat=2)
-        total_out = 0
-        for i, ang in enumerate(angles):
-            angle_out = 0
-            for e in range(n_elts):
-                # Figure out if element is on boundary
-                vertices = self.fe2grid.element(e).vertices
-                interior = -1*np.ones(3)
-                for k, v in enumerate(vertices):
-                    interior[k] = self.fe2grid.node(v).is_interior()
-                if interior.sum() == 0 or interior.sum() == 1:
-                    # Figure out what boundary we're on
-                    for idx in [[0, 1], [0, 2], [1, 2]]:
-                        m = idx[0]
-                        n = idx[1]
-                        if not interior[m] and not interior[n]:
-                            normal = self.op2.assign_normal(vertices[m], vertices[n])
-                            if type(normal) == int:
-                                continue
-                            if ang@normal > 0:
-                                psi = (ang_fluxes[i, vertices[m]] + ang_fluxes[i, vertices[n]])/2
-                                a, b = self.fe2grid.boundary_edges([vertices[m], vertices[n]], e)
-                                boundary_length = b - a
-                                angle_out += ang@normal*boundary_length*psi
-            total_out += np.pi*angle_out
-        assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)
+        # n_elts = self.fe2grid.num_elts
+        # n_nodes = self.fe2grid.num_nodes
+        # source = np.ones((self.mats2.num_groups, n_elts))
+        # scalar_flux, ang_fluxes = self.solv2.solve(source)
+        # siga = self.mats2.get_siga(0, 0)
+        #
+        # # Calculate Total Source
+        # total_src = 0
+        # for i in range(n_elts):
+        #     e = self.fe2grid.element(i)
+        #     total_src += self.fe2grid.element_area(i)
+        #
+        # # Calculate Total Sink
+        # total_sink = 0
+        # for i in range(n_elts):
+        #     e = self.fe2grid.element(i)
+        #     area = self.fe2grid.element_area(i)
+        #     vertices = e.vertices
+        #     phi = 0
+        #     for v in vertices:
+        #         phi += scalar_flux[0, v]
+        #     phi /= 3
+        #     total_sink += siga*phi*area
+        #
+        # # Calculate Total Out
+        # # CAUTION: Only for S2
+        # ang_one = .5773503
+        # ang_two = -.5773503
+        # angles = itr.product([ang_one, ang_two], repeat=2)
+        # total_out = 0
+        # for i, ang in enumerate(angles):
+        #     angle_out = 0
+        #     for e in range(n_elts):
+        #         # Figure out if element is on boundary
+        #         vertices = self.fe2grid.element(e).vertices
+        #         interior = -1*np.ones(3)
+        #         for k, v in enumerate(vertices):
+        #             interior[k] = self.fe2grid.node(v).is_interior
+        #         if interior.sum() == 0 or interior.sum() == 1:
+        #             # Figure out what boundary we're on
+        #             for idx in [[0, 1], [0, 2], [1, 2]]:
+        #                 m = idx[0]
+        #                 n = idx[1]
+        #                 if not interior[m] and not interior[n]:
+        #                     normal = self.fe2grid.assign_normal(vertices[m], vertices[n])
+        #                     if type(normal) == int:
+        #                         continue
+        #                     if ang@normal > 0:
+        #                         psi = (ang_fluxes[0, i, vertices[m]] + ang_fluxes[0, i, vertices[n]])/2
+        #                         a, b = self.fe2grid.boundary_edges([vertices[m], vertices[n]], e)
+        #                         boundary_length = b - a
+        #                         angle_out += ang@normal*boundary_length*psi
+        #     total_out += np.pi*angle_out
+        # assert_almost_equals((np.abs(total_src-total_sink) - total_out)/total_src, 0, places=6)

@@ -25,6 +25,7 @@ class Materials():
             self.nu = np.zeros((self.num_mats, self.num_groups))
             self.inv_sigt = np.zeros((self.num_mats, self.num_groups))
             self.chi = np.zeros((self.num_mats, self.num_groups))
+            self.sig_tr = np.zeros((self.num_mats, self.num_groups))
             for i in range(self.num_mats):
                 line = fp.readline()
                 attributes = line.split("|")
@@ -33,13 +34,14 @@ class Materials():
                     self.sig_a[i, j] = float(attributes[4])
                     scat = np.array(attributes[5].split())
                     self.sig_s[i, j, :] = scat.astype(float)
-                    self.sig_t[i, j] = self.sig_a[i, j] + np.sum(self.sig_s[i, j, :])
                     self.sig_f[i, j] = float(attributes[6])
+                    self.sig_t[i, j] = self.sig_a[i, j] + np.sum(self.sig_s[i, j, :]) + self.sig_f[i, j]
                     self.nu[i, j] = float(attributes[7])
                     self.chi[i, j] = float(attributes[8])
+                    self.sig_tr[i, j] = float(attributes[3])
 
                     # Derived quantities
-                    self.D[i, j] = 1 / (3 * self.sig_t[i, j])
+                    self.D[i, j] = 1 / (3 * self.sig_tr[i, j])
                     self.inv_sigt[i, j] = 1 / self.sig_t[i, j]
                     if j == (self.num_groups - 1):
                         continue

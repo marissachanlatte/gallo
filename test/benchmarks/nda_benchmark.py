@@ -32,14 +32,17 @@ def filename_to_problem(func):
 @filename_to_problem
 def test_problem(problem):
     source = np.zeros((problem.num_groups, problem.n_elements))
-    for e in range(problem.n_elements):
-        centroid = problem.grid.centroid(e)
-        if all(-10/4 < p < 10/4 for p in centroid):
-            source[0, e] = 7
-            source[1, e] = 2
-            source[2, e] = 1
+    # for e in range(problem.n_elements):
+    #     centroid = problem.grid.centroid(e)
+    #     if all(-10/4 < p < 10/4 for p in centroid):
+    #         source[0, e] = 7
+    #         source[1, e] = 2
+    #         source[2, e] = 1
     #source = np.ones((problem.num_groups, problem.n_elements))
-    phis = problem.solver.solve(source, ua_bool=True)
+    fluxes = problem.solver.solve(source, ua_bool=True, eigenvalue=True)
+    print("Eigenvalue: ", fluxes['k'])
+    phis = fluxes['Phi']
+    np.savetxt("tgnda_mod-uo2.out", phis)
     # Plot Everything
     for g in range(problem.num_groups):
         scalar_flux = phis[g]
@@ -84,6 +87,6 @@ def test_ua(problem):
     eigenfunction = problem.ua.compute_eigenfunction(0)
     print(eigenfunction)
 
-test_problem("iron-water10", "mod-water", "tgnda_iron-water")
+test_problem("mod-uo2", "mod-uo2", "tgnda_mod-uo2")
 #test_1d("origin_centered10_fine", "scattering2g", "1d_test")
 #test_ua("symmetric_fine", "fake-mod", "test-eigenfunction")

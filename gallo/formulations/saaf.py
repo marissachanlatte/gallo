@@ -133,16 +133,14 @@ class SAAF():
                 # First Scattering Term
                 # Multiply Phi & Basis Function
                 product = fn_vals * phi_vals
-                integral_product = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral_product[g] = self.fegrid.gauss_quad(e, product[g])
+                integral_product = np.array([self.fegrid.gauss_quad(e, product[g])
+                                            for g in range(self.num_groups)])
                 ssource = self.compute_scattering_source(
                     midx, integral_product, group_id)
                 rhs_at_node[nid] += ssource / (4 * np.pi)
                 # Second Scattering Term
-                integral = np.zeros(self.num_groups)
-                for g in range(self.num_groups):
-                    integral[g] = self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
+                integral = np.array([self.fegrid.gauss_quad(e, phi_vals[g]*(angles@ngrad))
+                                    for g in range(self.num_groups)])
                 ssource = self.compute_scattering_source(
                     midx, integral, group_id)
                 rhs_at_node[nid] += inv_sigt*ssource/(4*np.pi)
