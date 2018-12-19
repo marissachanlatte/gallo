@@ -1,0 +1,1326 @@
+Power Iteration  1
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2758035654526579
+Within-Group Iteration:  2
+Norm:  0.002207879873560363
+Within-Group Iteration:  3
+Norm:  2.0565676442900028e-08
+Within-Group Iteration:  4
+Norm:  3.029992102568312e-13
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.029992102568312e-13
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.4358764962121193
+Within-Group Iteration:  2
+Norm:  0.0005823653259001191
+Within-Group Iteration:  3
+Norm:  3.491182733584341e-07
+Within-Group Iteration:  4
+Norm:  2.0876272471626808e-10
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0876272471626808e-10
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.626665906095896
+Within-Group Iteration:  2
+Norm:  0.0011916229070659575
+Within-Group Iteration:  3
+Norm:  1.533818822708947e-06
+Within-Group Iteration:  4
+Norm:  1.9762576576593955e-09
+Finished Group  5
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.9762576576593955e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.2799031473665812
+Within-Group Iteration:  2
+Norm:  0.003980966574218917
+Within-Group Iteration:  3
+Norm:  2.8612432191876132e-05
+Within-Group Iteration:  4
+Norm:  2.0797324946106442e-07
+Within-Group Iteration:  5
+Norm:  1.51156224206242e-09
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.51156224206242e-09
+GS Norm:  0.8562947985367108
+Gauss-Seidel Iteration:  2
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26899421741835156
+Within-Group Iteration:  2
+Norm:  0.002269950723030194
+Within-Group Iteration:  3
+Norm:  6.678997120835009e-07
+Within-Group Iteration:  4
+Norm:  2.1380241086940713e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.1380241086940713e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.21395128379540806
+Within-Group Iteration:  2
+Norm:  0.0017390609669197155
+Within-Group Iteration:  3
+Norm:  4.564099893524632e-06
+Within-Group Iteration:  4
+Norm:  1.1969521131189495e-08
+Within-Group Iteration:  5
+Norm:  3.139053274371336e-11
+Finished Group  4
+Number of Within-Group Iterations:  6
+Final Phi Norm:  3.139053274371336e-11
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.2364022195811331
+Within-Group Iteration:  2
+Norm:  0.0037740809548339744
+Within-Group Iteration:  3
+Norm:  2.607875418045356e-05
+Within-Group Iteration:  4
+Norm:  1.817228898874637e-07
+Within-Group Iteration:  5
+Norm:  1.2662183655699482e-09
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.2662183655699482e-09
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.17125123657936034
+Within-Group Iteration:  2
+Norm:  0.004885152222631402
+Within-Group Iteration:  3
+Norm:  4.30150827501548e-05
+Within-Group Iteration:  4
+Norm:  3.8555638579559055e-07
+Within-Group Iteration:  5
+Norm:  3.455332668769897e-09
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  3.455332668769897e-09
+GS Norm:  0.05031858433195937
+Gauss-Seidel Iteration:  3
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.268118890318222
+Within-Group Iteration:  2
+Norm:  0.002263885289192586
+Within-Group Iteration:  3
+Norm:  6.322733926885015e-07
+Within-Group Iteration:  4
+Norm:  1.9300291949183566e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.9300291949183566e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15937998593261157
+Within-Group Iteration:  2
+Norm:  0.0018149070950418441
+Within-Group Iteration:  3
+Norm:  3.1336884850815504e-06
+Within-Group Iteration:  4
+Norm:  5.404364052107938e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  5.404364052107938e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.1703545007602824
+Within-Group Iteration:  2
+Norm:  0.0030132765743075894
+Within-Group Iteration:  3
+Norm:  1.3987918293022084e-05
+Within-Group Iteration:  4
+Norm:  6.5340602521558e-08
+Within-Group Iteration:  5
+Norm:  3.0522844403311715e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  3.0522844403311715e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.13399733983625212
+Within-Group Iteration:  2
+Norm:  0.0038728985147995693
+Within-Group Iteration:  3
+Norm:  2.4375731752738416e-05
+Within-Group Iteration:  4
+Norm:  1.532555587038671e-07
+Within-Group Iteration:  5
+Norm:  9.635628710655297e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  9.635628710655297e-10
+GS Norm:  0.007109839595564186
+Gauss-Seidel Iteration:  4
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26777175427451805
+Within-Group Iteration:  2
+Norm:  0.0022597278526890734
+Within-Group Iteration:  3
+Norm:  6.105891458056697e-07
+Within-Group Iteration:  4
+Norm:  1.8084150062734345e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.8084150062734345e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15283119615801216
+Within-Group Iteration:  2
+Norm:  0.0017431468439993215
+Within-Group Iteration:  3
+Norm:  2.2885652041894834e-06
+Within-Group Iteration:  4
+Norm:  3.008279769982706e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.008279769982706e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15737122331714193
+Within-Group Iteration:  2
+Norm:  0.002785345538477997
+Within-Group Iteration:  3
+Norm:  9.768352451600493e-06
+Within-Group Iteration:  4
+Norm:  3.433781437699766e-08
+Within-Group Iteration:  5
+Norm:  1.207038084079767e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.207038084079767e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12775743398659384
+Within-Group Iteration:  2
+Norm:  0.0037489744364185545
+Within-Group Iteration:  3
+Norm:  2.0771788427937146e-05
+Within-Group Iteration:  4
+Norm:  1.1512103624640857e-07
+Within-Group Iteration:  5
+Norm:  6.38024138899997e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.38024138899997e-10
+GS Norm:  0.0008740379272383906
+Gauss-Seidel Iteration:  5
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26772997647085955
+Within-Group Iteration:  2
+Norm:  0.0022591926415565025
+Within-Group Iteration:  3
+Norm:  6.085695954572947e-07
+Within-Group Iteration:  4
+Norm:  1.797377665386797e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.797377665386797e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15194972016739572
+Within-Group Iteration:  2
+Norm:  0.0017324456193793514
+Within-Group Iteration:  3
+Norm:  2.1890726530670708e-06
+Within-Group Iteration:  4
+Norm:  2.770332649672269e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.770332649672269e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15547764633533137
+Within-Group Iteration:  2
+Norm:  0.0027589727033318044
+Within-Group Iteration:  3
+Norm:  9.245415097332463e-06
+Within-Group Iteration:  4
+Norm:  3.107192499648166e-08
+Within-Group Iteration:  5
+Norm:  1.044256587284618e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.044256587284618e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12685144856938974
+Within-Group Iteration:  2
+Norm:  0.0037298907397945065
+Within-Group Iteration:  3
+Norm:  2.033673684889091e-05
+Within-Group Iteration:  4
+Norm:  1.1093010725304255e-07
+Within-Group Iteration:  5
+Norm:  6.050877959470246e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.050877959470246e-10
+GS Norm:  0.00012587467251238787
+Gauss-Seidel Iteration:  6
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26772377931186625
+Within-Group Iteration:  2
+Norm:  0.0022591164072491066
+Within-Group Iteration:  3
+Norm:  6.083681170494327e-07
+Within-Group Iteration:  4
+Norm:  1.7962918619253765e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7962918619253765e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15182383458178442
+Within-Group Iteration:  2
+Norm:  0.00173114937844888
+Within-Group Iteration:  3
+Norm:  2.1785142389001497e-06
+Within-Group Iteration:  4
+Norm:  2.7458191913578156e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.7458191913578156e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15519838849843742
+Within-Group Iteration:  2
+Norm:  0.002755706334217793
+Within-Group Iteration:  3
+Norm:  9.18814922045071e-06
+Within-Group Iteration:  4
+Norm:  3.0726359125920115e-08
+Within-Group Iteration:  5
+Norm:  1.0275217879492129e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0275217879492129e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.1267165950029944
+Within-Group Iteration:  2
+Norm:  0.0037273328609564184
+Within-Group Iteration:  3
+Norm:  2.0288492340237782e-05
+Within-Group Iteration:  4
+Norm:  1.1048166402853827e-07
+Within-Group Iteration:  5
+Norm:  6.016327911562538e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.016327911562538e-10
+GS Norm:  1.8134466686196672e-05
+Gauss-Seidel Iteration:  7
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26772284310500644
+Within-Group Iteration:  2
+Norm:  0.0022591054586495844
+Within-Group Iteration:  3
+Norm:  6.083488057850239e-07
+Within-Group Iteration:  4
+Norm:  1.7961900097634623e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7961900097634623e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.1518048503087323
+Within-Group Iteration:  2
+Norm:  0.0017309913721393093
+Within-Group Iteration:  3
+Norm:  2.177375672518499e-06
+Within-Group Iteration:  4
+Norm:  2.743209060513366e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.743209060513366e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.1551558578375234
+Within-Group Iteration:  2
+Norm:  0.0027553029417161467
+Within-Group Iteration:  3
+Norm:  9.181867202901583e-06
+Within-Group Iteration:  4
+Norm:  3.068901342630394e-08
+Within-Group Iteration:  5
+Norm:  1.0257253318119932e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0257253318119932e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12669595708474402
+Within-Group Iteration:  2
+Norm:  0.0037269853327849744
+Within-Group Iteration:  3
+Norm:  2.0283044610646542e-05
+Within-Group Iteration:  4
+Norm:  1.1043276356265574e-07
+Within-Group Iteration:  5
+Norm:  6.012622345918658e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.012622345918658e-10
+GS Norm:  2.6460560353072627e-06
+Gauss-Seidel Iteration:  8
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2677226994581455
+Within-Group Iteration:  2
+Norm:  0.0022591038488913944
+Within-Group Iteration:  3
+Norm:  6.083469868819995e-07
+Within-Group Iteration:  4
+Norm:  1.7961819288708042e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7961819288708042e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.1518019231240657
+Within-Group Iteration:  2
+Norm:  0.0017309714417294063
+Within-Group Iteration:  3
+Norm:  2.17724977480455e-06
+Within-Group Iteration:  4
+Norm:  2.7429238561053327e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.7429238561053327e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15514927847413876
+Within-Group Iteration:  2
+Norm:  0.002755251286509824
+Within-Group Iteration:  3
+Norm:  9.181158652009953e-06
+Within-Group Iteration:  4
+Norm:  3.0684866296713765e-08
+Within-Group Iteration:  5
+Norm:  1.0255307957943093e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0255307957943093e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.126692762583932
+Within-Group Iteration:  2
+Norm:  0.0037269366987894396
+Within-Group Iteration:  3
+Norm:  2.0282407435801446e-05
+Within-Group Iteration:  4
+Norm:  1.1042727538185987e-07
+Within-Group Iteration:  5
+Norm:  6.012212925723128e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.012212925723128e-10
+GS Norm:  3.886621996082342e-07
+PI Norm:  6468.176842248199
+Power Iteration  2
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2679072179646433
+Within-Group Iteration:  2
+Norm:  0.002265895411197268
+Within-Group Iteration:  3
+Norm:  6.406499350234694e-07
+Within-Group Iteration:  4
+Norm:  1.978284483480366e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.978284483480366e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.1486183312382599
+Within-Group Iteration:  2
+Norm:  0.0019492445578295145
+Within-Group Iteration:  3
+Norm:  3.488333844499372e-06
+Within-Group Iteration:  4
+Norm:  6.2395242741085765e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  6.2395242741085765e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.14842424576291566
+Within-Group Iteration:  2
+Norm:  0.003331477986217538
+Within-Group Iteration:  3
+Norm:  1.727161086764757e-05
+Within-Group Iteration:  4
+Norm:  8.94829593439061e-08
+Within-Group Iteration:  5
+Norm:  4.63608252810683e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  4.63608252810683e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12329182750855208
+Within-Group Iteration:  2
+Norm:  0.004222305378231277
+Within-Group Iteration:  3
+Norm:  2.8508305789437505e-05
+Within-Group Iteration:  4
+Norm:  1.9241054387568818e-07
+Within-Group Iteration:  5
+Norm:  1.2986444567074665e-09
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.2986444567074665e-09
+GS Norm:  6.428669391518025
+Gauss-Seidel Iteration:  2
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2677669727724119
+Within-Group Iteration:  2
+Norm:  0.0022599267513581573
+Within-Group Iteration:  3
+Norm:  6.101383352267322e-07
+Within-Group Iteration:  4
+Norm:  1.805763211279273e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.805763211279273e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.1511949497946262
+Within-Group Iteration:  2
+Norm:  0.0017921095959444729
+Within-Group Iteration:  3
+Norm:  2.479919424444419e-06
+Within-Group Iteration:  4
+Norm:  3.435258622384688e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.435258622384688e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.1544311599354071
+Within-Group Iteration:  2
+Norm:  0.0029017233881732233
+Within-Group Iteration:  3
+Norm:  1.0761462453001395e-05
+Within-Group Iteration:  4
+Norm:  4.000222097797707e-08
+Within-Group Iteration:  5
+Norm:  1.4869393020165594e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.4869393020165594e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.1266858675160859
+Within-Group Iteration:  2
+Norm:  0.003829087700371577
+Within-Group Iteration:  3
+Norm:  2.1622741105636858e-05
+Within-Group Iteration:  4
+Norm:  1.221485134983177e-07
+Within-Group Iteration:  5
+Norm:  6.900285146806544e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.900285146806544e-10
+GS Norm:  0.005616016236275696
+Gauss-Seidel Iteration:  3
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26773730177229516
+Within-Group Iteration:  2
+Norm:  0.0022593185373230226
+Within-Group Iteration:  3
+Norm:  6.085782307729411e-07
+Within-Group Iteration:  4
+Norm:  1.7973440142914509e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7973440142914509e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15186399431060144
+Within-Group Iteration:  2
+Norm:  0.0017389874073333391
+Within-Group Iteration:  3
+Norm:  2.2112073488393856e-06
+Within-Group Iteration:  4
+Norm:  2.8159651918343756e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.8159651918343756e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15536775384666748
+Within-Group Iteration:  2
+Norm:  0.002776615173289545
+Within-Group Iteration:  3
+Norm:  9.380619409456065e-06
+Within-Group Iteration:  4
+Norm:  3.178452837223446e-08
+Within-Group Iteration:  5
+Norm:  1.0769526157641996e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0769526157641996e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12686451532274118
+Within-Group Iteration:  2
+Norm:  0.0037418869766412777
+Within-Group Iteration:  3
+Norm:  2.04475656885791e-05
+Within-Group Iteration:  4
+Norm:  1.1178510154846126e-07
+Within-Group Iteration:  5
+Norm:  6.111209502980958e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.111209502980958e-10
+GS Norm:  0.0008655418253936314
+Gauss-Seidel Iteration:  4
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26772578381127454
+Within-Group Iteration:  2
+Norm:  0.002259142023235865
+Within-Group Iteration:  3
+Norm:  6.083538561628288e-07
+Within-Group Iteration:  4
+Norm:  1.7961943572664574e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7961943572664574e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.1518355026671057
+Within-Group Iteration:  2
+Norm:  0.001732021905131254
+Within-Group Iteration:  3
+Norm:  2.1811678447730453e-06
+Within-Group Iteration:  4
+Norm:  2.7511256381001467e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.7511256381001467e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15523694644960218
+Within-Group Iteration:  2
+Norm:  0.002758045323303137
+Within-Group Iteration:  3
+Norm:  9.204487452326164e-06
+Within-Group Iteration:  4
+Norm:  3.080977589832303e-08
+Within-Group Iteration:  5
+Norm:  1.0312778877737777e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0312778877737777e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12674402688101216
+Within-Group Iteration:  2
+Norm:  0.0037290577132983323
+Within-Group Iteration:  3
+Norm:  2.0302338005763013e-05
+Within-Group Iteration:  4
+Norm:  1.1058175574417607e-07
+Within-Group Iteration:  5
+Norm:  6.023124814128064e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.023124814128064e-10
+GS Norm:  0.00011989768440960571
+Gauss-Seidel Iteration:  5
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26772327239150345
+Within-Group Iteration:  2
+Norm:  0.0022591104023220025
+Within-Group Iteration:  3
+Norm:  6.083453381436005e-07
+Within-Group Iteration:  4
+Norm:  1.796170684012186e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.796170684012186e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15181001069519634
+Within-Group Iteration:  2
+Norm:  0.0017311079947791963
+Within-Group Iteration:  3
+Norm:  2.177693144994226e-06
+Within-Group Iteration:  4
+Norm:  2.743824710005682e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.743824710005682e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.1551690565535502
+Within-Group Iteration:  2
+Norm:  0.002755616033217438
+Within-Group Iteration:  3
+Norm:  9.18387669476824e-06
+Within-Group Iteration:  4
+Norm:  3.069900419124201e-08
+Within-Group Iteration:  5
+Norm:  1.026167871251891e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.026167871251891e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12670345470495759
+Within-Group Iteration:  2
+Norm:  0.0037272377360821965
+Within-Group Iteration:  3
+Norm:  2.0284832018106586e-05
+Within-Group Iteration:  4
+Norm:  1.1044482350816589e-07
+Within-Group Iteration:  5
+Norm:  6.013403756313382e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.013403756313382e-10
+GS Norm:  1.7702796100338468e-05
+Gauss-Seidel Iteration:  6
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2677227803956259
+Within-Group Iteration:  2
+Norm:  0.002259104737728934
+Within-Group Iteration:  3
+Norm:  6.083463542781656e-07
+Within-Group Iteration:  4
+Norm:  1.7961774820286138e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7961774820286138e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.15180314624125849
+Within-Group Iteration:  2
+Norm:  0.0017309874393658246
+Within-Group Iteration:  3
+Norm:  2.1772894121596187e-06
+Within-Group Iteration:  4
+Norm:  2.7429985298385153e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.7429985298385153e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15515222768878453
+Within-Group Iteration:  2
+Norm:  0.0027552942536205032
+Within-Group Iteration:  3
+Norm:  9.181416521220556e-06
+Within-Group Iteration:  4
+Norm:  3.068611970444805e-08
+Within-Group Iteration:  5
+Norm:  1.0255835501342899e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0255835501342899e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12669432658368346
+Within-Group Iteration:  2
+Norm:  0.0037269743370330483
+Within-Group Iteration:  3
+Norm:  2.0282650147209245e-05
+Within-Group Iteration:  4
+Norm:  1.1042881556212229e-07
+Within-Group Iteration:  5
+Norm:  6.012303846997238e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.012303846997238e-10
+GS Norm:  2.6054505617861694e-06
+Gauss-Seidel Iteration:  7
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.252221443080789
+Within-Group Iteration:  2
+Norm:  0.0002860267587213417
+Within-Group Iteration:  3
+Norm:  6.9079204930026385e-09
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  6.9079204930026385e-09
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  1.1314446838978682
+Within-Group Iteration:  2
+Norm:  0.0036460405139862066
+Within-Group Iteration:  3
+Norm:  3.815164532119558e-06
+Within-Group Iteration:  4
+Norm:  3.898694419498849e-09
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.898694419498849e-09
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.5243827552959965
+Within-Group Iteration:  2
+Norm:  0.006330388034970101
+Within-Group Iteration:  3
+Norm:  1.691744735503688e-06
+Within-Group Iteration:  4
+Norm:  2.599189486272056e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.599189486272056e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.26772269162332785
+Within-Group Iteration:  2
+Norm:  0.002259103762087176
+Within-Group Iteration:  3
+Norm:  6.083467195205758e-07
+Within-Group Iteration:  4
+Norm:  1.7961804780003437e-10
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  1.7961804780003437e-10
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.1518017104436148
+Within-Group Iteration:  2
+Norm:  0.0017309710755754706
+Within-Group Iteration:  3
+Norm:  2.177240611238142e-06
+Within-Group Iteration:  4
+Norm:  2.742901757289406e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.742901757289406e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.15514882428320276
+Within-Group Iteration:  2
+Norm:  0.0027552504524091873
+Within-Group Iteration:  3
+Norm:  9.181110591202827e-06
+Within-Group Iteration:  4
+Norm:  3.068455668511089e-08
+Within-Group Iteration:  5
+Norm:  1.0255140072253793e-10
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  1.0255140072253793e-10
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.12669255827446646
+Within-Group Iteration:  2
+Norm:  0.003726935403785993
+Within-Group Iteration:  3
+Norm:  2.0282364355519737e-05
+Within-Group Iteration:  4
+Norm:  1.1042684677364156e-07
+Within-Group Iteration:  5
+Norm:  6.012178161715466e-10
+Finished Group  6
+Number of Within-Group Iterations:  6
+Final Phi Norm:  6.012178161715466e-10
+GS Norm:  3.849042746936359e-07
+PI Norm:  5.557210254915661e-05
+Runtime: 24672.87309 seconds
+Eigenvalue:  0.13461361523616436
