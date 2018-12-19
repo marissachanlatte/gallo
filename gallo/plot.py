@@ -48,6 +48,7 @@ def plot_mesh(grid, filename):
         el = grid.element(i)
         mats[i] = el.mat_id
     plt.figure()
+    plt.triplot(triang)
     plt.tripcolor(triang, mats, shading='flat')
     plt.colorbar()
     plt.savefig(filename)
