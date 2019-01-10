@@ -1,0 +1,1464 @@
+Power Iteration  1
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.23589214469149786
+Within-Group Iteration:  2
+Norm:  0.0009494139151997047
+Within-Group Iteration:  3
+Norm:  2.93608544020335e-07
+Within-Group Iteration:  4
+Norm:  8.834575195289801e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  8.834575195289801e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.28108799417475494
+Within-Group Iteration:  2
+Norm:  0.0030802584756032965
+Within-Group Iteration:  3
+Norm:  3.2817425442808922e-06
+Within-Group Iteration:  4
+Norm:  3.494405628178871e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.494405628178871e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.45416634683713647
+Within-Group Iteration:  2
+Norm:  0.004329503180552016
+Within-Group Iteration:  3
+Norm:  8.488427037305576e-06
+Within-Group Iteration:  4
+Norm:  1.662316601954007e-08
+Within-Group Iteration:  5
+Norm:  3.2553648749165874e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  3.2553648749165874e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.14275546249668922
+Within-Group Iteration:  2
+Norm:  0.025200543306607596
+Within-Group Iteration:  3
+Norm:  0.0002061972955230483
+Within-Group Iteration:  4
+Norm:  1.6268677479122602e-06
+Within-Group Iteration:  5
+Norm:  1.2831801428476272e-08
+Within-Group Iteration:  6
+Norm:  1.0120985853249037e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.0120985853249037e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.8890908140328551
+Gauss-Seidel Iteration:  2
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22918131490560228
+Within-Group Iteration:  2
+Norm:  0.0009713047176622526
+Within-Group Iteration:  3
+Norm:  1.8445673453655454e-07
+Within-Group Iteration:  4
+Norm:  3.350247163902684e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.350247163902684e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.11343294093257175
+Within-Group Iteration:  2
+Norm:  0.007232475030506867
+Within-Group Iteration:  3
+Norm:  5.462089195532521e-06
+Within-Group Iteration:  4
+Norm:  3.9917455529916776e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.9917455529916776e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.09095753668662328
+Within-Group Iteration:  2
+Norm:  0.014732913361425647
+Within-Group Iteration:  3
+Norm:  2.1480498418516547e-05
+Within-Group Iteration:  4
+Norm:  2.8712963412727952e-08
+Within-Group Iteration:  5
+Norm:  3.8375348039414365e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  3.8375348039414365e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05911260635429043
+Within-Group Iteration:  2
+Norm:  0.028849273547305033
+Within-Group Iteration:  3
+Norm:  0.00028269706652510687
+Within-Group Iteration:  4
+Norm:  2.5417983957319264e-06
+Within-Group Iteration:  5
+Norm:  2.2834565921600863e-08
+Within-Group Iteration:  6
+Norm:  2.0513544729951865e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  2.0513544729951865e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.024345860290909866
+Gauss-Seidel Iteration:  3
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2293163337098274
+Within-Group Iteration:  2
+Norm:  0.0009743813589899343
+Within-Group Iteration:  3
+Norm:  1.7676898058591584e-07
+Within-Group Iteration:  4
+Norm:  3.060811302502452e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.060811302502452e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09384063623736477
+Within-Group Iteration:  2
+Norm:  0.007457093390571368
+Within-Group Iteration:  3
+Norm:  6.056675396881238e-06
+Within-Group Iteration:  4
+Norm:  4.769426954398749e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.769426954398749e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07681144262132951
+Within-Group Iteration:  2
+Norm:  0.01414986104478698
+Within-Group Iteration:  3
+Norm:  2.3557678488311986e-05
+Within-Group Iteration:  4
+Norm:  3.616822081825389e-08
+Within-Group Iteration:  5
+Norm:  5.5521918177376825e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.5521918177376825e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.0536215154809857
+Within-Group Iteration:  2
+Norm:  0.027537605974521668
+Within-Group Iteration:  3
+Norm:  0.0002564094469052952
+Within-Group Iteration:  4
+Norm:  2.2339130243673994e-06
+Within-Group Iteration:  5
+Norm:  1.944660001846979e-08
+Within-Group Iteration:  6
+Norm:  1.6928492716875572e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6928492716875572e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.001468796469784903
+Gauss-Seidel Iteration:  4
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923704726142674
+Within-Group Iteration:  2
+Norm:  0.0009741203675144411
+Within-Group Iteration:  3
+Norm:  1.7690415852998126e-07
+Within-Group Iteration:  4
+Norm:  3.066400177187147e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.066400177187147e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0936647851501774
+Within-Group Iteration:  2
+Norm:  0.007487097927635914
+Within-Group Iteration:  3
+Norm:  6.109827156564492e-06
+Within-Group Iteration:  4
+Norm:  4.830827870338682e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.830827870338682e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07726363134248845
+Within-Group Iteration:  2
+Norm:  0.014135223454033808
+Within-Group Iteration:  3
+Norm:  2.400808406028045e-05
+Within-Group Iteration:  4
+Norm:  3.760836806288269e-08
+Within-Group Iteration:  5
+Norm:  5.89053403042752e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.89053403042752e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05386310804900198
+Within-Group Iteration:  2
+Norm:  0.027825289253401116
+Within-Group Iteration:  3
+Norm:  0.00025812439684148164
+Within-Group Iteration:  4
+Norm:  2.2415942506782557e-06
+Within-Group Iteration:  5
+Norm:  1.945397970885296e-08
+Within-Group Iteration:  6
+Norm:  1.6883297580742257e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6883297580742257e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  3.5477851568935504e-05
+Gauss-Seidel Iteration:  5
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923569371380856
+Within-Group Iteration:  2
+Norm:  0.0009741144163539347
+Within-Group Iteration:  3
+Norm:  1.768974237284913e-07
+Within-Group Iteration:  4
+Norm:  3.066188861561101e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.066188861561101e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0936701923647257
+Within-Group Iteration:  2
+Norm:  0.007489680481435188
+Within-Group Iteration:  3
+Norm:  6.112183140649226e-06
+Within-Group Iteration:  4
+Norm:  4.832705776517239e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.832705776517239e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07729202159294747
+Within-Group Iteration:  2
+Norm:  0.014136096170143157
+Within-Group Iteration:  3
+Norm:  2.4026764299961346e-05
+Within-Group Iteration:  4
+Norm:  3.766391567507315e-08
+Within-Group Iteration:  5
+Norm:  5.903332168450965e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.903332168450965e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05387162679952253
+Within-Group Iteration:  2
+Norm:  0.027834355978912654
+Within-Group Iteration:  3
+Norm:  0.0002582011308895205
+Within-Group Iteration:  4
+Norm:  2.2421451319301294e-06
+Within-Group Iteration:  5
+Norm:  1.945775441378951e-08
+Within-Group Iteration:  6
+Norm:  1.6885707218971378e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6885707218971378e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  1.3681648638679674e-06
+Gauss-Seidel Iteration:  6
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923559351476777
+Within-Group Iteration:  2
+Norm:  0.000974114086136246
+Within-Group Iteration:  3
+Norm:  1.7689725721623523e-07
+Within-Group Iteration:  4
+Norm:  3.0661756990613575e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.0661756990613575e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0936716823125457
+Within-Group Iteration:  2
+Norm:  0.007489803150834884
+Within-Group Iteration:  3
+Norm:  6.112334052023036e-06
+Within-Group Iteration:  4
+Norm:  4.83286308558063e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.83286308558063e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.0772948006256828
+Within-Group Iteration:  2
+Norm:  0.014136313008668015
+Within-Group Iteration:  3
+Norm:  2.4027697893652345e-05
+Within-Group Iteration:  4
+Norm:  3.7666330797525295e-08
+Within-Group Iteration:  5
+Norm:  5.903805297464083e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.903805297464083e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05387206822540202
+Within-Group Iteration:  2
+Norm:  0.027834663967715185
+Within-Group Iteration:  3
+Norm:  0.00025820342917336225
+Within-Group Iteration:  4
+Norm:  2.2421600604793904e-06
+Within-Group Iteration:  5
+Norm:  1.945784035843984e-08
+Within-Group Iteration:  6
+Norm:  1.6885751460212172e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6885751460212172e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  8.622542038784986e-08
+PI Norm:  7854.17853016671
+Power Iteration  2
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2293059924685784
+Within-Group Iteration:  2
+Norm:  0.0009774167276480573
+Within-Group Iteration:  3
+Norm:  1.738538778491748e-07
+Within-Group Iteration:  4
+Norm:  2.9486919064367084e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.9486919064367084e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.08224142370196527
+Within-Group Iteration:  2
+Norm:  0.00860122330413573
+Within-Group Iteration:  3
+Norm:  5.945679333522127e-06
+Within-Group Iteration:  4
+Norm:  3.8850007449287624e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.8850007449287624e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.06162654363616458
+Within-Group Iteration:  2
+Norm:  0.017394247821832336
+Within-Group Iteration:  3
+Norm:  2.1083092268354396e-05
+Within-Group Iteration:  4
+Norm:  2.218508521213881e-08
+Within-Group Iteration:  5
+Norm:  2.3340739728849602e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  2.3340739728849602e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.04266401109394191
+Within-Group Iteration:  2
+Norm:  0.03148481769486531
+Within-Group Iteration:  3
+Norm:  0.0003110654286237
+Within-Group Iteration:  4
+Norm:  2.7652325249682417e-06
+Within-Group Iteration:  5
+Norm:  2.4555856979570408e-08
+Within-Group Iteration:  6
+Norm:  2.1805935484455228e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  2.1805935484455228e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  4.681764902842629
+Gauss-Seidel Iteration:  2
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22926953793779403
+Within-Group Iteration:  2
+Norm:  0.0009741861733107252
+Within-Group Iteration:  3
+Norm:  1.768509988908315e-07
+Within-Group Iteration:  4
+Norm:  3.064303156963285e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.064303156963285e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09180376350191866
+Within-Group Iteration:  2
+Norm:  0.0075435015938523295
+Within-Group Iteration:  3
+Norm:  6.058540832205605e-06
+Within-Group Iteration:  4
+Norm:  4.657788540537129e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.657788540537129e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.0732485862402758
+Within-Group Iteration:  2
+Norm:  0.013918381692047113
+Within-Group Iteration:  3
+Norm:  2.288105186046999e-05
+Within-Group Iteration:  4
+Norm:  3.45575044482152e-08
+Within-Group Iteration:  5
+Norm:  5.218529548075086e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.218529548075086e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.051608574768057594
+Within-Group Iteration:  2
+Norm:  0.02706820335347034
+Within-Group Iteration:  3
+Norm:  0.000257450594500284
+Within-Group Iteration:  4
+Norm:  2.245386238591907e-06
+Within-Group Iteration:  5
+Norm:  1.9567128937734307e-08
+Within-Group Iteration:  6
+Norm:  1.705139645919699e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.705139645919699e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.003211157290959945
+Gauss-Seidel Iteration:  3
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923672853907004
+Within-Group Iteration:  2
+Norm:  0.0009741308001761219
+Within-Group Iteration:  3
+Norm:  1.7689469124578473e-07
+Within-Group Iteration:  4
+Norm:  3.0660266213120014e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.0660266213120014e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09363443165655749
+Within-Group Iteration:  2
+Norm:  0.007479563207408916
+Within-Group Iteration:  3
+Norm:  6.098170831488032e-06
+Within-Group Iteration:  4
+Norm:  4.817023055824668e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.817023055824668e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.0770912357127217
+Within-Group Iteration:  2
+Norm:  0.01411669323733563
+Within-Group Iteration:  3
+Norm:  2.395266960212238e-05
+Within-Group Iteration:  4
+Norm:  3.748010753334126e-08
+Within-Group Iteration:  5
+Norm:  5.863878937890659e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.863878937890659e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.053825481674594465
+Within-Group Iteration:  2
+Norm:  0.02778618411993655
+Within-Group Iteration:  3
+Norm:  0.0002578064669587598
+Within-Group Iteration:  4
+Norm:  2.2392083909182195e-06
+Within-Group Iteration:  5
+Norm:  1.9436526216476255e-08
+Within-Group Iteration:  6
+Norm:  1.6870972881616314e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6870972881616314e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.00021184681516745789
+Gauss-Seidel Iteration:  4
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.2292358890979309
+Within-Group Iteration:  2
+Norm:  0.0009741151993152007
+Within-Group Iteration:  3
+Norm:  1.7689735808860515e-07
+Within-Group Iteration:  4
+Norm:  3.0661726000571105e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.0661726000571105e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0936631147022795
+Within-Group Iteration:  2
+Norm:  0.007489266060807508
+Within-Group Iteration:  3
+Norm:  6.111676725190472e-06
+Within-Group Iteration:  4
+Norm:  4.832171129395562e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.832171129395562e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.0772817105778303
+Within-Group Iteration:  2
+Norm:  0.014136129550879525
+Within-Group Iteration:  3
+Norm:  2.4025608989145646e-05
+Within-Group Iteration:  4
+Norm:  3.7660034966489394e-08
+Within-Group Iteration:  5
+Norm:  5.902357313546646e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.902357313546646e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05386735788469641
+Within-Group Iteration:  2
+Norm:  0.027832636691012515
+Within-Group Iteration:  3
+Norm:  0.00025818683701597344
+Within-Group Iteration:  4
+Norm:  2.2420360990890397e-06
+Within-Group Iteration:  5
+Norm:  1.9456938980624737e-08
+Within-Group Iteration:  6
+Norm:  1.6885125097066385e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6885125097066385e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  4.61926170382787e-06
+Gauss-Seidel Iteration:  5
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923559958470233
+Within-Group Iteration:  2
+Norm:  0.000974114126368544
+Within-Group Iteration:  3
+Norm:  1.7689726063061152e-07
+Within-Group Iteration:  4
+Norm:  3.066175647528862e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.066175647528862e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0936714132119975
+Within-Group Iteration:  2
+Norm:  0.007489789501723505
+Within-Group Iteration:  3
+Norm:  6.1123146033365775e-06
+Within-Group Iteration:  4
+Norm:  4.832840551508181e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.832840551508181e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.0772940125624613
+Within-Group Iteration:  2
+Norm:  0.014136250965981775
+Within-Group Iteration:  3
+Norm:  2.4027539608355183e-05
+Within-Group Iteration:  4
+Norm:  3.766599477723708e-08
+Within-Group Iteration:  5
+Norm:  5.903747136185116e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.903747136185116e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.053871988271457595
+Within-Group Iteration:  2
+Norm:  0.02783460505948927
+Within-Group Iteration:  3
+Norm:  0.00025820294618292657
+Within-Group Iteration:  4
+Norm:  2.2421564168517473e-06
+Within-Group Iteration:  5
+Norm:  1.945781328929497e-08
+Within-Group Iteration:  6
+Norm:  1.688572914763105e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.688572914763105e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  2.63310650550073e-07
+PI Norm:  0.00019411108604870585
+Power Iteration  3
+Gauss-Seidel Iteration:  1
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22930599337107738
+Within-Group Iteration:  2
+Norm:  0.0009774167548923718
+Within-Group Iteration:  3
+Norm:  1.738538868846771e-07
+Within-Group Iteration:  4
+Norm:  2.948679124995184e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.948679124995184e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.0822411272824604
+Within-Group Iteration:  2
+Norm:  0.008601220828513442
+Within-Group Iteration:  3
+Norm:  5.945677643049529e-06
+Within-Group Iteration:  4
+Norm:  3.8850000113150165e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.8850000113150165e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.06162625322714071
+Within-Group Iteration:  2
+Norm:  0.017394244871783173
+Within-Group Iteration:  3
+Norm:  2.1083097449531766e-05
+Within-Group Iteration:  4
+Norm:  2.218510161380902e-08
+Within-Group Iteration:  5
+Norm:  2.3340395695853517e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  2.3340395695853517e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.04266385101771938
+Within-Group Iteration:  2
+Norm:  0.031484815838338856
+Within-Group Iteration:  3
+Norm:  0.0003110654388065483
+Within-Group Iteration:  4
+Norm:  2.7652329177670884e-06
+Within-Group Iteration:  5
+Norm:  2.4555863396437172e-08
+Within-Group Iteration:  6
+Norm:  2.1805927911320838e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  2.1805927911320838e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  4.681759813922243
+Gauss-Seidel Iteration:  2
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22926953812566775
+Within-Group Iteration:  2
+Norm:  0.0009741861744881859
+Within-Group Iteration:  3
+Norm:  1.768509987797947e-07
+Within-Group Iteration:  4
+Norm:  3.0643096399647454e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.0643096399647454e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09180372437757603
+Within-Group Iteration:  2
+Norm:  0.007543501859209526
+Within-Group Iteration:  3
+Norm:  6.058540906102692e-06
+Within-Group Iteration:  4
+Norm:  4.657788482499927e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.657788482499927e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07324855408373207
+Within-Group Iteration:  2
+Norm:  0.01391837929912706
+Within-Group Iteration:  3
+Norm:  2.2881047101304987e-05
+Within-Group Iteration:  4
+Norm:  3.455749561788636e-08
+Within-Group Iteration:  5
+Norm:  5.2185269366830535e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.2185269366830535e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.051608556421826164
+Within-Group Iteration:  2
+Norm:  0.027068202794538063
+Within-Group Iteration:  3
+Norm:  0.0002574505894274429
+Within-Group Iteration:  4
+Norm:  2.2453861996187395e-06
+Within-Group Iteration:  5
+Norm:  1.9567128310678775e-08
+Within-Group Iteration:  6
+Norm:  1.7051421565925255e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.7051421565925255e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.003211162179922657
+Gauss-Seidel Iteration:  3
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923672854651064
+Within-Group Iteration:  2
+Norm:  0.0009741308002789475
+Within-Group Iteration:  3
+Norm:  1.7689469147052811e-07
+Within-Group Iteration:  4
+Norm:  3.0660331056832566e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.0660331056832566e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09363443074932594
+Within-Group Iteration:  2
+Norm:  0.007479563126255342
+Within-Group Iteration:  3
+Norm:  6.098170765854363e-06
+Within-Group Iteration:  4
+Norm:  4.817023309686536e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.817023309686536e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07709123379248282
+Within-Group Iteration:  2
+Norm:  0.014116693008086694
+Within-Group Iteration:  3
+Norm:  2.395266919950875e-05
+Within-Group Iteration:  4
+Norm:  3.748010676435584e-08
+Within-Group Iteration:  5
+Norm:  5.863906890292998e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.863906890292998e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05382548124398704
+Within-Group Iteration:  2
+Norm:  0.02778618381419075
+Within-Group Iteration:  3
+Norm:  0.0002578064641129388
+Within-Group Iteration:  4
+Norm:  2.239208366409884e-06
+Within-Group Iteration:  5
+Norm:  1.943652599469609e-08
+Within-Group Iteration:  6
+Norm:  1.6870995847236358e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6870995847236358e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  0.00021184720638835398
+Gauss-Seidel Iteration:  4
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923588909754133
+Within-Group Iteration:  2
+Norm:  0.00097411519931418
+Within-Group Iteration:  3
+Norm:  1.7689735808778965e-07
+Within-Group Iteration:  4
+Norm:  3.066159630606358e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.066159630606358e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09366311466485455
+Within-Group Iteration:  2
+Norm:  0.007489266058030836
+Within-Group Iteration:  3
+Norm:  6.1116767231370455e-06
+Within-Group Iteration:  4
+Norm:  4.832171281913062e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.832171281913062e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07728171049184852
+Within-Group Iteration:  2
+Norm:  0.01413612955040087
+Within-Group Iteration:  3
+Norm:  2.4025608989453583e-05
+Within-Group Iteration:  4
+Norm:  3.766003421133065e-08
+Within-Group Iteration:  5
+Norm:  5.902385564843283e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.902385564843283e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.053867357858664415
+Within-Group Iteration:  2
+Norm:  0.02783263667791997
+Within-Group Iteration:  3
+Norm:  0.0002581868368944076
+Within-Group Iteration:  4
+Norm:  2.2420360982095595e-06
+Within-Group Iteration:  5
+Norm:  1.9456938735818187e-08
+Within-Group Iteration:  6
+Norm:  1.6885148299854763e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.6885148299854763e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  4.619278570226663e-06
+Gauss-Seidel Iteration:  5
+Starting Group  0
+Within-Group Iteration:  1
+Norm:  1.0254858006544527
+Within-Group Iteration:  2
+Norm:  0.00010864499434142732
+Within-Group Iteration:  3
+Norm:  9.442327298524046e-10
+Finished Group  0
+Number of Within-Group Iterations:  4
+Final Phi Norm:  9.442327298524046e-10
+Starting Group  1
+Within-Group Iteration:  1
+Norm:  0.9334122799345527
+Within-Group Iteration:  2
+Norm:  0.0011734865812349775
+Within-Group Iteration:  3
+Norm:  4.890669734645579e-07
+Within-Group Iteration:  4
+Norm:  2.0203131560060627e-10
+Finished Group  1
+Number of Within-Group Iterations:  5
+Final Phi Norm:  2.0203131560060627e-10
+Starting Group  2
+Within-Group Iteration:  1
+Norm:  0.4401329781006131
+Within-Group Iteration:  2
+Norm:  0.002213212168979761
+Within-Group Iteration:  3
+Norm:  1.0186776775758146e-06
+Within-Group Iteration:  4
+Norm:  4.4882656123900243e-10
+Finished Group  2
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.4882656123900243e-10
+Starting Group  3
+Within-Group Iteration:  1
+Norm:  0.22923559958473233
+Within-Group Iteration:  2
+Norm:  0.0009741141263685586
+Within-Group Iteration:  3
+Norm:  1.7689726082516167e-07
+Within-Group Iteration:  4
+Norm:  3.066195101682697e-11
+Finished Group  3
+Number of Within-Group Iterations:  5
+Final Phi Norm:  3.066195101682697e-11
+Starting Group  4
+Within-Group Iteration:  1
+Norm:  0.09367141320957115
+Within-Group Iteration:  2
+Norm:  0.0074897895015662835
+Within-Group Iteration:  3
+Norm:  6.1123146029991424e-06
+Within-Group Iteration:  4
+Norm:  4.832840861157542e-09
+Finished Group  4
+Number of Within-Group Iterations:  5
+Final Phi Norm:  4.832840861157542e-09
+Starting Group  5
+Within-Group Iteration:  1
+Norm:  0.07729401255793525
+Within-Group Iteration:  2
+Norm:  0.014136250965487887
+Within-Group Iteration:  3
+Norm:  2.4027539607362325e-05
+Within-Group Iteration:  4
+Norm:  3.766599463346653e-08
+Within-Group Iteration:  5
+Norm:  5.90371887022112e-11
+Finished Group  5
+Number of Within-Group Iterations:  6
+Final Phi Norm:  5.90371887022112e-11
+Starting Group  6
+Within-Group Iteration:  1
+Norm:  0.05387198827029194
+Within-Group Iteration:  2
+Norm:  0.02783460505881845
+Within-Group Iteration:  3
+Norm:  0.00025820294617701734
+Within-Group Iteration:  4
+Norm:  2.242156416671243e-06
+Within-Group Iteration:  5
+Norm:  1.9457813520907278e-08
+Within-Group Iteration:  6
+Norm:  1.688569432144397e-10
+Finished Group  6
+Number of Within-Group Iterations:  7
+Final Phi Norm:  1.688569432144397e-10
+Calculating Upscatter Acceleration Term
+GS Norm:  2.633112129912147e-07
+PI Norm:  9.965107265598272e-10
+Runtime: 97576.21383 seconds
+Eigenvalue:  0.1760018080232567
