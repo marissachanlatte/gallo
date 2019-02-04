@@ -8,6 +8,8 @@
 
 [![Build Status](https://travis-ci.org/mzweig/gallo.svg?branch=master)](https://travis-ci.org/mzweig/gallo)
 [![codecov](https://codecov.io/gh/mzweig/gallo/branch/master/graph/badge.svg)](https://codecov.io/gh/mzweig/gallo)
+[![DOI](https://zenodo.org/badge/116534008.svg)](https://zenodo.org/badge/latestdoi/116534008)
+
 
 Gallo is a 2D, finite element, radiation transport simulation code.
 
