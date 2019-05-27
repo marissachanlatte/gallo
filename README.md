@@ -30,4 +30,4 @@ This file stores cross-sections and other material data and has the extension '.
 This file gathers problem details and excutes solution. The user must specify the paths for all input files, an equation type (supported types are 'NDA', 'TGNDA', 'SAAF', and 'Diffusion'), a source, and a problem name. The run command will output a numpy array and plots of scalar flux data.
 
 # Architecture
-<img src="assets/architecture.png" alt="gallo architecture diagram" width="30%">
+<img src="assets/architecture.png" alt="gallo architecture diagram" width="100%">
